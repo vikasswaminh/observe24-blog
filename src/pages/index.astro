@@ -1,3 +1,488 @@
 ---
-return Astro.redirect('/blog');
+import Base from '../layouts/Base.astro';
+
+const BLOG_POSTS = [
+  {
+    title: "SIEM vs Observability: Differences, Overlap, and Why They’re Converging",
+    description: "SIEM and observability solve different problems, but the line between them is disappearing fast. Here's a plain English breakdown of what each one does, where they overlap, and why the smartest teams in 2026 aren't picking one over the other.",
+    category: "SECURITY",
+    date: "2026-09-02",
+    readTime: "21 MIN READ",
+    link: "/blog/siem-vs-observability-differences-overlap-converging",
+    tag: "NEW"
+  },
+  {
+    title: "Website Uptime Monitoring: Complete Guide — Build a Monitoring Strategy That Saves Revenue, Not Just Time",
+    description: "Website uptime monitoring explained from first principles — how to catch silent failures before they cost money, build multi-region checks that don't false-alarm, and design a monitoring setup that protects both your infrastructure and your customer's trust. A complete guide for teams serious about reliability.",
+    category: "DEVOPS",
+    date: "2026-09-02",
+    readTime: "21 MIN READ",
+    link: "/blog/website-uptime-monitoring-complete-guide",
+    tag: "POPULAR"
+  },
+  {
+    title: "AI Agent Observability: How to Monitor AI Agents in Production",
+    description: "AI agents fail differently than traditional software. Learn what to monitor, how OpenTelemetry GenAI spans work, and how to catch cost spikes, loops, and prompt injection early.",
+    category: "AI SECURITY",
+    date: "2026-09-01",
+    readTime: "21 MIN READ",
+    link: "/blog/ai-agent-observability-how-to-monitor",
+    tag: "FEATURED"
+  },
+  {
+    title: "What Is AI Observability? A Complete Guide for LLMs and AI Agents (2026)",
+    description: "AI observability explained: why traditional monitoring can't tell you if your LLM's answer was correct, what to track (tokens, cost, latency, hallucinations, tool calls), and how to build it into your stack.",
+    category: "AI OBSERVABILITY",
+    date: "2026-08-31",
+    readTime: "21 MIN READ",
+    link: "/blog/what-is-ai-observability-complete-guide",
+    tag: "FEATURED"
+  },
+  {
+    title: "Observability vs Monitoring: Key Differences, Examples & Best Practices",
+    description: "Observability and monitoring get used like synonyms, but they solve different problems. Here's what separates them, why green dashboards can still hide outages, and how to combine both without drowning your team in noise.",
+    category: "OBSERVABILITY",
+    date: "2026-08-27",
+    readTime: "20 MIN READ",
+    link: "/blog/observability-vs-monitoring-key-differences",
+    tag: "POPULAR"
+  },
+  {
+    title: "What Is Observability? The Complete Guide (2026)",
+    description: "What is observability, really, and how is it different from monitoring? This complete guide breaks down the three pillars, why they're not enough on their own, and how modern teams are using AI to investigate incidents instead of just detecting them.",
+    category: "OBSERVABILITY",
+    date: "2026-08-25",
+    readTime: "21 MIN READ",
+    link: "/blog/what-is-observability-guide-2026",
+    tag: "POPULAR"
+  },
+  {
+    title: "Best Datadog Alternatives in 2026 (And How to Actually Pick One)",
+    description: "Datadog's bill finally caught up with your infrastructure. Here's an honest, no-fluff look at the strongest Datadog alternatives in 2026 — what each one is good at, where it falls short, and how to figure out which one fits your team instead of just the next vendor's sales deck.",
+    category: "COMPARISONS",
+    date: "2026-08-24",
+    readTime: "20 MIN READ",
+    link: "/blog/best-datadog-alternatives-2026",
+    tag: "POPULAR"
+  },
+  {
+    title: "What Is Uptime Monitoring? The Complete Guide (2026 Edition)",
+    description: "Uptime monitoring explained from first principles — what it actually checks, why \"200 OK\" can still mean your site is broken, and how to build a monitoring setup that catches outages before your customers do.",
+    category: "DEVOPS",
+    date: "2026-08-21",
+    readTime: "20 MIN READ",
+    link: "/blog/what-is-uptime-monitoring-guide",
+    tag: "FEATURED"
+  },
+  {
+    title: "Best Uptime Monitoring Tools in 2026: The Complete Guide for Teams That Can't Afford Downtime",
+    description: "Looking for the best uptime monitoring tool in 2026? We break down 10 platforms — including 24Observe, Better Stack, UptimeRobot, Pingdom, and Datadog — so you can pick the right one for your stack, budget, and team.",
+    category: "OBSERVABILITY",
+    date: "2026-08-19",
+    readTime: "20 MIN READ",
+    link: "/blog/best-uptime-monitoring-tools-2026",
+    tag: "POPULAR"
+  }
+];
+
+const RELEASES = [
+  {
+    version: 'August 2026 — Featured Guides & Release',
+    tag: 'LATEST',
+    hasSeeMore: true,
+    highlights: [
+      'Published "What Is Uptime Monitoring? The Complete Guide (2026 Edition)" — Uptime monitoring explained from first principles, silent outage analysis, multi-region checks, 12 monitor types, and alert escalations.',
+      'Published "Best Uptime Monitoring Tools in 2026" guide comparing 10 leading platforms.',
+      'Deep dive into multi-region checks, 12 monitor types, automated status pages, AI root-cause investigation, and SaaS vs. Self-hosted tradeoffs.',
+    ],
+  },
+  {
+    version: 'June 2026',
+    highlights: [
+      'Operational Context Layer: a per-tenant graph built read-only from your telemetry. GET /api/v1/context/incident/{key}/summary returns an incident\'s blast-radius.',
+      'AI agent observability: send OpenTelemetry GenAI spans to /api/v1/otlp and view token usage, estimated cost, latency, and error rate.',
+      'AI Agent Security: a "Security signals" view flags prompt-injection markers, oversized outputs, sensitive tool calls, and runaway loops.',
+      'OTLP metrics + traces receiver: native OTLP/HTTP ingest for metrics and traces alongside logs.',
+      'SIEM: multi-event correlation rules, threat-intel IOC matching at ingest, GeoIP + identity + asset enrichment.',
+    ],
+  },
+  {
+    version: 'May 2026 (Phase 2 — Agent API)',
+    highlights: [
+      'Event webhook subscriptions: register a URL with /api/v1/webhook-subscriptions and receive signed POSTs on incident events.',
+      'Pre-converted LLM tool definitions: /openapi/openai-tools.json, /openapi/anthropic-tools.json, /openapi/langchain-tools.json.',
+      'Per-PAT rate-limit headers on every authenticated response.',
+      '14 narrow PAT scopes (monitors:read, webhooks:write, logs:write, etc.).',
+    ],
+  },
+  {
+    version: 'May 2026 (Logs v1)',
+    highlights: [
+      'Logs v1: ship structured events with a PAT, search by time + substring + service + level, live-tail in the dashboard.',
+      'Plan tiers now include monthly log volume caps (Free 1 GB, Startup 10 GB, Pro 100 GB).',
+    ],
+  },
+];
 ---
+<Base
+  title="IT Career & Observability Blog — 24Observe"
+  activeNav="blog"
+  description="Engineering blog & articles for 24Observe."
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    {/* MOBILE HORIZONTAL SCROLL CATEGORY CARDS */}
+    <div class="mobile-sidebars" style="margin-bottom: 20px;">
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="background: #3B9112; color: #fff; font-size: 0.85rem; font-weight: 800; padding: 4px 12px; border-radius: 12px; text-transform: uppercase;">FOUNDER SPECIAL</span>
+        </div>
+        <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;">
+          {BLOG_POSTS.slice(0, 5).map((post) => (
+            <a href={post.link} style="flex: 0 0 250px; background: rgba(59, 145, 18, 0.06); border: 1px solid rgba(59, 145, 18, 0.25); border-radius: 10px; padding: 12px; text-decoration: none; color: #111827;">
+              <h4 style="font-size: 0.98rem; font-weight: 700; margin: 0; line-height: 1.35;">{post.title}</h4>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="background: #3B9112; color: #fff; font-size: 0.85rem; font-weight: 800; padding: 4px 12px; border-radius: 12px; text-transform: uppercase;">AI SPECIAL</span>
+        </div>
+        <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;">
+          {BLOG_POSTS.slice(4).map((post) => (
+            <a href={post.link} style="flex: 0 0 250px; background: rgba(59, 145, 18, 0.06); border: 1px solid rgba(59, 145, 18, 0.25); border-radius: 10px; padding: 12px; text-decoration: none; color: #111827;">
+              <h4 style="font-size: 0.98rem; font-weight: 700; margin: 0; line-height: 1.35;">{post.title}</h4>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* DESKTOP 3-COLUMN LAYOUT */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {BLOG_POSTS.map((post) => (
+            <a
+              href={post.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {post.title}
+            </a>
+          ))}
+        </nav>
+        <a href="#complete-archive" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        {/* HERO HEADER */}
+        <section style="margin-bottom: 20px;">
+          <div style="font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+            Engineering &amp; Platform Blog
+          </div>
+          <h1 style="font-size: 2.1rem; font-weight: 800; color: #2A680D; margin: 0 0 8px 0; line-height: 1.2;">
+            IT Career Blog | Guides, Architecture &amp; News
+          </h1>
+          <p style="font-size: 1.02rem; color: #4b5563; margin: 0 0 20px 0; line-height: 1.55;">
+            In-depth guides, architecture breakdowns, uptime tool comparisons, and engineering posts from the 24Observe team.
+          </p>
+        </section>
+
+        {/* FEATURED TOP BLOG BANNER (NEWEST ARTICLE) */}
+        {BLOG_POSTS[0] && (
+          <section style="margin-bottom: 28px;">
+            <a
+              href={BLOG_POSTS[0].link}
+              style="display: flex; flex-direction: row; min-height: 250px; max-height: 270px; background: #fffdfa; border: 2px solid #2A680D; border-radius: 14px; overflow: hidden; text-decoration: none; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative;"
+              class="featured-hero-card"
+            >
+              <div style="flex: 1; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                {/* NEW BADGE IN TOP RIGHT */}
+                <div style="position: absolute; top: 16px; right: 16px;">
+                  <span style="background: #2A680D; color: #ffffff; font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 4px;">
+                    🔥 NEW
+                  </span>
+                </div>
+
+                <div>
+                  <div style="margin-bottom: 8px;">
+                    <span style="background: #3B9112; color: #ffffff; font-size: 0.76rem; font-weight: 800; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.05em;">
+                      {BLOG_POSTS[0].category}
+                    </span>
+                  </div>
+                  <h2 style="font-size: 1.45rem; font-weight: 800; color: #2A680D; margin: 0 0 8px 0; line-height: 1.3; padding-right: 60px;">
+                    {BLOG_POSTS[0].title}
+                  </h2>
+                  <p style="font-size: 0.95rem; color: #475569; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    {BLOG_POSTS[0].description}
+                  </p>
+                </div>
+
+                <div style="display: flex; align-items: flex-end; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #6b7280; padding-top: 10px; border-top: 1px solid #f1f5f9;">
+                  <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <span>{BLOG_POSTS[0].readTime}</span>
+                    <span style="font-size: 0.78rem; color: #6b7280; font-weight: 600;">{BLOG_POSTS[0].date}</span>
+                  </div>
+                  <span style="color: #2A680D; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+                    Read article →
+                  </span>
+                </div>
+              </div>
+            </a>
+          </section>
+        )}
+
+        {/* REMAINING BLOGS SECTION (GRID LAYOUT) */}
+        <section style="margin-bottom: 32px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="font-size: 1.45rem; font-weight: 800; color: #2A680D; margin: 0;">
+              Latest Engineering Guides &amp; Articles
+            </h2>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%;">
+            {BLOG_POSTS.slice(1).map((post) => (
+              <a
+                href={post.link}
+                style="display: flex; flex-direction: column; justify-content: space-between; background: #ffffff; border: 1.5px solid #cdebc2; border-radius: 14px; padding: 20px; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(42, 104, 13, 0.04);"
+                class="inline-blog-card"
+              >
+                <div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px;">
+                    <span style="background: #3B9112; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 0 8px; height: 22px; display: inline-flex; align-items: center; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;">
+                      {post.category}
+                    </span>
+                    {post.tag && (
+                      <span style="background: #2A680D; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 0 8px; height: 22px; display: inline-flex; align-items: center; border-radius: 6px; text-transform: uppercase; white-space: nowrap;">
+                        {post.tag}
+                      </span>
+                    )}
+                  </div>
+                  <h3 style="font-size: 1.12rem; font-weight: 700; line-height: 1.35; color: #2A680D; margin: 0 0 10px 0;">
+                    {post.title}
+                  </h3>
+                  <p style="font-size: 0.92rem; line-height: 1.5; color: #4b5563; margin: 0 0 16px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {post.description}
+                  </p>
+                </div>
+                <div style="display: flex; align-items: flex-end; justify-content: space-between; font-size: 0.82rem; font-weight: 700; color: #6b7280; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <span>{post.readTime}</span>
+                    {post.date && (
+                      <span style="font-size: 0.76rem; color: #6b7280; font-weight: 600; text-transform: none;">
+                        {post.date}
+                      </span>
+                    )}
+                  </div>
+                  <span style="color: #2A680D; font-weight: 800;">Read article →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* RELEASES & CHANGELOG SECTION */}
+        <section id="releases" style="margin-bottom: 32px;">
+          <h2 style="font-size: 1.65rem; font-weight: 800; color: #2A680D; margin-bottom: 16px;">
+            Release Notes &amp; Updates
+          </h2>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            {RELEASES.map((r) => (
+              <article class="card" style="padding: 28px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <h3 style="font-size: 1.45rem; margin: 0; font-weight: 800; color: #2A680D;">
+                      {r.version}
+                    </h3>
+                    {r.tag && <span style="background: #3B9112; color: #ffffff; font-size: 0.85rem; font-weight: 800; padding: 5px 14px; border-radius: 12px; text-transform: uppercase;">{r.tag}</span>}
+                  </div>
+                </div>
+                <ul style="display: flex; flex-direction: column; gap: 12px; padding-left: 22px; color: #374151; font-size: 1.08rem; line-height: 1.65; margin: 0;">
+                  {r.highlights.map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* RIGHT SIDEBAR: AI & PLATFORM SPECIAL */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {RELEASES.map((r) => (
+            <a
+              href="#releases"
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {r.version}
+            </a>
+          ))}
+          <a href="/docs/api-for-agents" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
+            AI Agent API &amp; Open API
+          </a>
+          <a href="/docs/mcp" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
+            MCP Server Setup Guide
+          </a>
+          <a href="/self-host" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
+            Self-Host Air-Gapped Setup
+          </a>
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+
+    {/* COMPLETE BLOG ARCHIVE SECTION (MATCHING NETWORKERS HOME BOTTOM ARCHIVE) */}
+    <section id="complete-archive" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; color: #2A680D; margin: 0 0 8px 0;">
+        Complete Blog Archive
+      </h2>
+      <p style="font-size: 1.1rem; color: #4b5563; margin: 0 0 24px 0;">
+        Browse all articles by topic and category. Click any article to read the full guide.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 36px;">
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
+            Monitoring &amp; Observability
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            {BLOG_POSTS.filter(p => p.category.includes("OBSERVABILITY") || p.category.includes("MONITORING")).map(p => (
+              <li>
+                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
+                  • {p.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
+            Tool Comparisons
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            {BLOG_POSTS.filter(p => p.category.includes("COMPARISON") || p.category.includes("TOOL")).map(p => (
+              <li>
+                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
+                  • {p.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
+            Product &amp; AI Engineering
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            {BLOG_POSTS.filter(p => p.category.includes("PRODUCT") || p.category.includes("CRON") || p.category.includes("BEST")).map(p => (
+              <li>
+                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
+                  • {p.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .sidebar-nav-item {
+      color: #111827 !important;
+      font-weight: 600;
+    }
+    .sidebar-nav-item:hover {
+      background: rgba(59, 145, 18, 0.1);
+      color: #2A680D !important;
+    }
+    .featured-hero-card:hover {
+      border-color: #2A680D !important;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(42, 104, 13, 0.15) !important;
+    }
+    .featured-hero-card:hover .featured-hero-img {
+      transform: scale(1.03);
+    }
+    .inline-blog-card:hover {
+      border-color: #2A680D !important;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(42, 104, 13, 0.12) !important;
+    }
+    .archive-link {
+      color: #111827 !important;
+      font-weight: 500;
+    }
+    .archive-link:hover {
+      color: #2A680D !important;
+      text-decoration: underline !important;
+    }
+    @media (max-width: 1024px) {
+      .desktop-sidebar {
+        display: none !important;
+      }
+      .featured-hero-card {
+        flex-direction: column !important;
+      }
+      .featured-hero-card > div:first-child {
+        width: 100% !important;
+        height: 220px !important;
+      }
+    }
+    @media (min-width: 1025px) {
+      .mobile-sidebars {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script is:inline>
+    window.toggleGuides = function() {
+      var container = document.getElementById('inline-blogs-container');
+      if (container) {
+        if (container.style.display === 'none' || container.style.display === '') {
+          container.style.display = 'block';
+        } else {
+          container.style.display = 'none';
+        }
+      }
+    };
+  </script>
+</Base>
+
