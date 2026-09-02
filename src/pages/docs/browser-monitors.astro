@@ -1,0 +1,145 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Browser (synthetic) monitors — 24Observe"
+  description="Load the target in real headless Chromium, run its JavaScript, and check the fully rendered page — not just the raw HTTP response. For SPAs, JS-gated content, and 'does the page actually render' checks."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · browser monitors</div>
+      <h1 class="h1">Browser (synthetic) monitors.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        A <b>browser</b> monitor loads your URL in real <b>headless Chromium</b>,
+        executes the page's JavaScript, and evaluates the <b>fully rendered
+        page</b>. An <code>http</code> or <code>keyword</code> check sees only
+        the raw HTTP response; a browser check sees what a user's browser
+        actually paints. Use it for single-page apps, JavaScript-gated content,
+        and "does the page actually render" checks where a 200 on the raw HTML
+        tells you nothing.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">When to reach for it</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>Single-page apps</b> — React / Vue / Svelte shells that ship an
+        empty <code>&lt;div id="root"&gt;</code> and hydrate client-side. The raw
+        response is a skeleton; the rendered page is the product.</li>
+        <li><b>JavaScript-gated content</b> — anything that only appears after
+        the bundle loads, fetches, and renders.</li>
+        <li><b>"Does it actually render" checks</b> — assert on text that only
+        exists post-hydration, so a broken bundle or a failed XHR flips the
+        monitor even when the server returns 200.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Create one — API</h2>
+      <p>
+        A browser monitor is created like any other: <code>POST /api/v1/monitors</code>
+        with <code>type: "browser"</code>. Use a PAT with the
+        <code>monitors:write</code> scope.
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H 'Authorization: Bearer obs_<token>' \\
+  -H "Idempotency-Key: $(uuidgen)" \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "app.example dashboard renders",
+    "url": "https://app.example.com/dashboard",
+    "type": "browser",
+    "intervalSec": 300,
+    "timeoutMs": 30000,
+    "expectedStatusCode": 200,
+    "keyword": "Welcome back",
+    "keywordMatchType": "contains",
+    "degradedResponseTimeMs": 4000,
+    "alertEmail": "alerts@yourco.com"
+  }'`}</pre>
+      <p>
+        The <code>keyword</code> above is matched against the
+        <b>rendered DOM</b> (post-JavaScript), so <code>"Welcome back"</code>
+        can be text the app only paints once it has hydrated and fetched the
+        user's session — not something present in the initial HTML.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Create one — dashboard</h2>
+      <p>
+        Open <a href="https://login.24observe.com">login.24observe.com</a>,
+        click <b>New monitor</b>, and pick
+        <b>"Browser (headless Chromium — renders JS)"</b> from the type
+        dropdown. Fill in the URL, interval, timeout, and any keyword assertion
+        exactly as above.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Fields it honors</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>url</code> (required) — the full <code>https</code> URL to load.</li>
+        <li><code>intervalSec</code> — how often the check runs. The free plan's
+        minimum interval is <code>300</code>s.</li>
+        <li><code>timeoutMs</code> — how long the load may take before it counts
+        as down (e.g. <code>30000</code>).</li>
+        <li><code>expectedStatusCode</code> (optional) — assert the document
+        response status.</li>
+        <li><code>keyword</code> + <code>keywordMatchType</code> (optional) —
+        <code>"contains"</code> or <code>"not_contains"</code>, matched against
+        the <b>rendered DOM</b> after JavaScript has run.</li>
+        <li><code>degradedResponseTimeMs</code> (optional) — render time above
+        this marks a slow-but-up page as <code>degraded</code> instead of
+        <code>up</code>.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Result semantics</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>up</code> — the page loaded (status <code>&lt; 400</code>) and
+        any keyword assertion passed.</li>
+        <li><code>degraded</code> — the page loaded, but render time exceeded
+        <code>degradedResponseTimeMs</code>.</li>
+        <li><code>down</code> — a <code>4xx</code> / <code>5xx</code>, a failed
+        keyword assertion, or a load timeout.</li>
+      </ul>
+      <p>
+        Reported response time is the time to the <code>load</code> event — the
+        same number you'll see in the dashboard charts and SLO calculations.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Isolation</h2>
+      <p>
+        Browser checks run on a <b>dedicated browser execution pool</b>, kept
+        separate from the standard check pipeline. Rendering a page is heavier
+        than a plain HTTP request, so isolating it means a slow or stuck browser
+        check never delays your <code>http</code>, <code>ping</code>, or
+        <code>keyword</code> monitors.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Security</h2>
+      <p>
+        Every request the page makes — the initial navigation, every redirect,
+        and every sub-resource it pulls — is checked against an <b>SSRF
+        guard</b>. A browser monitor cannot be pointed at private, loopback, or
+        cloud-metadata addresses, and a page can't be used to reach them
+        indirectly through a redirect or an embedded resource. The same defense
+        that protects alert and webhook targets applies to what the browser is
+        allowed to load.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Alerting, incidents, and status pages</h2>
+      <p>
+        A browser monitor behaves like every other monitor type once it's
+        running. Configured alert channels (email / webhook / Slack / Discord /
+        Teams / Telegram / PagerDuty / Opsgenie) fire on the same
+        <code>alertThreshold</code> rules, incidents open and auto-resolve the
+        same way, and the monitor can be added to a public status page like any
+        other. Nothing about the result handling is special — only the check
+        itself renders the page.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Other resources</h2>
+      <ul style="line-height: 1.9;">
+        <li><a href="/docs/api">API reference</a> — PATs, scopes, the full
+        monitor request body, and error codes.</li>
+        <li><a href="/docs/heartbeats">Heartbeat / cron-job monitors</a> — the
+        inverted check pattern.</li>
+        <li><a href="/docs/openapi">Interactive OpenAPI reference</a> — every
+        endpoint and schema in one searchable page.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,168 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const FEATURES = [
+  {
+    n: '01',
+    title: 'Rate-limit headers your agent can actually read.',
+    body: `Every authenticated response carries the daily mutation budget left on your PAT: X-PAT-Mut-Limit, X-PAT-Mut-Remaining, X-PAT-Mut-Reset. The bytes-budget on /logs/ingest is reported by X-PAT-LogBytes-Limit, X-PAT-LogBytes-Used, X-PAT-LogBytes-Remaining, X-PAT-LogBytes-Reset. The reset value is a unix timestamp — no parsing "in 4 hours". Your agent knows to back off before it hits a 429.`,
+    sample: `HTTP/1.1 201 Created
+X-PAT-Mut-Limit: 1000
+X-PAT-Mut-Remaining: 873
+X-PAT-Mut-Reset: 1716508800
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 99`,
+  },
+  {
+    n: '02',
+    title: 'Event webhooks. Stop polling.',
+    body: `Register a URL with /api/v1/webhook-subscriptions for the events you care about — incident.opened, incident.acknowledged, incident.resolved. We POST a JSON envelope signed with your org's webhook secret (HMAC-SHA256, Stripe-style). Your endpoint verifies the signature, processes the event, returns 200. We auto-retry on failure (5 attempts, exponential backoff), auto-disable after 10 consecutive failures, and you get a /deliveries log for everything.`,
+    sample: `POST https://your-agent.example.com/24observe-events
+Content-Type: application/json
+User-Agent: 24observe-webhooks/1.0
+X-24Observe-Event: incident.opened
+X-24Observe-Delivery-Id: deliver-abc.1
+X-24Observe-Timestamp: 1716480000
+X-24Observe-Signature: t=1716480000,v1=<hmac-sha256-hex>
+
+{
+  "id": "incident.42.opened",
+  "type": "incident.opened",
+  "created": 1716480000,
+  "data": {
+    "incident_id": 42,
+    "monitor_id": 7,
+    "monitor_name": "checkout-api",
+    "monitor_url": "https://api.example.com/healthz",
+    "status": "investigating",
+    "error_message": "HTTP 503",
+    "opened_at": "2026-05-23T14:00:00Z"
+  }
+}`,
+  },
+  {
+    n: '03',
+    title: 'Tool definitions for every agent framework.',
+    body: `We pre-convert the OpenAPI spec into the shapes your framework already expects. Fetch one of three URLs and pass the array straight into your agent — no schema wrangling, no hand-rolled converter.`,
+    sample: `# OpenAI function-calling
+curl https://api.24observe.com/openapi/openai-tools.json
+
+# Anthropic tool-use
+curl https://api.24observe.com/openapi/anthropic-tools.json
+
+# LangChain / generic
+curl https://api.24observe.com/openapi/langchain-tools.json`,
+  },
+  {
+    n: '04',
+    title: 'PAT scopes that name the action, not the resource.',
+    body: `Mint a token with monitors:read and your agent can list monitors but not create them. Add logs:write and it can ship logs but not search them. Twenty-four scopes total, including context:read for the operational graph and metrics:read/write for OTLP metrics. Mix and match per agent so the blast radius of a leaked token matches the trust level of the task.`,
+    sample: `curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H "Authorization: Bearer obs_<admin>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "incident-bot-prod",
+    "scopes": ["incidents:read", "incidents:write", "webhooks:write"],
+    "dailyMutationLimit": 200
+  }'`,
+  },
+  {
+    n: '05',
+    title: 'Idempotency-Key on every POST.',
+    body: `Send the same request twice with the same Idempotency-Key, get the same result twice — never a duplicate row, never a double-page. The window is 24 hours. Your agent's retry loop on a 5xx never costs you a duplicated incident.`,
+    sample: `curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H "Authorization: Bearer obs_<pat>" \\
+  -H "Idempotency-Key: 7c1d-create-checkout-monitor" \\
+  -H "Content-Type: application/json" \\
+  -d '{"name":"checkout-api","url":"https://api.example.com/healthz","type":"http"}'`,
+  },
+  {
+    n: '06',
+    title: 'Errors with a code, not just a message.',
+    body: `Every 4xx response carries a stable error code your agent can branch on — PAT_SCOPE_INSUFFICIENT, PAT_DAILY_LIMIT_EXCEEDED, PLAN_LIMIT_LOGS_VOLUME, WEBHOOK_URL_UNSAFE, WEBHOOK_URL_UNRESOLVABLE, MONITOR_TARGET_UNSAFE, IDEMPOTENCY_KEY_REPLAY_CONFLICT. The message is for humans; the code is the contract.`,
+    sample: `HTTP/1.1 403 Forbidden
+Content-Type: application/json
+
+{
+  "error": "Token missing required scope: webhooks:write",
+  "code": "PAT_SCOPE_INSUFFICIENT"
+}`,
+  },
+];
+---
+<Base
+  title="The 24Observe API for AI agents — webhooks, rate-limit headers, scoped tokens"
+  activeNav="docs"
+  description="Pure-REST observability API designed for AI agents: machine-readable rate-limit headers, signed event webhooks (replace polling), pre-converted tool definitions for OpenAI / Anthropic / LangChain, scoped PATs with per-token daily caps."
+>
+  <section class="section">
+    <div class="container" style="max-width: 920px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · API for agents</div>
+      <h1 class="h1">Built so an agent can run the day without paging you.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Most observability APIs were designed for humans clicking through a dashboard. The
+        retries get wrapped in an SDK; the auth gets hidden behind an OAuth dance; the
+        errors arrive as 500-page release notes. None of that ports to an agent.
+      </p>
+      <p style="margin-top: 16px; color: var(--ink-1); font-size: 15px; line-height: 1.6;">
+        We built this surface for the case where the caller is a script you wrote at
+        midnight, or a Claude/GPT/Gemini tool call that has to make a decision in the next
+        300 ms. Below is the short list of what that actually means — narrated against the
+        live API.
+      </p>
+
+      <section style="margin-top: 48px; padding: 28px; background: var(--accent-dim); border: 1px solid var(--accent-line); border-radius: 12px;">
+        <div class="mono" style="color: var(--accent); font-size: 12px; letter-spacing: 0.08em; margin-bottom: 8px;">NEW · MODEL CONTEXT PROTOCOL</div>
+        <h2 class="h2" style="margin: 0 0 12px;">Plug 24observe into any MCP client — no integration code.</h2>
+        <p style="color: var(--ink-1); font-size: 15px; line-height: 1.65; margin: 0 0 16px;">
+          Beyond the tool-definition JSON below, we ship a Model Context Protocol server (<code class="inline-code">@observe24/mcp</code>).
+          Add it to Claude Desktop, Claude Code, Cursor, or your own agent with one config block and your API token, then ask
+          things like <em>"investigate incident 159"</em> or <em>"open a case and attach the brute-force incident."</em> It's a thin,
+          safe proxy — every read plus a curated allow-list of safe writes, never <code class="inline-code">DELETE</code>, never auth
+          or billing — and it runs against your own self-hosted instance too.
+        </p>
+        <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`// claude_desktop_config.json  (or Cursor mcp.json)
+{
+  "mcpServers": {
+    "24observe": {
+      "command": "npx",
+      "args": ["-y", "@observe24/mcp"],
+      "env": { "OBSERVE24_TOKEN": "obs_your_token" }
+    }
+  }
+}`}</pre>
+        <p style="color: var(--ink-2); font-size: 13px; line-height: 1.6; margin: 12px 0 0;">
+          Available today by self-hosting from source — build it and set <code class="inline-code">"command": "node"</code>,
+          <code class="inline-code">"args": ["/path/to/observe24/apps/mcp/dist/index.js"]</code>. The managed
+          <code class="inline-code">@observe24/mcp</code> package shown above publishes shortly.
+        </p>
+      </section>
+
+      {FEATURES.map((f) => (
+        <section style="margin-top: 56px;">
+          <div class="num mono" style="color: var(--accent); font-size: 12px; letter-spacing: 0.08em; margin-bottom: 8px;">{f.n}</div>
+          <h2 class="h2" style="margin: 0 0 12px;">{f.title}</h2>
+          <p style="color: var(--ink-1); font-size: 15px; line-height: 1.65; margin: 0 0 16px;">{f.body}</p>
+          <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{f.sample}</pre>
+        </section>
+      ))}
+
+      <section style="margin-top: 80px; padding: 32px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px;">
+        <h2 class="h2" style="margin: 0 0 12px;">We'd still rather you didn't write to us.</h2>
+        <p style="color: var(--ink-1); font-size: 15px; line-height: 1.65; margin: 0 0 16px;">
+          Pages your agent should bookmark: <a href="/agents/" style="color: var(--accent);">/agents/</a> for the
+          end-to-end story, <a href="/docs/api/" style="color: var(--accent);">/docs/api/</a> for the full reference,
+          <a href="/docs/openapi/" style="color: var(--accent);">/docs/openapi/</a> for the interactive spec,
+          <a href="/docs/webhooks/" style="color: var(--accent);">/docs/webhooks/</a> for signature verification, and
+          <a href="https://api.24observe.com/openapi/tools-index.json" style="color: var(--accent);">/openapi/tools-index.json</a> for
+          the discovery doc that lists every tool-format URL.
+        </p>
+        <p style="color: var(--ink-1); font-size: 15px; line-height: 1.65; margin: 0;">
+          If something here is broken, vague, or just less convenient than it should be —
+          tell us. <a href="/contact/" style="color: var(--accent);">/contact/</a> goes to a real person, not a
+          ticketing queue.
+        </p>
+      </section>
+    </div>
+  </section>
+</Base>

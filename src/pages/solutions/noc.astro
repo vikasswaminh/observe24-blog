@@ -1,0 +1,320 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What is a NOC platform supposed to do that mine doesn’t?',
+    a: 'A real network-operations platform should watch the whole stack — devices, hosts, and the applications on top — in one place, alert on all of it through one pipeline, and help you find the cause fast. Most "NOC tools" only do the first part for the network alone, and leave correlation and root cause entirely to you. 24Observe covers the whole stack and adds an analyst that investigates each incident, so your team starts from a cause instead of a wall of red.',
+  },
+  {
+    q: 'We already have a network monitoring tool. Why switch?',
+    a: 'You probably do not need to rip it out on day one — many teams run 24Observe alongside what they have and migrate as confidence grows. The reason to move is the silo: a standalone network tool cannot see your applications, so it can never tell you that a routing change took down checkout. 24Observe puts the network, the hosts, and the services on one platform with one analyst, which is the thing a single-purpose tool structurally cannot do.',
+  },
+  {
+    q: 'How does it cut mean-time-to-resolution?',
+    a: 'Two ways. First, the AI analyst does the first hour of every investigation in seconds — it finds the common dependency behind a wave of failures, blames the recent change, confirms with the metrics, and hands your team the cause and the fix. Second, alert-storm correlation collapses fifty related pages into one case, so your responders work the incident instead of digging out from the flood. Less time hunting, less time triaging.',
+  },
+  {
+    q: 'Does it handle alert storms?',
+    a: 'Yes — directly. When one root failure lights up many incidents, the platform clusters the ones that share a root and collapses them into a single case with one notification. A switch failing pages you once, with the blast radius attached, not once per affected host. The signal survives; the noise does not.',
+  },
+  {
+    q: 'Can it monitor our Cisco, Palo Alto, and FortiGate gear?',
+    a: 'Yes. A collector polls your devices over SNMP for interface and device health and receives their syslog for events and configuration changes — agentless on the devices themselves. Interface saturation, link-down, routing-adjacency drops, and failovers all become incidents in the same pipeline as your hosts and apps. See <a href="/product/network">network monitoring</a>.',
+  },
+  {
+    q: 'What about on-call and escalation for the NOC?',
+    a: 'Built in. Define on-call schedules with rotations and overrides, build escalation policies that step from one responder to the next, and acknowledge to stop the chain. Every incident — network, host, application, or security — routes through the same schedules and the same ten notification channels, so there is one on-call story for the whole operation.',
+  },
+  {
+    q: 'Can leadership and customers see status?',
+    a: 'Yes. Public status pages group your services into components, post incident updates, and let customers subscribe — so the NOC is not also fielding "is it down?" messages during an incident. Internally, a live topology map shows what is broken and everything downstream of it at a glance.',
+  },
+  {
+    q: 'Does it replace our SIEM and our APM too?',
+    a: 'It consolidates more than most NOC tools: logs, metrics, uptime, network, security detections, and incident response on one platform. It is honest about its lane — it is not a deep code-level application-performance profiler. The win for a NOC is that the operational and security signals you actually act on at 3 a.m. live in one place with one analyst, instead of stitched across five.',
+  },
+  {
+    q: 'How big a team is this for?',
+    a: 'It is built for teams that are smaller than the problem they cover — which is most NOCs. The analyst and the consolidation are force multipliers precisely when you do not have a room full of tier-1 staff. It scales up cleanly for larger operations and multi-tenant providers, but the sweet spot is a lean team that needs to punch above its headcount.',
+  },
+  {
+    q: 'How do we get started without a big migration?',
+    a: 'Start with one slice — point a few devices and hosts at a collector, send a stream of logs, and turn on the relevant detections and metric alerts. You will have incidents being investigated within the day. Expand coverage segment by segment as you go; there is no all-or-nothing cutover.',
+  },
+];
+---
+<Base
+  title="The AI-native NOC — network, hosts, apps | 24Observe"
+  description="A network-operations platform that watches devices, hosts, and applications together, collapses alert storms, and root-causes every incident with an AI analyst."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> For NOC &amp; network teams</div>
+          <h1 class="h1">The NOC platform that includes the network — and <em>finds the cause for you.</em></h1>
+          <p class="lede">
+            Network operations has been stuck with tools that watch the wires and nothing else, alert in their own silo,
+            and leave every root cause to a tired human at an awkward hour. 24Observe gives a lean NOC the whole stack —
+            devices, hosts, and applications — on one platform, with alert storms collapsed into single cases and an
+            analyst that investigates each incident and hands you the cause and the fix.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">See the analyst</a>
+          </div>
+          <div class="hero-meta">
+            <span>Network <b>+</b> hosts <b>+</b> apps</span>
+            <span>Storms <b>collapsed</b></span>
+            <span>Root cause <b>in seconds</b></span>
+            <span>On-call <b>built in</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/cases/storm-118</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Storm collapsed → one case</div>
+              <div class="con-meta">52 incidents · 1 root</div>
+            </div>
+            <div style="padding: 16px;">
+              <div style="font-size: 13.5px; color: var(--ink); font-weight: 600; margin-bottom: 6px;">Root cause</div>
+              <p style="font-size: 13.5px; color: var(--ink-1); line-height: 1.55; margin: 0;">
+                core-sw-01 went unreachable at 02:14. The 52 host and service incidents that followed all depend on it.
+                One case, one page — not fifty-two.
+              </p>
+            </div>
+            <div class="con-row">
+              <div><div class="con-rule">core-sw-01 · unreachable</div><div class="con-sub"><span>02:14:09</span><span class="tech">shared root</span></div></div>
+              <span class="sev sev-crit">ROOT</span>
+            </div>
+            <div class="con-row">
+              <div><div class="con-rule">52 downstream incidents grouped</div><div class="con-sub"><span>hosts · services · links</span></div></div>
+              <span class="sev sev-med">IMPACT</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Page once, with the blast radius — investigate the cause, not the flood</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The 3 a.m. reality</div>
+        <h2 class="h2">The NOC was handed every problem and half the tools to solve it.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The network operations centre is where everything that breaks ends up — and where the tooling has been least
+          willing to help.
+        </p>
+        <p>
+          The pager goes off at two in the morning. By the time someone is at a keyboard, it has gone off forty more
+          times, because one failure cascaded into dozens of symptoms and every monitor fired independently. Now a
+          half-awake engineer has to figure out, from a screen full of red, which alert is the cause and which forty-nine
+          are echoes. They open the network tool, which shows a device is unreachable but knows nothing about what runs on
+          it. They open the application dashboards, which show errors everywhere but cannot see the network. They start the
+          slow, manual work of correlating two worlds that their tools insist on keeping apart.
+        </p>
+        <p>
+          This is the daily reality of network operations, and none of it is the team’s fault. They were handed the
+          broadest mandate in the building — keep everything running — and the narrowest tools to do it with: a network
+          monitor that lives in a silo, an application stack that ignores the network, an alerting system that pages per
+          symptom instead of per cause, and no help at all with the investigation that actually consumes the night. The
+          result is long resolution times, burned-out engineers, and a constant low-grade argument about whose problem
+          each incident really is.
+        </p>
+        <p>
+          24Observe was designed for exactly this team. It refuses the silo: the network, the hosts, and the applications
+          live on one platform, alert through one pipeline, and are investigated by one analyst. Alert storms collapse to
+          single cases. Root cause arrives in seconds with the evidence attached. And the engineer who used to spend the
+          night correlating dashboards by hand gets to spend it on the fix.
+        </p>
+        <p>
+          It is worth being clear about what this is not. It is not a promise to replace your engineers, and it is not a
+          magic box that makes outages stop happening — hardware still fails, changes still go wrong, providers still have
+          bad days. What changes is the shape of the response: the platform absorbs the parts of an incident that are
+          mechanical and repetitive — the correlation, the first-pass investigation, the routing, the status updates — so
+          the irreducibly human parts get the attention they deserve. A NOC that runs on this does the same job with less
+          heroics, fewer false starts, and far less burnout. That is a quieter claim than "autonomous operations," and a
+          far more honest one.
+        </p>
+      </div>
+      <blockquote class="quote">
+        The NOC’s job is the whole stack. Its tools only ever covered a slice of it. We built the platform for the actual
+        job.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What the NOC gets</div>
+        <h2 class="h2">One platform for the whole operation.</h2>
+        <p class="lede">
+          Everything a network operations team reaches for in an incident — visibility, alerting, root cause, response —
+          consolidated so there is one place to look and one workflow to run.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">The whole stack, watched</div><p>Devices over SNMP, hosts, and applications, monitored together — interface and link health beside service latency and host metrics. <a href="/product/network">Network monitoring →</a></p></div>
+        <div class="why-card"><div class="why-num">Root cause in seconds</div><p>The analyst investigates every incident — common dependency, recent change, confirming metric — and hands you the cause and the fix. <a href="/product/ai-analyst">AI analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">Alert storms collapsed</div><p>Fifty related incidents from one failure become a single case with one notification — work the cause, not the flood.</p></div>
+        <div class="why-card"><div class="why-num">Metric &amp; threshold alerting</div><p>Alert on any device or host metric — interface utilisation, CPU, latency — and a breach opens an incident. <a href="/product/metrics">Metrics →</a></p></div>
+        <div class="why-card"><div class="why-num">Infrastructure detections</div><p>Memory exhaustion, disk-full, kernel faults, crash loops, link and routing failures — surfaced as incidents the analyst root-causes.</p></div>
+        <div class="why-card"><div class="why-num">On-call &amp; escalation</div><p>Schedules, rotations, overrides, and escalation chains across all ten notification channels — one on-call story for everything.</p></div>
+        <div class="why-card"><div class="why-num">Live topology &amp; health</div><p>A map of devices, hosts, and services with a health overlay — what is broken, and everything downstream of it, at a glance.</p></div>
+        <div class="why-card"><div class="why-num">Status pages</div><p>Keep leadership and customers informed automatically, so the NOC is not also answering "is it down?" mid-incident.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Why it works for a lean team</div>
+        <h2 class="h2">Built to make a small NOC punch above its headcount.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>The analyst is the extra shift you can’t hire</h3>
+          <p>
+            Most NOCs are understaffed for the surface they cover, and tier-1 talent is the hardest to keep. The analyst
+            is the tireless first responder you cannot recruit: it works every incident the moment it opens, runs the same
+            disciplined investigation every time, never gets tired at the end of a shift, and remembers what your team
+            taught it. Your humans stop doing repetitive triage and start doing the work that needs judgement.
+          </p>
+          <h3>Consolidation is fewer tools to babysit</h3>
+          <p>
+            Every tool in a NOC stack is another login, another bill, another integration to maintain, another silo to
+            reconcile at three in the morning. Folding network, hosts, applications, alerting, and response into one
+            platform is not just cheaper — it removes the seams where incidents hide and the swivel-chair that wastes the
+            first half-hour of every outage.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>One pipeline, one pager</h3>
+          <p>
+            An interface saturating, a host running out of memory, a service erroring, and a security detection all open
+            the same kind of incident and route through the same on-call schedule. There is no separate network pager, no
+            second escalation policy, no arguing about which system should have alerted. One queue, one rotation, one place
+            to acknowledge.
+          </p>
+          <h3>Grows with you — and with your customers</h3>
+          <p>
+            Start with a segment and expand as confidence grows; there is no all-or-nothing migration. And for teams that
+            operate networks on behalf of others, every customer is an isolated tenant — run a collector in each network,
+            keep the data cleanly separated, and operate them all from one console. See
+            <a href="/solutions/msp">24Observe for MSPs</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The same incident, two ways</div>
+        <h2 class="h2">A bad night, before and after.</h2>
+        <p class="lede">
+          The clearest way to see the difference is to watch the same failure play out with the old stack and with one
+          platform. Same root cause, same blast radius — very different night.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Before.</strong> A core switch loses power at 02:14. Within ninety seconds the pager has fired fifty-two
+          times — every host behind that switch, every service on those hosts, every synthetic check that traverses the
+          segment, each one an independent alert from an independent tool. The on-call engineer wakes to a phone that will
+          not stop buzzing and a dashboard that is solid red. The first job is not fixing anything; it is triage —
+          figuring out which of fifty-two alerts is the cause and which fifty-one are symptoms. They open the network tool:
+          a switch is unreachable, but it cannot say what runs behind it. They open the application dashboards: errors
+          everywhere, no idea why. They start manually lining up timestamps and cross-referencing two products that were
+          never designed to be read together. Twenty, thirty, forty minutes pass before anyone even names the switch as
+          the cause. Only then does the actual work — get the switch back — begin. By morning the engineer is wrecked, the
+          post-incident review is a mess of forty-nine duplicate alerts, and the team has learned nothing except that the
+          next storm will be just as bad.
+        </p>
+        <p>
+          <strong>After.</strong> The same switch loses power at 02:14. The platform sees the same fifty-two failures —
+          but it also knows that every one of them depends on that switch, because the dependency map is live. So instead
+          of fifty-two pages, it opens one case, names the switch as the shared root, attaches the full blast radius of
+          affected hosts and services, and pages the on-call engineer exactly once. They wake to a single notification
+          that already says, in plain language, what failed, what it took down, and that the fifty-one downstream
+          incidents are explained by the one root. There is no triage phase, because the triage is done. The first thing
+          the engineer does is the thing that matters: restore the switch. The blast radius tells them precisely what to
+          re-check as it comes back. The case is a clean record of one incident with one cause, not a haystack of
+          duplicates. And the whole thing took a fraction of the time, at a fraction of the cost in human exhaustion.
+        </p>
+        <p>
+          Nothing about the failure changed. The switch died either way. What changed is that the platform did the
+          correlation and the first pass of the investigation — the work that, in the old world, a human had to do by hand
+          while half asleep before they were allowed to start fixing the problem. That is what an AI-native NOC platform
+          actually buys you: not a prettier dashboard, but the removal of the slowest, most error-prone, most demoralising
+          part of every incident. Multiply that across every storm, every month, and it is the difference between a NOC
+          that is perpetually behind and one that is, finally, ahead of the board.
+        </p>
+        <p>
+          And the improvement compounds. Every verdict your team confirms or corrects teaches the analyst how your
+          environment behaves, so its investigations get sharper over time. The runbook knowledge that used to live only
+          in your most senior engineer’s head starts to live in the platform, available on every shift, to every
+          responder, at every hour. The lean team does not just survive the night better — it gets measurably better at
+          nights, month over month, without hiring a single extra person.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A stitched-together NOC stack vs one platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The night shift</div><div>Stitched stack</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Where you look</div><div>Network tool, app dashboards, log tool, alerting tool.</div><div class="cmp-us">One console for all of it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">When a storm hits</div><div>Fifty pages, manual correlation.</div><div class="cmp-us">One case, root grouped, one page.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Finding root cause</div><div>You, at 3 a.m., across tabs.</div><div class="cmp-us">The analyst, in seconds, with evidence.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Network vs app</div><div>Two teams, two tools, one argument.</div><div class="cmp-us">One investigation across the boundary.</div></div>
+        <div class="cmp-row"><div class="cmp-k">On-call</div><div>A pager per tool.</div><div class="cmp-us">One schedule for everything.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe for NOC teams — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Give your NOC the whole stack — and a head start on every incident.</h2>
+      <p class="final-cta-sub">
+        Network, hosts, and applications on one platform, storms collapsed to single cases, and an analyst that hands your
+        team the cause and the fix. Start with one segment and grow from there.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/network" class="btn btn-ghost btn-lg">Network monitoring</a>
+      </div>
+    </div>
+  </section>
+</Base>

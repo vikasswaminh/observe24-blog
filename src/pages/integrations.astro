@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import PageSchema from '../components/PageSchema.astro';
+import IntegrationGrid from '../components/IntegrationGrid.astro';
+import LogoMarquee from '../components/LogoMarquee.astro';
+import { INTEGRATIONS } from '../data/integrations';
+
+const total = INTEGRATIONS.length;
+---
+<Base
+  title="Integrations — 24Observe"
+  activeNav="integrations"
+  description="Bring any firewall, EDR, cloud, or SaaS source in through OpenTelemetry, the Linux Sensor, or the Universal Webhook with AI-authored mappings — then route alerts through ten channels. No per-vendor lock-in."
+>
+  <PageSchema type="WebPage" name="24Observe Integrations & Connectors" path="/integrations"
+    description="30+ one-click connectors (CrowdStrike, SentinelOne, Palo Alto, Okta, CloudTrail, and more) plus OpenTelemetry, the Linux Sensor, and a universal webhook with AI-authored mappings."
+  />
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Integrations</div>
+      <h1 class="h1">Send us anything. We'll make sense of it.</h1>
+      <p class="lede" style="margin-top: 24px; max-width: 75ch;">
+        OpenTelemetry-native for everything modern, a one-line Linux Sensor for hosts, and a
+        <strong>Universal Webhook</strong> for the long tail of firewall, EDR, and cloud sources —
+        where an AI writes the field mapping from a single sample event, so you're not blocked
+        waiting on a per-vendor connector. {total} sources and channels below, from
+        OpenTelemetry to FortiGate to PagerDuty.
+      </p>
+      <div class="final-cta-buttons" style="margin-top: 28px; justify-content: flex-start;">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/logs" class="btn btn-ghost btn-lg">Read the ingest docs</a>
+      </div>
+    </div>
+  </section>
+
+  <LogoMarquee label="Already speaks your stack" />
+
+  <section class="section">
+    <div class="container">
+      <div class="why-grid why-grid--2">
+        <div class="why-card">
+          <div class="why-num mono">NATIVE</div>
+          <h3 class="h3">First-class paths</h3>
+          <p>
+            OpenTelemetry (logs, metrics, traces), the Linux Sensor,
+            Kubernetes via Helm, Docker, and Terraform to manage it all as code. Plus ten alert
+            channels — Slack, Discord, Teams, Telegram, PagerDuty, Opsgenie, Twilio SMS/voice,
+            email, and signed webhooks. These ship today, end to end.
+          </p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">WEBHOOK + AI MAP</div>
+          <h3 class="h3">Everything else, no connector wait</h3>
+          <p>
+            Point a vendor's log push at one webhook URL. Paste a sample event; the model proposes
+            an Elastic-Common-Schema mapping with a live preview; you approve it; from then on the
+            transform runs deterministically — the LLM is only at config time. FortiGate and
+            CrowdStrike formats are <strong>validated end-to-end</strong>; Palo Alto, Cisco,
+            Cloudflare Logpush and the rest ride the same path.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <IntegrationGrid />
+
+  <section class="section">
+    <div class="container">
+      <p class="mono" style="color: var(--ink-2); font-size: 12px; line-height: 1.7; max-width: 80ch;">
+        "Native" = a first-class path that ships today. "Webhook + AI map" = ingested through the
+        Universal Webhook with an AI-authored mapping. "Tested" = we've validated ingest from that
+        vendor's exact format. All product names and logos are trademarks of their respective
+        owners; their use here indicates compatibility, not endorsement or affiliation.
+      </p>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">If it emits a log, it belongs here.</h2>
+      <p class="final-cta-sub">No per-vendor connector tax. No "integrations" SKU.</p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/pricing" class="btn btn-ghost btn-lg">See pricing</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,7 @@
+Contact: mailto:security@24observe.com
+Expires: 2027-06-22T00:00:00.000Z
+Acknowledgments: https://24observe.com/legal/security
+Preferred-Languages: en
+Canonical: https://24observe.com/.well-known/security.txt
+Policy: https://24observe.com/legal/security
+Hiring: https://24observe.com/about

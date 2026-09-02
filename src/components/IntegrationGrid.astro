@@ -1,0 +1,99 @@
+---
+import { INTEGRATIONS, CATEGORIES } from '../data/integrations';
+
+// Inline the monochrome SVGs at build time so they inherit `currentColor`
+// (an <img> can't be themed). Brands without a freely-redistributable mark
+// fall back to a monogram tile.
+const raws = import.meta.glob('../icons/logos/*.svg', { query: '?raw', import: 'default', eager: true });
+const svgFor = (logo: string | null): string | null =>
+  logo ? ((raws[`../icons/logos/${logo}.svg`] as string | undefined) ?? null) : null;
+
+const pill = (i: (typeof INTEGRATIONS)[number]) =>
+  i.status === 'native' ? 'Native' : i.verified ? 'Tested · webhook' : 'Webhook + AI map';
+---
+{CATEGORIES.map((cat) => (
+  <section class="section int-cat" id={cat.id}>
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> {cat.title}</div>
+      <p class="lede int-blurb">{cat.blurb}</p>
+      <div class="int-grid">
+        {INTEGRATIONS.filter((i) => i.category === cat.id).map((i) => (
+          <a class="int-card" href={i.docHref ?? '#'}>
+            <span class="int-logo">
+              {svgFor(i.logo)
+                ? <Fragment set:html={svgFor(i.logo)} />
+                : <span class="int-mono">{i.abbr}</span>}
+            </span>
+            <span class="int-name">{i.name}</span>
+            <span class:list={['int-pill', i.status]}>{pill(i)}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+))}
+
+<style>
+  .int-blurb { margin: 12px 0 28px; max-width: 70ch; }
+  .int-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+  }
+  .int-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--rad-lg);
+    background: var(--bg-1);
+    text-decoration: none;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  }
+  .int-card:hover {
+    border-color: var(--accent-line);
+    background: var(--bg-2);
+    transform: translateY(-2px);
+  }
+  .int-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--ink-1);
+    transition: color 0.15s ease;
+  }
+  .int-card:hover .int-logo { color: var(--ink); }
+  .int-logo :global(svg) { width: 32px; height: 32px; display: block; }
+  .int-mono {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    color: inherit;
+  }
+  .int-name {
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+  .int-pill {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    color: var(--ink-1);
+  }
+  .int-pill.native {
+    color: var(--accent);
+    border-color: var(--accent-line);
+    background: var(--accent-dim);
+  }
+</style>

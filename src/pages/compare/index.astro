@@ -1,0 +1,338 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const compares = [
+  { href: '/compare/datadog',   name: 'vs Datadog',   note: 'Investigation built in, pricing you can predict' },
+  { href: '/compare/splunk',    name: 'vs Splunk',    note: 'A SIEM that investigates, not just searches' },
+  { href: '/compare/grafana',   name: 'vs Grafana',   note: 'Integrated platform vs assembled stack' },
+  { href: '/compare/pagerduty', name: 'vs PagerDuty', note: 'A page that arrives already investigated' },
+  { href: '/compare/elastic',   name: 'vs Elastic',   note: 'Investigation without operating a cluster' },
+];
+
+const alternatives = [
+  { href: '/blog/betterstack-alternative', name: 'BetterStack alternative', note: 'Uptime + logs, honestly compared' },
+  { href: '/blog/uptimerobot-alternative', name: 'UptimeRobot alternative', note: 'When you outgrow a pure uptime checker' },
+];
+
+const faqs = [
+  {
+    q: 'Do your comparison pages play fair with competitors?',
+    a: 'That is the rule we hold ourselves to. Every comparison opens by acknowledging what the other tool genuinely does well — and several of them are excellent, category-leading products. We never quote competitor pricing (it changes and varies by deal), we do not invent weaknesses, and we say plainly when a competitor is the better choice for a given team. A comparison that pretends the incumbent has no strengths is not worth your time, and it would not survive contact with your own evaluation anyway.',
+  },
+  {
+    q: 'What actually makes 24Observe different across all of these?',
+    a: 'One idea runs through every comparison: detection and display are not the hard part — investigation is. Most tools collect telemetry beautifully and leave you to investigate by hand. 24Observe investigates every incident with an AI analyst that returns a verdict with evidence. Around that sit consolidation (one platform, one bill), first-class AI-agent coverage, an agent-programmable API, and the option to self-host. Those are the threads you will see repeated, because they are the real differences.',
+  },
+  {
+    q: 'Is 24Observe more mature than these incumbents?',
+    a: 'No, and we will not claim it. Datadog, Splunk, Grafana, PagerDuty, and Elastic are mature products with large ecosystems and long track records at scale. 24Observe is younger and more focused; its capabilities are real and deployed, but we describe what it does rather than implying adoption we have not earned. Where maturity or breadth is the deciding factor, we say so on the relevant page.',
+  },
+  {
+    q: 'Can I evaluate 24Observe alongside my current tool?',
+    a: 'Yes, and we recommend it. 24Observe ingests open standards (OpenTelemetry) and webhook sources, and exports cleanly via signed webhooks and a gap-free export, so you can run it next to what you have, move one painful surface across, and judge the difference on your own incidents. You do not have to commit to a migration to test the claims on these pages.',
+  },
+  {
+    q: 'Which comparison should I read first?',
+    a: 'Read the one for the tool you are weighing us against. If you are choosing a broad observability suite, start with Datadog or Grafana; for SIEM, Splunk or Elastic; for incident response and on-call, PagerDuty. Each is self-contained and honest about where each product fits. If you are coming from a pure uptime tool, the BetterStack and UptimeRobot pieces are the closest fit.',
+  },
+  {
+    q: 'What if my tool isn’t listed here?',
+    a: 'The same principles apply regardless. Ask: after an alert fires, who does the investigation? Is the pricing predictable as I grow? How many separate tools and bills am I consolidating? Are AI agents covered? Can I self-host if I need to? Those questions will tell you more about fit than any feature checklist — and they are the questions every page here is organised around.',
+  },
+];
+---
+<Base
+  title="Compare 24Observe vs Datadog, Splunk and more"
+  description="Honest, fair comparisons against Datadog, Splunk, Grafana, PagerDuty, and Elastic — plus how to actually evaluate an observability and security platform."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare</div>
+          <h1 class="h1">Honest comparisons — <em>including where the other tool wins.</em></h1>
+          <p class="lede">
+            Most comparison pages are thinly-disguised sales copy that pretend the incumbent has no strengths. These are
+            not that. Datadog, Splunk, Grafana, PagerDuty, and Elastic are, in their categories, excellent — and each
+            comparison says so before explaining where 24Observe differs and who each is right for. Read the one that
+            matches your decision, or start with how to think about the choice at all.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="#how" class="btn btn-ghost btn-lg">How to choose</a>
+          </div>
+          <div class="hero-meta">
+            <span>Fair to <b>competitors</b></span>
+            <span>No <b>FUD</b></span>
+            <span>No quoted <b>prices</b></span>
+            <span>Test it <b>yourself</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe/compare</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> The thread through all of them</div>
+              <div class="con-meta">one idea</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Detection &amp; display are easy</div>
+                <div class="con-sub"><span>investigation is the hard part</span><span class="tech">we do it</span></div>
+              </div>
+              <span class="sev sev-high">CORE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Consolidation · AI-agent · self-host</div>
+                <div class="con-sub"><span>the recurring differences</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">“Choose them if…”</div>
+                <div class="con-sub"><span>on every page</span><span class="tech">honest</span></div>
+              </div>
+              <span class="sev sev-med">FAIR</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Pick the comparison that matches your decision</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The comparisons</div>
+        <h2 class="h2">Pick the tool you’re weighing us against.</h2>
+        <p class="lede">
+          Each page is self-contained: what the competitor does well, where 24Observe differs, an honest "choose them if /
+          choose us if," and a side-by-side table.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        {compares.map((c) => (
+          <a class="why-card" href={c.href} style="text-decoration: none;">
+            <div class="why-num">{c.name}</div>
+            <p>{c.note} <span class="arr">→</span></p>
+          </a>
+        ))}
+      </div>
+      <div class="sec-intro" style="margin-top: 48px;">
+        <div class="eyebrow"><span class="bar"></span> Coming from a pure uptime tool?</div>
+        <h2 class="h2">Uptime-checker alternatives.</h2>
+      </div>
+      <div class="why-grid why-grid--2">
+        {alternatives.map((c) => (
+          <a class="why-card" href={c.href} style="text-decoration: none;">
+            <div class="why-num">{c.name}</div>
+            <p>{c.note} <span class="arr">→</span></p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> How to choose</div>
+        <h2 class="h2">The questions that actually decide fit.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Feature checklists are a poor way to choose an observability and security platform, because almost everyone can
+          tick almost every box. The questions that actually predict whether a tool will help your team are about how the
+          work flows, not which features exist. Here are the five we think matter most — and, fair warning, they are the
+          five our comparisons are organised around, because we believe they are where the real differences live.
+        </p>
+        <p>
+          <strong>First: after an alert fires, who does the investigation?</strong> This is the question the industry
+          quietly avoids, because the honest answer for most tools is "you do." Collecting telemetry and producing alerts
+          is, frankly, the easy part now — every serious tool does it well. The expensive, slow, burnout-inducing part is
+          turning an alert into a decision: gathering the related events, tracing what is affected, finding the cause. If a
+          platform leaves that entirely to your people, then its dashboards, however beautiful, have not removed your
+          bottleneck. Ask whether the tool investigates, or merely shows. It is the single biggest differentiator, and the
+          one this whole site is built around.
+        </p>
+        <p>
+          <strong>Second: is the pricing predictable as you grow?</strong> Observability has earned a reputation for
+          terrifying bills, and the reason is structural — many tools price across numerous separate dimensions that
+          combine unpredictably, or make high-volume data expensive enough that teams ration what they send. Rationing is
+          the worst outcome, because the data you dropped is invariably the data the next incident needed. Ask whether the
+          model is consolidated and forecastable, or a menu of separately-metered products whose total you discover at the
+          end of the month.
+        </p>
+        <p>
+          <strong>Third: how many tools and bills are you really consolidating?</strong> The typical stack is six or more
+          products — uptime, logs, metrics, traces, on-call, status, SIEM — each with its own integration, its own bill,
+          and its own mental model, plus the glue you maintain between them. That sprawl is a tax you pay every day and,
+          worst of all, during incidents when you can least afford to tab-hop. Ask how much of the stack a platform
+          genuinely replaces, and how much it leaves you assembling.
+        </p>
+        <p>
+          <strong>Fourth: are AI agents covered?</strong> If your organisation has shipped any AI features — a chatbot, a
+          copilot, a retrieval feature, an agentic automation — you have taken on a class of risk and cost that most
+          tooling does not see: unpredictable token spend, behaviour that drifts, and attacks like prompt injection and
+          tool-loop abuse. This is new ground, and most incumbents are early here. Ask whether agents are a first-class
+          concern or an afterthought, because the gap is real and growing.
+        </p>
+        <p>
+          <strong>Fifth: can you self-host if you need to?</strong> For regulated, air-gapped, or privacy-conscious teams,
+          "send us your data" is a non-starter, and the arrival of AI has made even teams without strict requirements think
+          harder about where their prompts and logs go. A genuine, full-capability self-host option — not a stripped-down
+          edition — is also the best insurance against lock-in and future price shocks. Ask whether the open and
+          self-hostable story is real or marketing.
+        </p>
+        <p>
+          Run any tool, including ours, through those five questions and the fit becomes clear quickly. 24Observe's answers
+          are consistent across every comparison on this site: it investigates every incident with an
+          <a href="/product/ai-analyst">AI analyst</a>; it prices on one consolidated, predictable allowance; it replaces
+          much of the stack in one <a href="/product/siem">platform</a>; it treats <a href="/product/ai-agent-security">AI
+          agents</a> as first-class; and it is open source and <a href="/solutions/self-host">self-hostable</a> with an
+          identical contract. That does not make it right for everyone — and the individual pages are candid about who
+          should choose the incumbent instead — but it is what we are, on every axis that matters.
+        </p>
+        <h3>The evaluation mistakes that cost teams the most</h3>
+        <p>
+          Two mistakes recur in observability and security evaluations, and both are expensive. The first is the demo
+          trap: tools are chosen on a polished, scripted demonstration with clean sample data, and then deployed into the
+          mess of real production, where the volume is higher, the data is dirtier, and the alerts are noisier than any
+          demo admits. The fix is to evaluate on your own telemetry, not theirs. Every serious platform, ours included,
+          should let you run it on your real data before you commit — and if one will not, treat that as the answer.
+        </p>
+        <p>
+          The second mistake is evaluating the happy path and ignoring the bad day. A platform feels great when nothing is
+          wrong; what matters is how it behaves at 3 a.m. during a cascading incident, when fifty things are red and you
+          need to know which one is the cause. That is precisely the moment most tooling abandons you to a manual
+          investigation, and precisely the moment a platform that groups by root cause and investigates for you earns its
+          keep. When you trial anything, engineer a realistic incident and watch what the tool does with it — because the
+          incident, not the dashboard, is the product's real test.
+        </p>
+        <h3>How to run a trial that tells you the truth</h3>
+        <p>
+          A fair trial has a few properties. It runs on real, representative data — ideally fanned out from the same
+          instrumentation feeding your current tool, so the comparison is genuinely apples to apples. It includes at least
+          one real or realistic incident, worked end to end, so you see the investigation and the on-call flow rather than
+          just the steady state. It involves the people who will actually live with the tool — the on-call engineers and
+          analysts, not only the person making the purchase — because their day-to-day experience is what determines
+          whether the platform is adopted or quietly worked around. And it has a defined question: not "is this nice" but
+          "does this measurably shorten our time-to-understand, reduce our pages, or cut our bill."
+        </p>
+        <p>
+          Because 24Observe ingests OpenTelemetry and webhook sources and exports cleanly, it is built to be trialled this
+          way. You do not change your application code; you add a destination. You keep your existing tools fed by signed
+          webhook and a gap-free export, so nothing downstream is at risk. And you can confine the trial to one service or
+          one alert class, prove or disprove the claim there, and widen only if it holds. The whole point is to let you
+          replace our argument with your evidence.
+        </p>
+        <h3>The cost nobody puts on the comparison table</h3>
+        <p>
+          Finally, weigh the cost that never appears in a feature matrix: the human one. The tool you choose decides
+          whether your on-call engineers are woken kindly or brutally, whether your analysts spend their days deciding or
+          gathering, and whether the platform is a colleague or a chore. Those are not soft considerations — they show up
+          hard, in retention, in burnout, and in whether your best people stay. A platform that does the investigation,
+          groups the storm, and arrives with an answer is, more than anything, a platform that respects your team's time
+          and attention. That is the lens we built everything on this site around, and the one we would urge you to judge
+          any tool by — ours included.
+        </p>
+        <h3>A word on switching costs and lock-in</h3>
+        <p>
+          The fear that quietly governs most platform decisions is not "will this tool be good" but "what happens if I'm
+          wrong." Switching costs are real, and incumbents benefit from them: the more of your sources, dashboards,
+          detections, and habits are entangled with a tool, the harder it is to leave, and the more you tolerate prices
+          and limitations you would otherwise reject. A fair evaluation accounts for that gravity honestly — both the cost
+          of leaving what you have, and the cost of being trapped in what you choose next.
+        </p>
+        <p>
+          This is where open standards and a clean exit matter more than any feature. A platform that ingests
+          OpenTelemetry and exports your data gap-free is one you can adopt incrementally and leave without a hostage
+          negotiation — which, paradoxically, is exactly why you can trust it enough to commit. 24Observe is built that
+          way on principle: open standards in, clean export out, open source and self-hostable underneath. We would rather
+          earn your continued use by being good than keep it by making you afraid to leave, and an honest comparison hub
+          should say plainly that you should demand the same low switching cost from every vendor on this page, including
+          us. The tool confident enough to make leaving easy is usually the one most worth staying with.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Our principles</div>
+        <h2 class="h2">How we promise to compare.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>We name what the other tool does well</h3>
+          <p>
+            Every comparison opens by granting the competitor its genuine strengths, because they are real and because you
+            already know them — pretending otherwise would only cost us your trust. Datadog's breadth and maturity,
+            Splunk's search power, Grafana's dashboards and openness, PagerDuty's response orchestration, Elastic's engine
+            and ecosystem: these are stated plainly, not buried. A comparison you cannot trust on the easy facts is one you
+            will not trust on the hard ones.
+          </p>
+          <h3>We don’t quote their prices</h3>
+          <p>
+            Competitor pricing changes, varies by deal, and is easy to misrepresent — so we do not put numbers in their
+            mouths. We describe the shape of a pricing model (consolidated versus many-metered, ingest-priced versus
+            allowance-based) because that is durable and verifiable, and we leave the specific figures to the vendors who
+            set them. If you want their price, ask them; if you want to understand the model, that is what we explain.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>We tell you when to choose them</h3>
+          <p>
+            Every comparison has an explicit "choose them if" alongside the "choose us if," and we mean both. There are
+            real situations — extreme scale, deep ecosystem dependence, a need for vendor-neutral routing across an
+            irreducibly diverse toolchain — where an incumbent is the better answer, and saying so is not weakness, it is
+            the only thing that makes the rest of the page credible. We would rather lose a deal we were wrong for than win
+            one we cannot serve.
+          </p>
+          <h3>We invite you to test it, not take our word</h3>
+          <p>
+            Because 24Observe speaks open standards and exports cleanly, every comparison ends the same way: run it next to
+            what you have, move one painful surface over, and judge the difference on your own incidents. The strongest
+            argument we can make is not a table — it is your own data flowing through both, so you can see whether arriving
+            at a verdict beats arriving at a dashboard for your team specifically.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Comparisons — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Judge it on your own incidents.</h2>
+      <p class="final-cta-sub">
+        Read the comparison that fits your decision, then run 24Observe alongside what you have — open standards in, clean
+        export out — and see whether investigation-done-for-you changes your day.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

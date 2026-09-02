@@ -1,0 +1,16 @@
+# Cloudflare Pages redirects.
+# Syntax: <source>  <destination>  <status>
+
+# App & sign-in go to the API domain
+/app/*       https://app.24observe.com/:splat   302
+/sign-in     https://app.24observe.com/sign-in  302
+/sign-up     https://app.24observe.com/sign-up  302
+
+# Legacy / convenience aliases
+/checks      /features                           301
+# NOTE: /docs/api and /docs/openapi are now real pages (narrative reference +
+# interactive Scalar spec). They link out to the live Swagger UI / openapi.json
+# themselves, so we no longer redirect those paths away to the API domain.
+
+# Contact — mailto until we ship a form
+/contact     mailto:hello@24observe.com          302

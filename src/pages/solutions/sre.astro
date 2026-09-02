@@ -1,0 +1,334 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What does 24Observe actually change for an SRE team?',
+    a: 'It collapses the tool sprawl that creates most of your toil and shortens the part of an incident that costs the most: understanding it. Logs, metrics, traces, uptime, on-call, and incident response live in one platform, and an AI analyst investigates every incident and attaches a root-cause verdict — so your team spends its time deciding and fixing rather than gathering evidence across five consoles at 3 a.m.',
+  },
+  {
+    q: 'How does it help reduce MTTR?',
+    a: 'By removing the slowest stage of the mean: the cold-start investigation. When an incident opens, it arrives wired to the topology map so blast radius is visible immediately, and the <a href="/product/ai-analyst">analyst</a> has already gathered the related logs, metrics, and traces and proposed a root cause with cited evidence. Your responder reads a conclusion and verifies it, instead of reconstructing the timeline by hand. The time-to-understand, which dominates most incidents, drops sharply.',
+  },
+  {
+    q: 'Will it cut down on alert fatigue and pager noise?',
+    a: 'Yes, by design. One root cause that trips many incidents is grouped into a single case with one notification, so a cascade pages you once, not fifty times. Alerts route by severity so routine signals never arrive dressed as emergencies, and because the analyst can disposition benign incidents automatically, the pages that reach a human skew toward the ones that deserve one. See <a href="/product/alerting">alerting</a> and <a href="/product/incidents">on-call</a>.',
+  },
+  {
+    q: 'Does it replace my whole observability stack?',
+    a: 'It can cover the core — uptime, logs, metrics, traces, on-call, status, and detection — in one place, on open standards. Whether you consolidate everything or run it alongside a specialised tool is your call; it speaks OpenTelemetry in and signed webhooks plus a gap-free export out, so it slots into an existing stack rather than demanding a big-bang migration. Many teams start with one painful area and widen as confidence grows.',
+  },
+  {
+    q: 'How much instrumentation work is involved?',
+    a: 'Minimal, because it rides the open standard you are probably already using. Applications export over OpenTelemetry; servers get a one-line Sensor; there is no proprietary agent to roll out across the fleet. If your services already emit OpenTelemetry, you are pointing an exporter at a new endpoint, not re-instrumenting your estate.',
+  },
+  {
+    q: 'Can I manage it as code?',
+    a: 'Yes. Monitors, detections, alerts, on-call schedules, and escalation policies are all part of the agent-programmable REST API, so you can provision and version your observability the same way you manage the rest of your infrastructure. Pipelines and agents can create checks for new services automatically as they ship. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'How does it help with blameless post-mortems?',
+    a: 'Every incident leaves a complete, honest record — what fired, what the analyst concluded, what the responder did, when it resolved — on one timeline, so the retro starts from facts rather than reconstructed memory. And because corrections to the analyst feed back into how it reads your environment, the post-mortem\'s lessons can become measurably better triage next time, not just a document nobody reads.',
+  },
+  {
+    q: 'Is it suitable for a small SRE team punching above its weight?',
+    a: 'That is arguably where it helps most. A small team cannot staff a 24/7 investigation rotation, so an analyst that does the first hour of every incident is the closest thing to extra headcount you can buy. Consolidation removes the integration toil that small teams can least afford, and one bill replaces several. You get more reliability coverage per engineer.',
+  },
+  {
+    q: 'Can I keep it on my own infrastructure?',
+    a: 'Yes. 24Observe is open source and self-hostable with an identical contract, so regulated or privacy-conscious teams can run the whole platform inside their own perimeter. Your telemetry — and your incidents — never have to leave your network. See the <a href="/solutions/self-host">self-host solution</a>.',
+  },
+];
+---
+<Base
+  title="For SRE and DevOps — cut MTTR, tame on-call | 24Observe"
+  description="One platform for logs, metrics, traces, uptime, on-call, and incident response — with an AI analyst that investigates, so you spend time fixing, not digging."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> For SRE &amp; DevOps</div>
+          <h1 class="h1">Reliability work is mostly waiting, gathering, and toil. <em>Automate the worst of it.</em></h1>
+          <p class="lede">
+            The job is not the fixing — most SREs are good at fixing. The job is everything around it: the five consoles
+            you stitch together during an incident, the pager that cries wolf, the cold-start investigation at 3 a.m., the
+            integration glue you maintain instead of building. 24Observe puts observability, on-call, and incident response
+            in one platform and has an AI analyst do the first hour of every investigation — so your team's time goes to
+            judgement and fixes, not evidence-gathering.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+          </div>
+          <div class="hero-meta">
+            <span>Lower <b>MTTR</b></span>
+            <span>Less <b>pager noise</b></span>
+            <span>One <b>platform</b></span>
+            <span>Manage as <b>code</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/incidents</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Incident #5210 · acknowledged</div>
+              <div class="con-meta">MTTU: 40s</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">checkout p95 breach · payments dependency</div>
+                <div class="con-sub"><span>verdict attached</span><span class="tech">root: upstream timeout</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">storm grouped · 9 symptoms → 1 case</div>
+                <div class="con-sub"><span>1 page</span><span class="tech">not 9</span></div>
+              </div>
+              <span class="sev sev-med">OK</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">logs · metrics · traces on one timeline</div>
+                <div class="con-sub"><span>no tool-hopping</span><span class="tech">cause visible</span></div>
+              </div>
+              <span class="sev sev-med">CTX</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Read a conclusion, verify it, fix it — not five consoles at 3 a.m.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The SRE reality</div>
+        <h2 class="h2">The toil isn’t the incidents. It’s everything around them.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Ask an experienced SRE where their week actually goes and very little of the answer is "heroically fixing
+          outages." It is the connective tissue — the tools, the glue, the noise, the gathering — that quietly eats the
+          time and the morale.
+        </p>
+        <p>
+          Tool sprawl is the first tax. A typical reliability stack is a logging product, a metrics product, a tracing
+          product, an uptime checker, an on-call router, and a status page — six tools, six bills, six integrations, six
+          mental models, and six places that have to agree about what time it is. The integration work to keep them
+          talking is never finished, and during an incident you pay the sprawl back with interest: you bounce between tabs,
+          copy timestamps, and try to assemble one coherent story from six partial views, in the minutes you can least
+          afford it.
+        </p>
+        <p>
+          The pager is the second tax. Alerting that fires everything to everyone trains people to stop trusting it, and a
+          cascade that pages fifty times for one root cause does not just annoy the on-call engineer — it actively buries
+          the signal and delays the response. Over months, bad on-call is how teams burn out and how the best engineers
+          quietly start planning their exit. The occasional real 3 a.m. emergency is survivable; the steady drip of noise
+          and false pages is what corrodes a team.
+        </p>
+        <p>
+          The third tax is the cold start. Even with perfect data, most of an incident's clock is spent not fixing but
+          understanding — pulling the related events, lining up the metrics, finding the deploy, working out the blast
+          radius. This time-to-understand dominates MTTR, and it is precisely the part that scales worst with a small
+          team, because there is only so much parallel investigation a handful of humans can do at 3 a.m.
+        </p>
+        <p>
+          24Observe attacks all three. One platform replaces the sprawl, so logs, metrics, traces, uptime, on-call, and
+          status share a timeline and a model instead of six integrations. Root-cause grouping and severity routing tame
+          the pager, so one outage pages once and routine noise never wakes anyone. And the <a href="/product/ai-analyst">AI
+          analyst</a> does the cold-start work — gathering evidence, tracing blast radius, proposing a root cause — so your
+          responders begin from a conclusion. The fixing was never the problem; this is about giving you back the hours
+          around it.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Most of an incident is spent understanding it, not fixing it — and most of an SRE’s week is spent on the toil
+        around incidents, not the incidents. Automate that, and you have given the team its time back.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you consolidate</div>
+        <h2 class="h2">The reliability stack, in one place.</h2>
+        <p class="lede">
+          Each of these is a tool you might be paying for and integrating separately today. Here they share one timeline,
+          one query language, one on-call model, and one bill.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Uptime &amp; synthetics</div><p>HTTP, TCP, TLS, ping, content, and cron-heartbeat checks from multiple vantage points — failures open real incidents. <a href="/product/uptime">Uptime →</a></p></div>
+        <div class="why-card"><div class="why-num">Logs, metrics, traces</div><p>The three pillars on one timeline, in one readable query language, so cause and effect sit side by side. <a href="/product/logs">Logs →</a> · <a href="/product/tracing">Tracing →</a></p></div>
+        <div class="why-card"><div class="why-num">On-call &amp; escalation</div><p>Rotations that resolve to one responsible person, escalation chains that climb until acknowledged. <a href="/product/incidents">On-call →</a></p></div>
+        <div class="why-card"><div class="why-num">Topology &amp; blast radius</div><p>A live map of what depends on what, so you size impact by reading rather than guessing. <a href="/product/context-graph">Context graph →</a></p></div>
+        <div class="why-card"><div class="why-num">Status pages</div><p>Auto-updated public or private status, so the operator fixes the outage instead of also writing the announcements. <a href="/product/status-pages">Status pages →</a></p></div>
+        <div class="why-card"><div class="why-num">The AI analyst</div><p>Investigates every incident and attaches a root-cause verdict with evidence — the first hour of work, done. <a href="/product/ai-analyst">The analyst →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where the time goes back</div>
+        <h2 class="h2">Lower MTTR, calmer pager, less glue to maintain.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Cut the time-to-understand</h3>
+          <p>
+            The lever on MTTR that nobody pulls is the investigation itself, because it is skilled human work that does
+            not obviously automate — until now. When an incident opens here, it carries its blast radius from the topology
+            map and an analyst's root-cause verdict with cited evidence. The responder's job shifts from "reconstruct what
+            happened" to "verify this conclusion and act," which is faster, less error-prone, and far less punishing at
+            3 a.m. The slowest stage of the mean gets shorter for every incident, automatically.
+          </p>
+          <h3>Make the pager trustworthy again</h3>
+          <p>
+            Root-cause grouping collapses a cascade into one case, severity routing keeps routine signals off the phone,
+            and automatic disposition of benign incidents means fewer false pages reach a human. The combined effect is a
+            pager people can trust — which is the only kind that works, because a channel people have learned to ignore is
+            worse than no channel at all. Sustainable on-call is a retention strategy, not just an operational one.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Stop maintaining the glue</h3>
+          <p>
+            Every integration between two observability tools is code you own, that breaks, that someone has to fix on a
+            Friday. Consolidating onto one platform deletes a whole category of that toil: there is no log-to-metric
+            correlation to wire up, no trace-to-log linking to maintain, no clock-skew between products to reconcile. The
+            engineering hours you were spending keeping the stack talking to itself go back to building the things that
+            actually move reliability forward.
+          </p>
+          <h3>Observability as code</h3>
+          <p>
+            Monitors, detections, alerts, on-call schedules, and escalation policies are all in the API, so your
+            reliability configuration lives in version control alongside your infrastructure. A new service can ship with
+            its checks and alerts defined in the same pull request as its Terraform, and an agent can provision coverage
+            automatically. Reliability stops being click-ops in six consoles and becomes part of your delivery pipeline.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A latency regression, from page to fix.</h2>
+        <p class="lede">
+          The everyday SRE incident — and how consolidation plus an analyst turn a multi-tool scramble into a short,
+          calm response.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Checkout latency creeps past its budget. A metric threshold opens an incident, and because on-call lives in the
+          same platform, it routes straight to whoever is actually holding the pager — one person, clearly responsible,
+          reached on the channel that matches the severity. They acknowledge in under a minute, and the escalation chain
+          stops there; nobody else is woken.
+        </p>
+        <p>
+          In a six-tool world the next twenty minutes would be a scavenger hunt: open the metrics tool to confirm the
+          breach, the tracing tool to find the slow service, the logging tool to see what it said, the deploy log to check
+          for a recent change, lining up timestamps across all of them. Here, that work is already done. The incident
+          arrived with the topology map showing the dependency the latency traces to, and the analyst's verdict naming the
+          root cause — an upstream payment provider timing out and triggering retries — with the spans and log lines cited
+          as evidence, all on one timeline.
+        </p>
+        <p>
+          So the responder spends their time on the decision, not the diagnosis. They verify the analyst's conclusion in a
+          few seconds by glancing at the cited evidence, flip to a fallback provider, and watch the latency recover. The
+          incident also tripped a couple of downstream thresholds, but those were grouped into the same case, so the
+          response was one coherent incident rather than three overlapping pages and a confusion about which was real.
+        </p>
+        <p>
+          When it resolves, the public status page — which had flipped the checkout component to degraded and notified
+          subscribers — updates itself to recovered, without the responder writing a word of it. The whole episode, from
+          breach to fix, is a single record on one timeline: the metric that fired, the verdict, the action, the
+          resolution. There is nothing to reconstruct for the post-mortem because the platform kept the story straight as
+          it happened.
+        </p>
+        <p>
+          The morning after, the retro is short and factual, the on-call engineer is not wrecked, and if the team decides
+          the fallback should have been automatic, that is a one-line change to a runbook driven off the same incident
+          event. None of the heroics, all of the outcome — which is exactly what good reliability engineering is supposed
+          to feel like when the tooling is finally on your side.
+        </p>
+        <p>
+          It is worth being honest about what this does and does not change, because reliability has no silver bullets.
+          The switch still failed; the provider still timed out; software still breaks, and it always will. What changes
+          is the human cost of responding to it — the number of consoles, the size of the pager storm, the length of the
+          cold-start investigation, the toll on the person holding the rotation. Those are the variables that actually
+          determine whether your team can run reliable systems sustainably over years, and they are exactly the variables
+          a consolidated platform with an investigating analyst moves. You are not buying fewer outages; you are buying a
+          dramatically cheaper, calmer, faster response to the outages you were always going to have.
+        </p>
+        <p>
+          That distinction matters for how you adopt it. The teams who get the most value do not try to flip everything at
+          once; they take their single most painful surface — the service that pages most, the incident type that takes
+          longest to diagnose — and move it first, prove the MTTR and the pager noise actually improve, and then widen.
+          Because the platform speaks open standards in and offers a clean export out, that incremental path carries no
+          lock-in risk: you can consolidate as fast or as slowly as your confidence grows, and stop wherever the balance
+          of value and effort feels right for your team.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A stitched-together stack vs one reliability platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Six stitched-together tools</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">During an incident</div><div>Bounce between consoles, align clocks.</div><div class="cmp-us">One timeline; the analyst already investigated.</div></div>
+        <div class="cmp-row"><div class="cmp-k">A cascade</div><div>Fifty pages.</div><div class="cmp-us">One grouped case, one page.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Time-to-understand</div><div>Manual, every time.</div><div class="cmp-us">A verdict with evidence, attached.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Integration glue</div><div>You own and maintain it.</div><div class="cmp-us">Nothing to wire; one platform.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Managing it</div><div>Click-ops across six tools.</div><div class="cmp-us">As code, through one API.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Billing</div><div>Six invoices.</div><div class="cmp-us">One, shared allowance.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">For SRE &amp; DevOps — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Give your reliability team its hours back.</h2>
+      <p class="final-cta-sub">
+        Consolidate observability, on-call, and incident response — and let an AI analyst do the first hour of every
+        investigation, so your engineers spend their time fixing, not gathering.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; incidents</a>
+      </div>
+    </div>
+  </section>
+</Base>

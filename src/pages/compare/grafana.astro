@@ -1,0 +1,329 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is 24Observe an alternative to Grafana and the LGTM stack?',
+    a: 'It is an alternative way to get the outcome most teams assemble the LGTM stack to achieve — logs, metrics, traces, and dashboards in one place — but delivered as an integrated platform that also investigates incidents for you. Grafana is a superb, beloved visualization layer and a flexible open ecosystem; 24Observe trades some of that build-it-yourself flexibility for an integrated product where the pieces already fit together and an AI analyst does the investigation.',
+  },
+  {
+    q: 'What is the core difference in approach?',
+    a: 'Grafana, especially with Loki, Mimir, and Tempo, is a set of excellent components you compose and operate into an observability stack — immensely flexible, and yours to assemble and run. 24Observe is the assembled, integrated platform: logs, metrics, traces, uptime, on-call, status, and a SIEM that already work together, with investigation built in. One gives you maximum flexibility and the assembly job; the other gives you an opinionated, integrated whole and conclusions.',
+  },
+  {
+    q: 'Grafana is open source. Is 24Observe?',
+    a: 'Yes — 24Observe is open source and self-hostable with an identical contract, so the openness that draws people to Grafana is not something you give up. You can run the full platform inside your own perimeter, including the AI analyst. The difference is not open-versus-closed; it is assemble-the-components versus run-the-integrated-platform.',
+  },
+  {
+    q: 'Does 24Observe do dashboards as well as Grafana?',
+    a: 'We will be honest: Grafana is the gold standard for flexible, customisable visualization and dashboarding, with a huge plugin ecosystem and data sources for almost everything. 24Observe gives you the views that matter for monitoring and investigation — search, live tail, charts, a topology health map — but it is not trying to out-dashboard Grafana. If pixel-level dashboard craftsmanship across many data sources is your priority, that is a genuine Grafana strength.',
+  },
+  {
+    q: 'What does 24Observe add that an assembled stack doesn’t have?',
+    a: 'Investigation and integration. An assembled stack shows you the data beautifully but still leaves you to investigate by hand and to maintain the glue between components. 24Observe investigates every incident with an AI analyst, groups alert storms by shared root, runs a real SIEM over the same data, and routes on-call — all integrated, so there is no correlation to wire up and no clock-skew between tools. See <a href="/product/ai-analyst">the analyst</a>.',
+  },
+  {
+    q: 'How does the operational burden compare?',
+    a: 'Composing and running an observability stack from components is powerful but real work — capacity, upgrades, and the integration glue are yours to own forever. 24Observe is one platform to run (hosted, or self-hosted as a documented, container-based deployment), which removes a category of assembly-and-maintenance toil. You trade some flexibility for far less operational surface.',
+  },
+  {
+    q: 'When is Grafana the better choice?',
+    a: 'When flexibility and visualization are paramount — when you want to compose exactly the stack you envision, visualize across many heterogeneous data sources, and you have the team and the appetite to operate it. Grafana\'s openness, ecosystem, and dashboarding are genuinely best-in-class, and for teams that value building their own, it is an excellent, well-loved choice.',
+  },
+  {
+    q: 'When is 24Observe the better choice?',
+    a: 'When you would rather have an integrated platform than assemble one — when you want investigation done for you, a SIEM and on-call already wired in, and less glue to maintain. Teams who love what Grafana shows them but are tired of building and operating the stack around it, and of investigating by hand, tend to feel the difference most.',
+  },
+];
+---
+<Base
+  title="24Observe vs Grafana — investigation included"
+  description="Grafana is a superb, open visualization layer you assemble into a stack. 24Observe is the integrated platform — logs, metrics, traces, SIEM, and on-call."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare · 24Observe vs Grafana</div>
+          <h1 class="h1">Grafana is a brilliant stack you assemble. <em>24Observe is the assembled platform.</em></h1>
+          <p class="lede">
+            Grafana — and the Loki, Mimir, and Tempo stack around it — is one of the most loved, most flexible, most open
+            ways to see your telemetry, and this comparison says so plainly. The difference is integration and
+            investigation. Grafana gives you superb components to compose and operate yourself; 24Observe gives you the
+            integrated platform where logs, metrics, traces, SIEM, and on-call already fit together, with an AI analyst
+            that investigates every incident — and it is open source and self-hostable too.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare" class="btn btn-ghost btn-lg">All comparisons</a>
+          </div>
+          <div class="hero-meta">
+            <span>Integrated, <b>not assembled</b></span>
+            <span>Investigation <b>built in</b></span>
+            <span>SIEM + on-call <b>included</b></span>
+            <span>Open &amp; <b>self-hostable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe vs grafana</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Where they differ</div>
+              <div class="con-meta">honest take</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Getting to a working stack</div>
+                <div class="con-sub"><span>Grafana: you assemble</span><span class="tech">24o: integrated</span></div>
+              </div>
+              <span class="sev sev-high">KEY</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Dashboards &amp; flexibility</div>
+                <div class="con-sub"><span>Grafana leads</span><span class="tech">fair</span></div>
+              </div>
+              <span class="sev sev-med">FAIR</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Investigation &amp; SIEM</div>
+                <div class="con-sub"><span>build it / add tools</span><span class="tech">built in</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Maximum flexibility vs an integrated whole</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest take</div>
+        <h2 class="h2">Grafana is wonderful. Assembling and running the stack is the catch.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Few tools are as genuinely loved as Grafana, and for good reason. Its dashboards are the standard the whole
+          industry measures against, its ecosystem of data sources and plugins is enormous, and its open ethos has earned
+          deep trust. An honest comparison starts by acknowledging that Grafana is excellent at what it does.
+        </p>
+        <p>
+          What Grafana is, though, is primarily a visualization and composition layer — and the full observability stack
+          around it, with Loki for logs, Mimir for metrics, and Tempo for traces, is a set of powerful components you
+          assemble and operate. That is a feature for teams who want to build exactly the stack they envision. It is also
+          a real cost: you are responsible for standing the pieces up, wiring them together, scaling them, upgrading them,
+          and maintaining the integration glue between them indefinitely. The flexibility and the assembly burden are the
+          same coin.
+        </p>
+        <p>
+          And there is a layer the visualization stack does not, by itself, provide: the investigation. Grafana will show
+          you the slow span and the error spike beautifully, but it will not gather the related evidence, trace the blast
+          radius, and tell you the root cause — that is still your engineers, by hand, hopping between the panels. Add the
+          security and incident-response pieces (detection, a SIEM, on-call) and you are assembling and operating even
+          more. The result is powerful and yours, but it is a stack you run, not a product that runs for you.
+        </p>
+        <p>
+          24Observe makes the opposite trade. It is the integrated platform: logs, metrics, traces, uptime, on-call,
+          status pages, and a real SIEM that already fit together, on one timeline and one query language, with the
+          investigation built in — every incident worked by an <a href="/product/ai-analyst">AI analyst</a> that returns a
+          verdict with evidence. There is no correlation to wire up, no clock-skew between tools, and no separate
+          security or on-call product to bolt on. And because it is open source and self-hostable with an identical
+          contract, you keep the openness that draws people to Grafana while shedding the assembly job.
+        </p>
+        <p>
+          Neither approach is wrong. If composing and operating your own stack is something you want to do — for control,
+          for flexibility, for the love of it — Grafana is a superb foundation and we mean that sincerely. If you would
+          rather have the integrated whole and have the investigation done for you, that is the trade 24Observe offers,
+          and the rest of this page is honest about both sides.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Grafana gives you brilliant components and the job of assembling them. 24Observe gives you the assembled platform
+        and the investigation. The question is whether you want to build the stack or run the product.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where 24Observe differs</div>
+        <h2 class="h2">Integration and investigation, out of the box.</h2>
+        <p class="lede">
+          The differences are less about any single panel and more about whether the pieces come together for you — and
+          whether the platform does the analysis.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Integrated, not assembled</div><p>Logs, metrics, traces, uptime, on-call, status, and SIEM already fit together — one timeline, one query language, no glue to maintain.</p></div>
+        <div class="why-card"><div class="why-num">Investigation built in</div><p>Every incident worked by an AI analyst that returns a root-cause verdict with evidence — not panels you interpret by hand. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">A SIEM is included</div><p>87 detections and threat intel run over the same data, investigated — not a separate security stack to assemble. <a href="/product/siem">SIEM →</a></p></div>
+        <div class="why-card"><div class="why-num">On-call &amp; storm grouping</div><p>Rotations, escalation, and root-cause grouping are part of the platform, so one outage pages once. <a href="/product/incidents">On-call →</a></p></div>
+        <div class="why-card"><div class="why-num">Less to operate</div><p>One platform to run rather than several components to scale, upgrade, and keep talking to each other.</p></div>
+        <div class="why-card"><div class="why-num">Still open, still yours</div><p>Open source and self-hostable with an identical contract — the openness of Grafana, without the assembly. <a href="/solutions/self-host">Self-host →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where Grafana leads</div>
+        <h2 class="h2">The honest other side of the ledger.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Dashboards and flexibility</h3>
+          <p>
+            For flexible, customisable visualization across a huge range of data sources, Grafana is the standard, and we
+            are not going to pretend to match it panel for panel. If your priority is bespoke dashboards, mixing many
+            heterogeneous sources into one view, or a specific plugin from its vast ecosystem, that is a real Grafana
+            strength built on years of community work. 24Observe gives you the views that serve monitoring and
+            investigation — search, live tail, charts, a topology health map — but it is not trying to be a
+            general-purpose dashboarding canvas.
+          </p>
+          <h3>Compose exactly what you want</h3>
+          <p>
+            The flip side of the assembly burden is total control. With Grafana and its stack you can build precisely the
+            architecture you envision, swap any component, and tune every layer — and for teams who want that, the
+            flexibility is the point, not a cost. An integrated platform like 24Observe is, by design, more opinionated;
+            if your requirement is maximum composability, that opinionation is a constraint, and we would rather say so
+            than oversell.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Why the trade favours many teams</h3>
+          <p>
+            Most teams, though, did not set out to run an observability stack — they set out to run reliable, secure
+            software, and the stack is a means to that end. For them, the assembly and operation of components, and the
+            by-hand investigation on top, are overhead they would happily trade away. Getting an integrated platform with
+            investigation built in, while keeping openness and self-hosting, is a favourable trade precisely because it
+            returns the time the assembly job consumes — time that was never the actual goal.
+          </p>
+          <h3>You keep what you love about open</h3>
+          <p>
+            The deepest reason teams choose Grafana is often philosophical: open, inspectable, not locked in. 24Observe
+            honours that — it is open source and self-hostable with an identical contract, so choosing the integrated
+            platform does not mean surrendering the openness. You can read it, run it yourself, and leave if you ever want
+            to. The trade is assembly-versus-integration, not open-versus-closed, and that is an important distinction to
+            be honest about.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Side by side</div>
+        <h2 class="h2">The comparison, laid out plainly.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>Dimension</div><div>Grafana / LGTM</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Getting a working stack</div><div>Assemble and operate components.</div><div class="cmp-us">Integrated platform, out of the box.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Investigation</div><div>By hand, across panels.</div><div class="cmp-us">The analyst returns a verdict.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Dashboards / flexibility</div><div>Best-in-class (a strength).</div><div class="cmp-us">Focused views for monitoring &amp; triage.</div></div>
+        <div class="cmp-row"><div class="cmp-k">SIEM &amp; on-call</div><div>Add and integrate more pieces.</div><div class="cmp-us">Included and wired in.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Operational burden</div><div>Yours to scale and maintain.</div><div class="cmp-us">One platform to run.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Openness</div><div>Open source.</div><div class="cmp-us">Open source, self-hostable, identical contract.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Choosing honestly</div>
+        <h2 class="h2">Which one is right for you.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Choose Grafana and its stack if</strong> flexibility and visualization are your priority — if you want
+          to compose exactly the architecture you envision, dashboard across many heterogeneous sources, and you have the
+          team and the appetite to operate the components. Its openness, ecosystem, and dashboarding are best-in-class,
+          and for teams who value building their own, it is an excellent and genuinely beloved choice. We are happy to say
+          so.
+        </p>
+        <p>
+          <strong>Choose 24Observe if</strong> you would rather run a product than assemble a stack — if you want logs,
+          metrics, traces, SIEM, and on-call already integrated, the investigation done for you by an analyst, and far
+          less glue to maintain, while keeping the openness and self-hosting that matter to you. Teams who love what
+          Grafana shows them but are weary of building and operating everything around it, and of investigating by hand,
+          are exactly who 24Observe is for.
+        </p>
+        <p>
+          Because 24Observe speaks OpenTelemetry, you can point the telemetry you already send to Grafana at it too and
+          compare the experiences directly — the assembled view you maintain versus the integrated one that investigates
+          for you — without committing to either until you have seen both on your own data.
+        </p>
+        <h3>What coexisting with, or moving from, your stack takes</h3>
+        <p>
+          The migration question is gentler here than with most comparisons, precisely because Grafana's world is built on
+          open standards. The OpenTelemetry your services already emit to your collector can fan out to 24Observe at the
+          same time — a destination change, not a re-instrumentation — so you can run the integrated platform beside your
+          assembled stack on identical, live data. There is no contrived bake-off; both see the same telemetry, and you
+          judge the experiences side by side.
+        </p>
+        <p>
+          What you are really evaluating in that period is not "whose chart looks better" but "how much of my time went to
+          assembly and manual investigation, and how much of it does the integrated platform give back." Watch how an
+          incident feels: in the assembled stack you hop between panels and reconstruct the story; in 24Observe the
+          incident arrives grouped and investigated. If the time saved and the toil removed are worth more to you than the
+          dashboard flexibility you give up, you have your answer — and if they are not, you have lost nothing but kept a
+          clearer view of the trade.
+        </p>
+        <p>
+          The honest caveat we will not dodge: for bespoke visualization across many heterogeneous sources, Grafana is
+          better, and some teams genuinely need that. We are not trying to win those teams. We are trying to serve the
+          larger group who assembled the stack because they had to, not because they wanted to — and who would happily
+          trade some dashboard flexibility for an integrated platform that investigates for them, while keeping the
+          openness and self-hosting that made them choose Grafana in the first place.
+        </p>
+        <p>
+          It is also worth being clear that this is not an either-or for the dashboards you love. Because 24Observe speaks
+          OpenTelemetry and exports cleanly, nothing stops you from keeping a Grafana instance for the bespoke
+          visualization it does best while letting 24Observe handle ingestion, detection, investigation, and on-call. The
+          choice is not "give up your favourite dashboards"; it is "stop hand-assembling and operating the entire pipeline
+          underneath them." For many teams that is the most comfortable path of all — keep the visualization layer you
+          prize, and replace the toil of running the stack and investigating by hand with a platform that does both.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe vs Grafana — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Keep the openness. Drop the assembly.</h2>
+      <p class="final-cta-sub">
+        Point the telemetry you already send at 24Observe and compare an integrated, self-hostable platform that
+        investigates for you against the stack you assemble and operate yourself.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/solutions/sre" class="btn btn-ghost btn-lg">For SRE teams</a>
+      </div>
+    </div>
+  </section>
+</Base>

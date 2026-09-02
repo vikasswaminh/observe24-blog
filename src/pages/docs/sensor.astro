@@ -1,0 +1,78 @@
+---
+import Base from '../../layouts/Base.astro';
+
+
+const INSTALL = `curl -sSL https://api.24observe.com/install.sh | sudo bash -s -- --enroll-token=<TOKEN>`;
+const INSTALL_PROFILES = `curl -sSL https://api.24observe.com/install.sh \\
+  | sudo bash -s -- --enroll-token=<TOKEN> --profile=docker --profile=nginx`;
+const VERIFY = `sudo 24observe-sensor status   # is the Sensor running?
+sudo 24observe-sensor logs -f  # follow what it's shipping`;
+const UNINSTALL = `curl -sSL https://api.24observe.com/install.sh | sudo bash -s -- --uninstall`;
+---
+<Base
+  title="24Observe Linux Sensor — one-line install for logs + host metrics"
+  description="Install the 24Observe Sensor on any Ubuntu/Debian host with a single command. Ships journald logs and host metrics over OTLP, installed from a signed package and enrolled with a scoped token."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · sensor</div>
+      <h1 class="h1">The Linux Sensor. One command. Logs and metrics flow.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        The 24Observe Sensor is the fastest way to get a Linux server reporting. It installs from a
+        <b>signed package</b> — never an unsigned binary piped onto your box — and ships
+        <b>journald logs</b> and <b>host metrics</b> to 24Observe over OTLP out of the box. It&apos;s
+        built on open standards under the hood, so nothing about it is proprietary or locked in.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">1. Get your install command</h2>
+      <p>
+        Open the dashboard and go to <b>Settings → Linux Hosts → “Generate install command.”</b>
+        That mints a scoped <b>enrollment token</b> (owner/admin only) and gives you the exact
+        one-liner with the token already filled in. The enrollment token can <em>only</em> enroll
+        hosts — it cannot read your data — and one token can onboard your whole fleet.
+      </p>
+      <p>The command looks like this:</p>
+      <pre class="code-block">{INSTALL}</pre>
+      <p>
+        Run it on the host as root. The Sensor installs itself, exchanges the enrollment token for a
+        per-host token that can only ship <code>logs</code> + <code>metrics</code>, writes its
+        config, and starts a <code>systemd</code> service. Re-running it on the same host rotates
+        the host token automatically.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">2. Optional: collector profiles</h2>
+      <p>
+        Layer extra log sources on top of the base journald + metrics pipeline with repeatable
+        <code>--profile</code> flags (the dashboard checkboxes add these for you):
+      </p>
+      <pre class="code-block">{INSTALL_PROFILES}</pre>
+      <ul>
+        <li><code>--profile=docker</code> — Docker container stdout/stderr logs.</li>
+        <li><code>--profile=nginx</code> — nginx access + error logs.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 40px;">3. Verify</h2>
+      <pre class="code-block">{VERIFY}</pre>
+      <p>
+        Within a minute the host appears under <b>Settings → Linux Hosts → Enrolled hosts</b>, and
+        its logs show up in <b>Explore</b> / <b>Logs</b>. Edge redaction is on by default, so secrets
+        are stripped before anything leaves the box.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">Uninstall</h2>
+      <pre class="code-block">{UNINSTALL}</pre>
+
+      <h2 class="h2" style="margin-top: 40px;">Sensor vs. the OpenTelemetry Collector</h2>
+      <p>
+        Use the <b>Sensor</b> when you want a server reporting in one command — it&apos;s opinionated
+        (journald, host metrics, sensible defaults) and self-enrolling. Use the
+        <a href="/docs/collector">OpenTelemetry Collector</a> when you already run OTel, need OTLP/gRPC
+        in, or have legacy sources (syslog, Fluent Bit). Both land in the same place; pick by how
+        much you want to configure.
+      </p>
+      <p style="margin-top: 8px; font-size: 13px; color: var(--ink-3);">
+        Supported today: Ubuntu/Debian + systemd. RHEL and other init systems are on the roadmap.
+      </p>
+    </div>
+  </section>
+</Base>

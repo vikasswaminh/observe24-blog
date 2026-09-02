@@ -1,0 +1,329 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is 24Observe an alternative to Elastic / OpenSearch for SIEM?',
+    a: 'For teams who want detection and investigation over their logs without operating a search cluster, yes. Elastic is a powerful, open search engine with a mature security solution, and we say so plainly. The difference is that Elastic gives you a superb engine to build detections on and investigate with — work you perform and infrastructure you run — while 24Observe investigates every detection for you and removes the cluster-operation burden.',
+  },
+  {
+    q: 'What is the core difference?',
+    a: 'Elastic is, at heart, a search engine you build a SIEM on top of: you run the cluster, define the detections, and perform the hunts. That is powerful and flexible. 24Observe is built around the investigation itself — every detection opens an incident an AI analyst works, returning a verdict with evidence — and it is delivered as a platform you do not have to operate as a search cluster. Engine-you-operate versus investigated-incidents-delivered.',
+  },
+  {
+    q: 'Do you use the same data schema?',
+    a: 'Common security sources are normalised to a shared schema on ingest — the same Elastic Common Schema lineage the industry has standardised on — so detections behave consistently across vendors. If your team thinks in ECS, the model will feel familiar; you are not learning a foreign normalisation. That shared-schema approach is one reason migrating detection logic tends to be straightforward.',
+  },
+  {
+    q: 'What about the operational burden of running Elasticsearch?',
+    a: 'That is a real consideration Elastic users know well: clusters need capacity planning, sharding, upgrades, and care, and at volume that is a meaningful operational commitment. 24Observe is one platform to run — hosted, or self-hosted as a documented, container-based deployment — so you are not also signing up to operate a search cluster as a precondition for having a SIEM.',
+  },
+  {
+    q: 'Does 24Observe investigate, or just detect?',
+    a: 'It investigates. Where Elastic gives you the tools to hunt, 24Observe\'s analyst does the hunt: when a detection fires, it gathers the related events, traces the blast radius, corroborates against threat intelligence, and returns a verdict your team acts on or audits. That is the central difference for a security team measuring itself in analyst-hours. See <a href="/product/ai-analyst">the analyst</a>.',
+  },
+  {
+    q: 'Is 24Observe open and self-hostable, like Elastic?',
+    a: 'Yes. 24Observe is open source and self-hostable with an identical contract, so the openness and the run-it-yourself option that draw people to Elastic and OpenSearch are not things you give up. You can run the full platform, analyst included, inside your own perimeter. See the <a href="/solutions/self-host">self-host solution</a>.',
+  },
+  {
+    q: 'Does it cover AI-agent threats?',
+    a: 'Yes, as a first-class capability — prompt injection, runaway tool loops, cost abuse, sensitive tool use, and tool-protocol manipulation, each investigated by the analyst. It is a category traditional SIEM content, Elastic\'s included, was not originally written for. See <a href="/product/ai-agent-security">AI-agent security</a>.',
+  },
+  {
+    q: 'When is Elastic the better choice?',
+    a: 'When you want a powerful, open search platform you control end to end, you have the expertise to operate clusters well, and you value building and tuning your own detections on a mature, flexible engine. Elastic\'s search depth, openness, and security maturity are real, and for teams who want that control and have the operational capacity, it is a strong choice.',
+  },
+  {
+    q: 'When is 24Observe the better choice?',
+    a: 'When you want detection and investigation without operating a search cluster, when the bottleneck is analyst time rather than search flexibility, and when you want AI-agent coverage and an analyst that returns verdicts. Teams who like Elastic\'s openness but not the operational weight, and who want the hunting done for them, feel the difference most.',
+  },
+];
+---
+<Base
+  title="24Observe vs Elastic — SIEM without the tuning"
+  description="Elastic is a powerful open search engine with a SIEM you operate and build on. 24Observe investigates every detection for you — and there's no cluster to run."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare · 24Observe vs Elastic</div>
+          <h1 class="h1">Elastic gives you a search engine to hunt with. <em>24Observe does the hunt.</em></h1>
+          <p class="lede">
+            Elastic — and the OpenSearch lineage beside it — is a genuinely powerful, open search platform with a mature
+            security solution, and this is an honest comparison. The difference is twofold: Elastic is an engine you
+            operate and build detections on, performing the investigation yourself; 24Observe investigates every detection
+            for you with an AI analyst and removes the burden of running a search cluster. Both are open and
+            self-hostable; one is infrastructure you run, the other is investigated incidents delivered.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare" class="btn btn-ghost btn-lg">All comparisons</a>
+          </div>
+          <div class="hero-meta">
+            <span>Investigation <b>built in</b></span>
+            <span>No <b>cluster to run</b></span>
+            <span>ECS-<b>familiar</b></span>
+            <span>Open &amp; <b>self-hostable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe vs elastic</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Where they differ</div>
+              <div class="con-meta">honest take</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">After a detection fires</div>
+                <div class="con-sub"><span>Elastic: you hunt</span><span class="tech">24o: analyst hunts</span></div>
+              </div>
+              <span class="sev sev-high">KEY</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Operating the engine</div>
+                <div class="con-sub"><span>run the cluster</span><span class="tech">one platform</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Schema</div>
+                <div class="con-sub"><span>ECS</span><span class="tech">ECS-familiar</span></div>
+              </div>
+              <span class="sev sev-med">SAME</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> An engine you operate vs verdicts delivered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest take</div>
+        <h2 class="h2">Elastic is a powerful engine. Powerful engines need driving and running.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Elastic earned its place. Its search is fast and flexible, its security solution is mature, the Elastic Common
+          Schema it championed has become an industry standard, and its openness has built a large, loyal community. A
+          fair comparison begins by granting all of that.
+        </p>
+        <p>
+          The honest framing is about what kind of thing Elastic is: fundamentally, a search engine on which a SIEM is
+          built. That has two consequences for a security team. First, you operate it — Elasticsearch clusters need
+          capacity planning, sharding, upgrades, and ongoing care, and at security-data volumes that is a real, continuous
+          operational commitment that someone on your team owns. Second, you perform the analysis — Elastic gives you a
+          superb engine to write detections on and to hunt with, but the hunting itself, the gathering and correlating and
+          deciding, is still skilled human work the engine enables rather than does.
+        </p>
+        <p>
+          Both of those are fine if you have the team for them, and a liability if you do not. Many security teams discover
+          that a meaningful share of their effort goes not to security but to keeping the search cluster healthy, and that
+          the alerts their excellent detections produce still pile up faster than analysts can investigate them. The engine
+          is powerful; the work it presumes — operating it, and driving the investigation — is the part that does not
+          scale with a small or stretched team.
+        </p>
+        <p>
+          24Observe is built to remove both forms of that work. It investigates for you: every detection opens an incident
+          the <a href="/product/ai-analyst">analyst</a> works, returning a verdict with the evidence cited, so your team
+          triages conclusions instead of constructing hunts. And it is a platform you run as one thing — hosted, or
+          self-hosted as a documented, container-based deployment — rather than a search cluster you operate as a
+          precondition for having a SIEM. Because common sources are normalised to the same shared schema lineage Elastic
+          uses, the model feels familiar and detection logic ports cleanly.
+        </p>
+        <p>
+          This is not "Elastic is bad" — for a team that wants a powerful open engine it controls end to end, and has the
+          expertise to run clusters and the appetite to build its own detections, Elastic is excellent, and we will say so.
+          It is "24Observe removes the two jobs Elastic presumes" — operating the engine and performing the hunt — for the
+          teams whose constraint is exactly those two jobs.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Elastic is an engine you run and drive. 24Observe runs itself and does the driving. If operating a cluster and
+        hunting by hand are your bottleneck, that is the whole difference.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where 24Observe differs</div>
+        <h2 class="h2">The work removed, not just enabled.</h2>
+        <p class="lede">
+          The differences come down to two jobs Elastic presumes you will do — and that 24Observe does for you.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">It does the hunt</div><p>Every detection arrives investigated, with a verdict and cited evidence — the gathering and correlating done for you. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">No cluster to operate</div><p>One platform to run, hosted or self-hosted — not a search cluster to capacity-plan, shard, and upgrade as a precondition.</p></div>
+        <div class="why-card"><div class="why-num">ECS-familiar schema</div><p>Common sources normalised to the same shared-schema lineage you already know, so the model is familiar and logic ports cleanly.</p></div>
+        <div class="why-card"><div class="why-num">One intrusion, one case</div><p>Related detections sharing a root collapse into a single investigated case, so a team works the intrusion, not the alerts.</p></div>
+        <div class="why-card"><div class="why-num">AI-agent threats</div><p>Prompt injection, tool-loop abuse, and tool-protocol attacks as first-class detections. <a href="/product/ai-agent-security">Agent security →</a></p></div>
+        <div class="why-card"><div class="why-num">Open and self-hostable</div><p>Open source with an identical-contract self-host, analyst included — the openness of Elastic, less of the operation. <a href="/solutions/self-host">Self-host →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where Elastic leads</div>
+        <h2 class="h2">The honest other side of the ledger.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Search power and control</h3>
+          <p>
+            Elastic's search is deep and flexible, and the control it offers is real: you can tune the engine, shape the
+            indices, and build precisely the detections and hunts you want on a mature, well-documented platform. For a
+            team that wants that level of control and has the expertise to wield it, the flexibility is a genuine
+            advantage, not overhead. 24Observe is more opinionated by design; if maximum search-engine control is your
+            requirement, that opinionation is a constraint we would rather name than gloss over.
+          </p>
+          <h3>Maturity and ecosystem</h3>
+          <p>
+            Elastic has a long track record at scale, a large community, broad ingest tooling, and a security solution
+            that has been refined over years. 24Observe is younger and more focused, and we describe what it does rather
+            than implying an equivalent ecosystem or reference base. If your decision rests on a mature, broad ecosystem
+            and a long public history at scale, that is an honest point in Elastic's favour today.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Why the trade favours many teams</h3>
+          <p>
+            Yet for many teams the two jobs Elastic presumes are precisely the binding constraints. Operating clusters
+            consumes engineers who would rather be doing security; investigating by hand consumes analysts faster than
+            they can be hired. For those teams, having the hunt done automatically and not running a cluster at all is
+            worth more than search-engine control they would rarely exercise to its limit. Give up some control and
+            ecosystem; gain conclusions and a lighter operation — a favourable trade for a large part of the market.
+          </p>
+          <h3>A familiar, low-risk migration</h3>
+          <p>
+            Because common sources are normalised to the same shared-schema lineage Elastic uses, moving is less jarring
+            than a cross-vendor switch usually is — the way you think about events carries over. And 24Observe ingests
+            open standards and exports cleanly, so you can run it alongside an existing Elastic deployment, point some
+            sources at it, and compare investigated-incidents against build-your-own-hunt on your own data before
+            committing. An honest comparison should come with an honest way to test it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Side by side</div>
+        <h2 class="h2">The comparison, laid out plainly.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>Dimension</div><div>Elastic / OpenSearch</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">After a detection fires</div><div>You hunt, with a powerful engine.</div><div class="cmp-us">The analyst hunts, returns a verdict.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Operating the engine</div><div>Run and scale a search cluster.</div><div class="cmp-us">One platform; no cluster to operate.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Schema</div><div>ECS (an industry standard).</div><div class="cmp-us">ECS-familiar; logic ports cleanly.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Search control</div><div>Deep and flexible (a strength).</div><div class="cmp-us">More opinionated, less to operate.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent threats</div><div>Not a focus.</div><div class="cmp-us">First-class detections, investigated.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Openness</div><div>Open; self-managed or cloud.</div><div class="cmp-us">Open source, self-hostable, identical contract.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Choosing honestly</div>
+        <h2 class="h2">Which one is right for you.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Choose Elastic / OpenSearch if</strong> you want a powerful, open search platform you control end to end,
+          you have the expertise to operate clusters well, and you value building and tuning your own detections on a
+          mature, flexible engine. Its search depth, openness, and security maturity are real advantages, and for a team
+          with the operational capacity and the desire for that control, it is a strong, defensible choice.
+        </p>
+        <p>
+          <strong>Choose 24Observe if</strong> the two jobs an engine presumes — operating it and driving the
+          investigation — are your binding constraints. Choose it for investigation done by an analyst, no search cluster
+          to run, an ECS-familiar model, AI-agent coverage, and the openness and self-hosting you would have wanted from
+          Elastic anyway. Teams who like Elastic's principles but not its operational weight, and who want the hunting done
+          for them, are exactly who this is for.
+        </p>
+        <p>
+          The migration is unusually low-risk because the schema thinking carries over. Run 24Observe next to your Elastic
+          deployment, point a few sources at it, and compare arriving-at-a-verdict against building-your-own-hunt — on
+          your own alerts, with your existing tools still fed by export, before you decide anything.
+        </p>
+        <h3>What moving off, or in front of, Elastic takes</h3>
+        <p>
+          The migration is eased by the one thing Elastic users care most about: the schema. Because common sources are
+          normalised to the same Elastic Common Schema lineage you already think in, your mental model of events carries
+          straight over — fields mean what you expect, and detection logic translates rather than being reinvented. Point
+          your sources, or a copy, at 24Observe over open standards and webhook ingest while your Elastic cluster keeps
+          running, and you are comparing on familiar ground from the first event.
+        </p>
+        <p>
+          What you will feel quickly is the absence of two jobs. There is no cluster to nurse — no sharding, no capacity
+          scramble, no upgrade window — because you are running a platform, not an engine. And there is no cold hunt after
+          an alert, because the analyst has already gathered and correlated and reached a verdict. Spend the evaluation
+          watching how much of your team's week those two absences give back; for teams who have been quietly funding a
+          cluster and a manual hunt, it tends to be the most persuasive part of the trial, more than any single feature.
+        </p>
+        <p>
+          The honest caveat: Elastic gives you more raw search control and a deeper, more mature ecosystem than a younger,
+          more opinionated platform does, and teams who want to operate their own engine end to end will value that. We
+          are not trying to win them. We are trying to serve the teams whose binding constraints are exactly the two jobs
+          an engine presumes — running it and driving it — and for whom removing both, while keeping openness and
+          self-hosting and a familiar schema, is the better deal. Test it on your own alerts and let the time-saved decide.
+        </p>
+        <p>
+          One way to frame the decision cleanly: separate the engine from the outcome. Elastic is, at its core, a superb
+          general-purpose search engine, and a great deal of its value — and its operational weight — comes from that
+          generality. If you genuinely want a search engine, to build many things on beyond security, that generality is
+          an asset and you should keep it. If what you actually want is the security outcome — threats caught, incidents
+          investigated, a SOC that keeps up — then a platform built for that outcome, rather than a general engine you
+          must shape into it, will get you there with far less to operate and far less to do by hand. Be honest with
+          yourself about which you are buying, because the right answer follows directly from that.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe vs Elastic — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Keep the openness. Lose the cluster and the cold hunt.</h2>
+      <p class="final-cta-sub">
+        Get detection and investigation over your logs without operating a search engine — the analyst does the hunt, the
+        schema is familiar, and you can still self-host the whole thing.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/siem" class="btn btn-ghost btn-lg">See the SIEM</a>
+      </div>
+    </div>
+  </section>
+</Base>

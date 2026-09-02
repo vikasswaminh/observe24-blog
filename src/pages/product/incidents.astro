@@ -1,0 +1,334 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What counts as an incident here?',
+    a: 'Anything worth a human knowing about, from any corner of the platform: a failed uptime check, a metric crossing a threshold, a fired security detection, a silent cron job, a host going offline. They are all first-class incidents that flow through the same lifecycle — open, acknowledge, investigate, resolve — and the same routing. You are not juggling a separate "alerts" concept for monitoring and an "incidents" concept for security; there is one queue and one model.',
+  },
+  {
+    q: 'How do on-call schedules work?',
+    a: 'You define rotations — weekly, daily, custom — and the schedule resolves to exactly one responsible person at any instant, with overrides for the times real life intervenes. When an incident opens, the platform knows who is actually holding the pager right now and routes to them, rather than blasting a whole team and hoping someone owns it. One incident, one clearly responsible human.',
+  },
+  {
+    q: 'What does an escalation policy do?',
+    a: 'It is an ordered chain of steps that runs until someone acknowledges. Notify the on-call engineer; if they have not acknowledged in a few minutes, notify the secondary; then the team lead; then a wider channel. Acknowledgement stops the chain immediately. So a missed page does not become a missed incident — it climbs until a human takes it, automatically, without anyone having to notice the silence.',
+  },
+  {
+    q: 'Will one outage page me fifty times?',
+    a: 'No. When a single root cause opens many related incidents — a switch dies and a rack of hosts goes unreachable — the platform recognises that they share a common impacted entity in the <a href="/product/context-graph">context graph</a> and collapses them into one case with a single notification. You are paged about the root cause, once, with the cascade attached as context. The 3 a.m. alert storm becomes one legible page.',
+  },
+  {
+    q: 'How many ways can it reach me?',
+    a: 'Ten channels: email, signed webhook, Slack, Discord, Microsoft Teams, Telegram, PagerDuty, Opsgenie, SMS, and voice call. Critical incidents can ring a phone; routine ones can post to a chat channel. You route by severity and team so the signal matches the stakes — a page that wakes someone for a real emergency, a quiet message for the rest. See <a href="/product/alerting">alerting</a> for the full channel detail.',
+  },
+  {
+    q: 'Does an incident come with an investigation?',
+    a: 'Yes — this is the part that changes the job. The <a href="/product/ai-analyst">AI analyst</a> investigates incidents and attaches a root-cause verdict with cited evidence, so when you acknowledge a page you are often reading a conclusion rather than starting from a blank search. The incident arrives with the first hour of work already done.',
+  },
+  {
+    q: 'Can I schedule maintenance so it doesn’t page anyone?',
+    a: 'Yes. Declare a maintenance window and the expected noise during planned work does not turn into pages, so a deploy or a migration does not light up the on-call rotation for changes you already know about. Real problems still surface; the self-inflicted ones during a known window do not wake anyone.',
+  },
+  {
+    q: 'Can I drive incidents from my own systems or an agent?',
+    a: 'Yes. Acknowledging and resolving incidents, posting updates, and managing on-call and escalation are all part of the agent-programmable REST API, and the platform emits incident.opened, incident.acknowledged, and incident.resolved events over signed webhooks. So your chatops, your runbooks, and your automated agents can participate in the incident lifecycle directly. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'How is this different from a standalone on-call tool?',
+    a: 'A standalone on-call tool is a router — it takes alerts from your other products and decides who to wake. Here the routing lives in the same platform that detected the problem and holds the evidence, so the page arrives already linked to the logs, the topology, and an analyst\'s verdict. You are not paid by one vendor to notice and another to explain; noticing, routing, and explaining are one system.',
+  },
+];
+---
+<Base
+  title="Incident management that starts with an answer | 24Observe"
+  description="One incident lifecycle for checks, metrics, and detections — with on-call rotations, escalation chains, root-cause grouping, and an AI analyst on point."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> On-call &amp; incidents</div>
+          <h1 class="h1">The page that wakes you should arrive <em>with the first hour already done.</em></h1>
+          <p class="lede">
+            On-call is the tax everyone pays for running software, and most tools make it heavier than it needs to be:
+            they wake the wrong person, page fifty times for one outage, and hand over a one-line alert with no context at
+            the worst possible hour. 24Observe runs on-call, escalation, and the whole incident lifecycle inside the
+            platform that detected the problem — so the page reaches exactly who is responsible, one outage pages once, and
+            the incident arrives already investigated.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+          </div>
+          <div class="hero-meta">
+            <span>On-call <b>rotations</b></span>
+            <span>Escalation <b>chains</b></span>
+            <span>One root, <b>one page</b></span>
+            <span>Ten <b>channels</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/incidents</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Incident #5210 · acknowledged</div>
+              <div class="con-meta">on-call: A. Rivera</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">core-switch-2 offline · storm grouped</div>
+                <div class="con-sub"><span>14 incidents → 1 case</span><span class="tech">1 page sent</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Analyst verdict attached</div>
+                <div class="con-sub"><span>root: switch power fault</span><span class="tech">6 citations</span></div>
+              </div>
+              <span class="sev sev-high">RCA</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Escalation: primary → ack in 40s</div>
+                <div class="con-sub"><span>chain stopped</span><span class="tech">no secondary paged</span></div>
+              </div>
+              <span class="sev sev-med">OK</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Right person, one page, verdict already attached</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The on-call problem</div>
+        <h2 class="h2">Being woken is bad enough. Being woken badly is what burns people out.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Nobody quits over the occasional 3 a.m. page for a real emergency. People quit over being paged fifty times for
+          one outage, woken for something that was not theirs, and handed a cryptic alert with no context and no help.
+        </p>
+        <p>
+          The standard on-call setup is a patchwork that fails in predictable ways. Alerts come from several products —
+          the uptime tool, the metrics tool, the security tool — and get funnelled into a separate on-call router whose
+          only job is to decide who to wake. Because that router lives apart from the systems that detected the problem,
+          the page it sends is thin: a title, a severity, a link back to a dashboard you will have to interpret yourself,
+          half-asleep. The hardest part of the night — understanding what is actually wrong — is exactly the part the
+          tooling washes its hands of.
+        </p>
+        <p>
+          Then there is the volume problem. When one failure cascades, every downstream symptom fires its own alert, and a
+          dumb router faithfully forwards all of them. You wake to a phone that will not stop buzzing, fifty notifications
+          deep, and your first task is not to fix anything but to work out, by hand, that these fifty alarms are one
+          incident. The storm is not just annoying; it actively delays the response, because the signal is buried in its
+          own echoes.
+        </p>
+        <p>
+          And the routing itself is often crude — page the whole team and hope someone owns it, or page one person whether
+          or not they are even on shift. Diffusion of responsibility means everyone assumes someone else has it; rigid
+          routing means the page goes to someone on holiday. Either way the incident sits unacknowledged while the clock
+          runs.
+        </p>
+        <p>
+          24Observe treats on-call as part of the platform, not a bolt-on router. Every incident — from a failed check, a
+          metric breach, or a security detection — flows through one lifecycle and one routing system that knows who is
+          genuinely on call right now, climbs an escalation chain if they do not answer, collapses a cascade into a single
+          case so one outage pages once, and arrives carrying the <a href="/product/ai-analyst">analyst's</a> verdict so
+          the page is a head start, not a cold start. The goal is not just to wake the right person — it is to wake them
+          as kindly as the situation allows.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A page that wakes the wrong person, fifty times, with no context, is how you lose your best engineers. Routing,
+        grouping, and an attached verdict are how you keep them.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The mechanics</div>
+        <h2 class="h2">Who hears about it, when, and how — defined once.</h2>
+        <p class="lede">
+          Good on-call is mostly about getting the routing right so humans can stop thinking about it. These are the
+          pieces, and they compose into a policy you set once and then trust.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">On-call rotations</div><p>Define who is on call and when; the schedule resolves to exactly one responsible person at any instant, with overrides for when life intervenes.</p></div>
+        <div class="why-card"><div class="why-num">Escalation chains</div><p>An ordered sequence that runs until someone acknowledges — primary, secondary, lead, wider channel. A missed page climbs instead of vanishing.</p></div>
+        <div class="why-card"><div class="why-num">Root-cause grouping</div><p>One failure that opens many incidents collapses into a single case with one notification, so a cascade pages you about its cause, once.</p></div>
+        <div class="why-card"><div class="why-num">Ten channels</div><p>Email, webhook, Slack, Discord, Teams, Telegram, PagerDuty, Opsgenie, SMS, and voice — routed by severity so the channel matches the stakes.</p></div>
+        <div class="why-card"><div class="why-num">Maintenance windows</div><p>Declare planned work and its expected noise does not page anyone, so a deploy or migration does not light up the rotation for changes you already knew about.</p></div>
+        <div class="why-card"><div class="why-num">Programmable lifecycle</div><p>Acknowledge, resolve, post updates, and manage schedules through the API; incident.opened/acknowledged/resolved events drive your own automation.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The lifecycle</div>
+        <h2 class="h2">Open, acknowledge, investigate, resolve — one model for everything.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>One queue, not a pile of consoles</h3>
+          <p>
+            A failed uptime check, a saturated disk, and a brute-force detection are wildly different events, but the work
+            of responding to them is the same shape: someone is told, someone takes ownership, someone understands it, and
+            someone closes it. So they share one lifecycle and one queue. Your responders learn a single way to work an
+            incident and use it for everything, instead of switching mental models between a monitoring "alert" and a
+            security "case." The muscle memory compounds.
+          </p>
+          <h3>Acknowledgement that means something</h3>
+          <p>
+            When a responder acknowledges, two things happen: the escalation chain stops, so nobody else gets woken, and
+            the incident is now clearly owned, so there is no ambiguity about who has it. That single action is what turns
+            a noisy alarm into a managed incident — and because it is one action in one place, it works the same whether
+            the responder is at a laptop or tapping a notification on their phone at night.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>The page that explains itself</h3>
+          <p>
+            Because incidents live in the platform that detected them, a page is never just a title and a link. It arrives
+            wired to the <a href="/product/context-graph">topology map</a> so the blast radius is visible, and the
+            <a href="/product/ai-analyst">analyst</a> attaches a root-cause verdict with cited evidence. The most common
+            on-call experience here is acknowledging a page and finding the investigation already done — you are deciding
+            what to do, not discovering what happened. That is the difference between an on-call shift that exhausts people
+            and one they can sustain.
+          </p>
+          <h3>Resolution that closes the loop</h3>
+          <p>
+            Resolving an incident records what happened and what was done, feeds the look-back, and — where the analyst was
+            involved — lets your correction teach the system to read your environment better next time. The incident does
+            not just disappear; it becomes part of the history that makes the next one easier, and the public
+            <a href="/product/status-pages">status page</a> updates itself to match.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A bad night, handled well.</h2>
+        <p class="lede">
+          The same cascade that ruins an on-call shift in a patchwork setup — and how it plays out when routing, grouping,
+          and investigation are one system.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          It is 3 a.m. A core switch loses power. Within seconds the hosts behind it stop reporting, their services fail
+          their checks, the metrics on those services breach, and the downstream calls start timing out. In a patchwork
+          setup this is the nightmare shift: the on-call engineer's phone erupts with dozens of alerts from three
+          different tools, none ranked, none connected, and the first job of the night is to silence the buzzing long
+          enough to think.
+        </p>
+        <p>
+          Here, the phone buzzes once. The platform saw that all those incidents trace back to one impacted entity in the
+          context graph and collapsed them into a single case rooted at the switch, so a single page goes out — to A.
+          Rivera, who the on-call schedule knows is actually holding the pager tonight, not to the whole team and not to
+          whoever happens to be listed in a stale config. Rivera acknowledges in under a minute, and the escalation chain
+          stops there; the secondary and the team lead sleep through it, because the system that would have escalated saw
+          the acknowledgement.
+        </p>
+        <p>
+          Rivera opens the case to find it is not a cold start. The analyst has already investigated: the verdict says the
+          switch suffered a power fault, the fourteen downstream hosts are unreachable as a consequence, and the
+          customer-facing checkout and payments services are at risk — with the supporting evidence cited. The topology
+          map shows the same story as a picture. Rivera did not spend the first twenty minutes establishing that it is the
+          switch and figuring out who is affected; that work was waiting for them when they woke up.
+        </p>
+        <p>
+          So the night becomes a decision instead of an investigation. Rivera dispatches someone to the switch, posts the
+          affected components to the status page — which the case already identified — and the customers who are watching
+          get an honest update without Rivera having to compose one from scratch. When the switch is restored, the hosts
+          report, the services clear, the grouped case resolves in one action, and the status page follows.
+        </p>
+        <p>
+          In the morning the whole episode is one coherent record: one case, one page, one acknowledgement, one resolution,
+          and a verdict that explains the root cause — rather than a scattered trail across three tools and fifty alarms
+          that someone has to reconstruct for the post-mortem. The switch failure was unavoidable. The miserable night was
+          not, and the platform is the reason it did not happen.
+        </p>
+        <p>
+          The deeper point is what this does to a team over months, not minutes. On-call is sustainable or it is not, and
+          what makes it unsustainable is rarely the number of real emergencies — those are few — but the accumulation of
+          bad nights: the floods, the wrong-person pages, the cold-start investigations at 3 a.m. Each one is a small
+          withdrawal from your engineers' goodwill, and enough of them is how you lose the people you most want holding the
+          pager. A setup that pages the right person once, with the investigation attached, makes the withdrawals far
+          smaller and far rarer.
+        </p>
+        <p>
+          That is the real return on treating incidents as a first-class part of the platform rather than bolting a router
+          onto the side. The routing, the grouping, the escalation, and the attached verdict are not separate features you
+          assemble; they are one coherent answer to the question "how do we tell the right human about the right problem,
+          kindly, with help already in hand." Get that answer right and on-call stops being the thing your best engineers
+          dread and quietly plan their exit around — which, over a year, is worth more than any single outage it helps you
+          resolve.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A standalone on-call router vs incidents in the platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A standalone on-call router</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">What the page contains</div><div>A title and a link to interpret.</div><div class="cmp-us">A verdict, evidence, and blast radius.</div></div>
+        <div class="cmp-row"><div class="cmp-k">One outage</div><div>Fifty forwarded alerts.</div><div class="cmp-us">One grouped case, one page.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Who gets paged</div><div>The team, or a stale config.</div><div class="cmp-us">Whoever is genuinely on call now.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Missed page</div><div>Lost in the noise.</div><div class="cmp-us">Climbs the escalation chain automatically.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Monitoring vs security</div><div>Two concepts, two consoles.</div><div class="cmp-us">One incident lifecycle for both.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Telling customers</div><div>A separate status tool to update.</div><div class="cmp-us">Status page updates from the incident.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">On-call &amp; incidents — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Make on-call something your team can sustain.</h2>
+      <p class="final-cta-sub">
+        One incident lifecycle for checks, metrics, and detections — with rotations, escalation, root-cause grouping, ten
+        channels, and an analyst that investigates before you wake.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/status-pages" class="btn btn-ghost btn-lg">Status pages</a>
+      </div>
+    </div>
+  </section>
+</Base>

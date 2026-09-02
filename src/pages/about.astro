@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="About — 24Observe"
+  description="Why a monitoring tool at one-tenth the price. Transparent pricing, self-hostable, no lock-in."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> About</div>
+      <h1 class="h1">Observability shouldn't cost as much as the software it's watching.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Most observability vendors price for their go-to-market, not your engineering reality —
+        per-host, per-seat, per-feature, with the essentials locked behind an enterprise tier.
+        24Observe takes the opposite approach: one platform, transparent pricing, and every
+        capability available on every plan.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="why-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="why-card">
+          <div class="why-num mono">THE THESIS</div>
+          <h3 class="h3">Monitoring is a commodity.</h3>
+          <p>
+            Pinging a URL on an interval is not a moat. Checking a TCP port is not a moat.
+            Validating a TLS cert is not a moat. The feature set in this category has been
+            solved for a decade. What's <b style="color: var(--ink);">not</b> commodified
+            is the billing. That's what we're correcting.
+          </p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">THE DEAL</div>
+          <h3 class="h3">Convenience, not captivity.</h3>
+          <p>
+            No "free for &lt;n seats" carve-outs, no enterprise tier gating the security
+            features. One transparent price for the hosted platform, and a fully
+            self-hostable deployment path when you want it on your own hardware. We
+            charge for convenience, never for control of your data.
+          </p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">THE BUILD</div>
+          <h3 class="h3">Boring on purpose.</h3>
+          <p>
+            We picked battle-tested tooling on every layer. Nothing bespoke, nothing "AI-native",
+            nothing you'd lose sleep operating. The reason it's cheap is that it's
+            <b style="color: var(--ink);">standard</b>, not because we cut corners.
+          </p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">THE PROMISE</div>
+          <h3 class="h3">No lock-in, by design</h3>
+          <p>
+            Your data and your deployment stay portable. The platform has a fully
+            self-hostable path that runs on modest hardware, plus continuous backups of
+            your data — so you keep complete control and continuity, independent of any single vendor.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> What we don't do (yet)</div>
+      <h2 class="h2">Honest inventory.</h2>
+      <p class="lede">
+        If you need these today, we're not the fit yet. We'll say so on a sales call too — don't
+        buy something that'll disappoint your team.
+      </p>
+      <div class="specs" style="margin-top: 40px;">
+        <div class="spec-row"><div class="spec-key">APM / traces</div><div class="spec-val">Not yet. Datadog is the incumbent here; we haven't moved into the tracing plane.</div></div>
+        <div class="spec-row"><div class="spec-key">RUM</div><div class="spec-val">Not yet. If real-user monitoring is your primary use case, look elsewhere.</div></div>
+        <div class="spec-row"><div class="spec-key">Log aggregation (your app's logs)</div><div class="spec-val">Hosted plans don't ingest your application logs. Use a dedicated log product for that.</div></div>
+        <div class="spec-row"><div class="spec-key">SOC 2 / ISO 27001</div><div class="spec-val">In progress, not certified. Self-host is the compliance answer until then.</div></div>
+        <div class="spec-row"><div class="spec-key">Multi-region synthetic checks</div><div class="spec-val">Single-region today. Adding EU + APAC regions on the roadmap.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Built in public. Priced like it.</h2>
+      <p class="final-cta-sub">Every commit, every architectural decision, every line — in the repo.</p>
+      <div class="final-cta-buttons">
+        <a href="https://github.com/vikasswaminh/observe24" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Read the source ↗</a>
+        <a href="/pricing" class="btn btn-ghost btn-lg">See pricing</a>
+      </div>
+    </div>
+  </section>
+</Base>

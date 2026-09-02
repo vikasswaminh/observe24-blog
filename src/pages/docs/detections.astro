@@ -1,0 +1,340 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const RULE = `// A simple threshold detection over your events
+service:auth event:login_failed
+| stats count() by user
+| where count > 10 within 5m`;
+
+const SEQ = `// Sequence: many failures THEN a success, same user
+service:auth
+| sequence (event:login_failed* , event:login_success) by user within 10m`;
+
+const CARD = `// Cardinality: one source touching many distinct accounts
+service:auth event:login_failed
+| stats distinct(user) as accounts by source_ip
+| where accounts >= 10 within 5m`;
+
+const faqs = [
+  {
+    q: 'What is a detection, structurally?',
+    a: 'A saved query over your events with a window, a threshold, a severity, and an attack-technique tag. When the query matches the condition within the window, the detection opens an incident — the same first-class incident a failed check or a metric breach would — and the analyst investigates it. There is no separate, weaker "detection" object; a detection is a query wired into the incident pipeline.',
+  },
+  {
+    q: 'Do I have to write detections from scratch?',
+    a: 'No. Eighty-seven prebuilt detections across fourteen packs cover the common attacker behaviours and operational failures — authentication abuse, exfiltration, secret exposure, web attacks, threat-intel matches, AI-agent threats, cloud, host, and reliability. Enable a pack with one action and it starts matching against your telemetry. Writing your own is for the gaps specific to your environment, not for the basics.',
+  },
+  {
+    q: 'What query language do detections use?',
+    a: 'The same readable language as everyday search — filter by field, match text, group, and aggregate — not a proprietary scripting dialect. The query you can type into the search bar is the query you can save as a detection. That means anyone who can investigate can author a rule, and there is no separate skill to certify in.',
+  },
+  {
+    q: 'Can detections catch multi-step attacks?',
+    a: 'Yes. Beyond simple thresholds, sequence rules catch an ordered pattern — many failed logins followed by a success for the same user — and cardinality rules catch breadth — one source touching ten distinct accounts, the signature of a spray or enumeration. These higher-order detections open incidents and get investigated exactly like single-event rules.',
+  },
+  {
+    q: 'How do I tune a noisy detection?',
+    a: 'Adjust its threshold, window, or filters to fit your environment, or scope it to exclude a known-benign source. Because the analyst investigates and can disposition benign matches automatically, a slightly noisy rule is far less costly here than in a traditional SIEM — but tightening the threshold or adding a filter is a one-line change when you want a cleaner signal. Tune toward the behaviour you care about, not toward silence.',
+  },
+  {
+    q: 'What does the attack-technique tag do?',
+    a: 'It maps the detection to a recognised adversary technique, so a match slots into how your team already thinks and reports, and so related detections can be reasoned about together. Most prebuilt detections carry one, and you can tag your own. It is metadata that makes detections legible to humans and to the analyst, not a gate on whether they fire.',
+  },
+  {
+    q: 'How does threat intelligence fit into detections?',
+    a: 'Public addresses in incoming events are checked against threat intelligence at ingest and flagged inline, and you can bring your own private indicators — addresses, domains, file fingerprints. A flagged indicator is both a one-line detection in its own right and a strong corroborating signal the analyst weighs when it investigates any related incident.',
+  },
+  {
+    q: 'Can I manage detections as code?',
+    a: 'Yes. Creating, updating, and tuning detections is part of the agent-programmable API, so you can keep your detection content in version control and provision it through a pipeline — or let an agent propose and adjust rules. Detection-as-code gives you review, history, and repeatability for your security logic. See the <a href="/agents">API for agents</a>.',
+  },
+];
+---
+<Base
+  title="Detection authoring & tuning — write and tune rules in a readable language | 24Observe"
+  description="Author detections as saved queries with a window, threshold, severity, and attack-technique tag — including sequence and cardinality rules — then tune them to your environment. Every match is investigated."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Detections</div>
+          <h1 class="h1">A detection is just a query <em>that opens an investigated incident.</em></h1>
+          <p class="lede">
+            You do not need a proprietary scripting dialect or a certification to write security content here. A detection
+            is a saved query over your events with a window, a threshold, a severity, and an attack-technique tag — and the
+            moment it matches, it opens an incident the analyst investigates. This guide covers the prebuilt packs, how to
+            author your own rules (including multi-step sequence and cardinality detections), and how to tune them to your
+            environment.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/siem" class="btn btn-ghost btn-lg">About the SIEM</a>
+          </div>
+          <div class="hero-meta">
+            <span>Readable <b>query language</b></span>
+            <span>Sequence &amp; <b>cardinality</b></span>
+            <span>Tunable <b>thresholds</b></span>
+            <span>Every match <b>investigated</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/detections/new</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> New detection</div>
+              <div class="con-meta">query · window · severity</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">login_failed &gt; 10 by user within 5m</div>
+                <div class="con-sub"><span>T1110 · brute-force</span><span class="tech">severity: high</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">on match → open incident</div>
+                <div class="con-sub"><span>same pipeline</span><span class="tech">analyst investigates</span></div>
+              </div>
+              <span class="sev sev-med">WIRED</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">tune: threshold, window, filters</div>
+                <div class="con-sub"><span>one-line change</span><span class="tech">to your env</span></div>
+              </div>
+              <span class="sev sev-med">TUNE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Write it like a search; it behaves like a detection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Start with the packs</div>
+        <h2 class="h2">Eighty-seven rules you can trust, then tune.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The fastest detection is the one you do not have to write. Before authoring anything, turn on the prebuilt packs
+          — they cover the behaviours nearly every environment needs watched, and they are starting points you can trust
+          and then shape, not a black box.
+        </p>
+        <p>
+          The library is organised into fourteen packs grouped by real attacker behaviour or operational failure:
+          authentication abuse, data exfiltration, secret exposure, web attacks, threat-intel matches, AI-agent and
+          tool-protocol threats, cloud control-plane tampering, Linux host security, infrastructure and network health,
+          and reliability. Most of the eighty-seven rules carry a recognised attack-technique mapping, so they slot
+          straight into how your team already reasons and reports. You enable a pack with a single action, and because the
+          rules are telemetry-gated, they stay quiet until the events they watch for actually arrive — so turning on broad
+          coverage does not mean turning on noise.
+        </p>
+        <p>
+          Crucially, nothing in a pack is immutable. Each rule's threshold, window, severity, and filters are yours to
+          adjust, so a prebuilt detection is a sensible default you tighten or relax to fit your environment rather than a
+          fixed appliance. The right workflow for most teams is: enable the packs, let them run, and tune the handful that
+          do not quite fit — which is far less work than authoring coverage from nothing, and gives you a known-good
+          baseline to learn the system on.
+        </p>
+        <p>
+          There is a second, less obvious reason to start from the packs: they are a teaching tool. Each prebuilt rule is
+          a worked example of how a real detection is expressed — what it filters on, what threshold and window it uses,
+          what severity and attack-technique tag it carries — so reading the packs is the fastest way to learn the
+          patterns you will reuse when you author your own. When you hit a gap specific to your environment, you are rarely
+          starting from a blank page; you are adapting a shape you have already seen work. That is why the recommended
+          path is always enable-then-author rather than author-from-scratch: the packs give you both coverage and a
+          curriculum, and the custom rules you eventually write are better for having studied them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Authoring</div>
+        <h2 class="h2">Write a detection like you write a search.</h2>
+        <p class="lede">
+          A detection is a query, a window, a threshold, a severity, and a tag. If you can search your logs, you can
+          author one — here are the three shapes you will use most.
+        </p>
+      </div>
+      <div class="prose">
+        <h3>A simple threshold rule</h3>
+        <p>
+          The most common detection counts something and fires when the count crosses a line within a window. This one
+          opens an incident when a single user accumulates more than ten failed logins in five minutes — a classic
+          brute-force signal:
+        </p>
+        <pre class="code-block">{RULE}</pre>
+        <p>
+          Save that with a severity and an attack-technique tag, and it is live. From the moment you save it, any match
+          opens an incident through the same pipeline and routing as every other detection, and the analyst investigates
+          it. The query is the same syntax you would type into Explore to hunt for the same thing by hand — you have just
+          made it continuous.
+        </p>
+        <h3>A sequence rule — order matters</h3>
+        <p>
+          Some attacks are invisible in any single event and obvious as a sequence. A wall of failed logins is suspicious;
+          a wall of failed logins <em>followed by a success</em> for the same user is an account takeover in progress.
+          Sequence rules express exactly that ordered pattern:
+        </p>
+        <pre class="code-block">{SEQ}</pre>
+        <p>
+          This fires only when the failures are followed by a success for the same user within the window — catching the
+          story that a simple count would miss, and not firing on failures alone.
+        </p>
+        <h3>A cardinality rule — breadth matters</h3>
+        <p>
+          Other attacks reveal themselves through breadth rather than volume. One source IP failing to log in against ten
+          distinct accounts is the fingerprint of a password spray or an enumeration sweep, even if no single account sees
+          many attempts. Cardinality rules count distinct values:
+        </p>
+        <pre class="code-block">{CARD}</pre>
+        <p>
+          Between thresholds, sequences, and cardinality, you can express the large majority of detection logic teams
+          actually need — and all three open investigated incidents in exactly the same way.
+        </p>
+        <h3>Enrichment makes a rule read like a sentence</h3>
+        <p>
+          Detections become much sharper when they can reference context, not just raw event fields. Source addresses are
+          resolved to geography and network owner inline, your own directory of identities and assets stamps risk and
+          criticality onto matching events, and threat intelligence flags known-bad indicators as they arrive. That means
+          a rule can express something genuinely meaningful in one readable line — "a failure on a critical asset, from a
+          high-risk source, outside business hours" — instead of a join across three separate tools. The enrichment is
+          applied as events land, so it is available to every detection without you wiring it up.
+        </p>
+        <p>
+          A practical consequence is that the most valuable detections are often not the most complex. A rule that
+          combines a modest threshold with a sharp piece of context — a single failed privileged action from a source the
+          threat intel has already flagged — is both quiet and high-signal, precisely because the context does the
+          discriminating work that a higher count would otherwise have to. When you author, reach for enrichment before
+          you reach for cleverness; a well-scoped simple rule usually beats an elaborate one.
+        </p>
+        <h3>What happens the moment a rule matches</h3>
+        <p>
+          It is worth being concrete about the pipeline a detection feeds, because it is what separates authoring here from
+          authoring in a tool that only produces alerts. The instant a rule matches, it opens a first-class incident
+          carrying the rule's severity and attack-technique tag. That incident is wired to the identities, hosts, and
+          assets it implicates, so the blast radius is attached from the first second. The analyst begins investigating
+          immediately — corroborating the signal, checking the context, and returning a verdict with citations. If the
+          match shares a root cause with other open incidents, it is grouped into a single case rather than paging
+          separately. And the whole thing routes through your on-call and alert channels by severity.
+        </p>
+        <p>
+          So when you write a detection, you are not just defining a condition that produces a notification — you are
+          adding a new way for the platform to open, enrich, investigate, group, and route a real incident, end to end.
+          That is why authoring is worth doing well, and why a one-line query can carry so much weight: the line is small,
+          but the machinery it triggers is the entire incident lifecycle.
+        </p>
+        <p>
+          A practical implication is that you should think about severity as carefully as you think about the query. The
+          severity you assign decides how the resulting incident is routed — whether it rings a phone or posts quietly to a
+          channel — so a perfectly-tuned detection with a careless severity either wakes people for nothing or buries a
+          real signal in a low-priority queue. Match the severity to the genuine stakes of what the rule detects, and
+          revisit it if the analyst keeps dispositioning the rule's incidents as more or less serious than you assumed. The
+          query decides what fires; the severity decides who hears about it and how loudly, and both deserve thought.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Tuning</div>
+        <h2 class="h2">Tune toward the behaviour, not toward silence.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>The usual SIEM trap, avoided</h3>
+          <p>
+            In a traditional SIEM, a noisy rule is a tax — every false positive costs an analyst twenty minutes, so teams
+            tune detections down toward silence and quietly lose coverage. Here that incentive is far weaker, because the
+            analyst investigates and can disposition benign matches automatically, so a slightly noisy rule costs seconds,
+            not twenty minutes. That means you can tune for accuracy rather than for quiet — keeping a sensitive rule on
+            and letting the investigation absorb the occasional benign hit, instead of blinding yourself to stay sane.
+          </p>
+          <h3>The knobs you have</h3>
+          <p>
+            When you do want a cleaner signal, four adjustments cover almost everything: raise or lower the
+            <b>threshold</b> to match your normal volume; widen or narrow the <b>window</b> to fit the timescale of the
+            behaviour; add a <b>filter</b> to scope the rule to the services or sources you care about; and exclude a
+            known-benign source that legitimately trips the pattern. Each is a one-line change to the saved query, takes
+            effect immediately, and is fully reversible.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Use the analyst’s verdicts as feedback</h3>
+          <p>
+            The best tuning signal is the analyst's own dispositions. If a detection keeps firing and the analyst keeps
+            closing the incidents as benign with a consistent reason, that is a precise hint about what to filter or where
+            to raise the threshold — the system is telling you which part of the rule is too broad. Reviewing a rule's
+            recent incidents and their verdicts turns tuning from guesswork into a data-driven adjustment.
+          </p>
+          <h3>Corrections that teach</h3>
+          <p>
+            When you correct an analyst verdict — confirm it, downgrade it, annotate it — that correction feeds future
+            investigations, so the system gets better at reading your environment over time. Tuning the detections and
+            correcting the verdicts are two halves of the same loop: one shapes what fires, the other shapes how what
+            fires is judged, and together they make your coverage measurably more accurate the longer you run it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Good practice</div>
+        <h2 class="h2">A workflow that scales.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Enable, then author</div><div class="spec-val">Turn on the packs first for a trusted baseline; <b>write custom rules only for the gaps</b> specific to your environment.</div></div>
+        <div class="spec-row"><div class="spec-key">Test as a search</div><div class="spec-val">Run a detection's query in Explore first to see what it would match <b>before saving it as a rule</b> — same syntax, instant feedback.</div></div>
+        <div class="spec-row"><div class="spec-key">Tag for legibility</div><div class="spec-val">Give every rule a <b>severity and an attack-technique tag</b>, so matches slot into how your team reports and the analyst reasons.</div></div>
+        <div class="spec-row"><div class="spec-key">Tune from verdicts</div><div class="spec-val">Use the analyst's <b>dispositions on recent matches</b> to decide what to filter or where to move a threshold.</div></div>
+        <div class="spec-row"><div class="spec-key">Keep it as code</div><div class="spec-val">Manage detections through the API so they live in <b>version control</b> with review and history. <a href="/agents">API →</a></div></div>
+        <div class="spec-row"><div class="spec-key">Favour sensitivity</div><div class="spec-val">Because investigation is automatic, prefer <b>broad coverage</b> and let the analyst absorb benign hits, rather than tuning to silence.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Detection authoring &amp; tuning — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Write security content like you write a search.</h2>
+      <p class="final-cta-sub">
+        Turn on the packs, author the gaps in a readable query language, tune from the analyst's verdicts — and let every
+        match open an investigated incident.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,303 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Faq from '../../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Why would I move from Pingdom to 24Observe?',
+    a: 'Usually because you have outgrown a pure uptime checker. Pingdom is good at telling you a site is down; what it cannot do is tell you why, because it does not hold your logs, metrics, or traces. If you find yourself bouncing from an uptime alert into separate tools to investigate every incident, 24Observe collapses that into one platform — uptime checks that open incidents next to the logs that explain them, with an analyst that investigates.',
+  },
+  {
+    q: 'Is the uptime monitoring itself as good?',
+    a: 'Yes, and broader. You get the full synthetic range — HTTP, TCP, TLS-expiry, ping, content/keyword, and cron-heartbeat checks — from multiple vantage points. The notable upgrade is content checks: confirming the page actually contains what it should, so a 200 response serving a broken or placeholder page is caught, not missed. That class of silent outage is exactly what a status-code-only checker sails past.',
+  },
+  {
+    q: 'How do I recreate my Pingdom checks?',
+    a: 'Recreate each check as a 24Observe monitor — the same target and interval, with the check type that fits (HTTP, TCP, TLS, content, etc.). It is a quick, mechanical step, and you can do it while Pingdom keeps running so you lose no coverage during the move. Start with your most important endpoints, confirm they report correctly, and widen from there.',
+  },
+  {
+    q: 'What do I gain beyond uptime?',
+    a: 'A great deal, on the same platform: log management, metrics, a real SIEM with detections, on-call and escalation, a context graph, status pages, and an AI analyst that investigates every incident. The point is that a failed check stops being a dead-end alert and becomes an incident next to the evidence that explains it — so you go from "it is down" to "it is down because this" without changing tools.',
+  },
+  {
+    q: 'Does a failed check get investigated here?',
+    a: 'Yes. A failed monitor opens a first-class incident, routes through on-call, and the analyst can investigate the cause by correlating the failure with your logs, metrics, and recent changes. Where Pingdom hands you a red status and stops, 24Observe hands you a red status with the beginning of an explanation already attached. That is the core difference.',
+  },
+  {
+    q: 'Can I keep my customers informed like a status page?',
+    a: 'Yes — status pages are built in. Group your monitors into components, let customers subscribe, and have incident updates publish automatically from the incidents your team is working, so the page stays accurate without anyone updating it by hand during an outage. If you were pairing Pingdom with a separate status-page tool, that consolidates here too.',
+  },
+  {
+    q: 'Will it cost more than a simple uptime tool?',
+    a: 'There is a genuinely usable free tier with no card, and the plans are flat and predictable. You are getting far more than uptime — logs, security, on-call, status, and investigation — on one consolidated bill, which for most teams replaces several separate tools and their separate costs. See pricing for the current plans.',
+  },
+  {
+    q: 'Is this overkill if I only want uptime?',
+    a: 'If your needs truly never go beyond "is it up," a dedicated uptime checker is perfectly reasonable, and we will say so. But most teams that started with pure uptime eventually need to know why something broke, want security coverage, or grow into on-call — and with 24Observe those are already there when you need them, not a future migration. You can use just the uptime monitoring today and grow into the rest.',
+  },
+  {
+    q: 'Will I lose my historical uptime data?',
+    a: 'Your historical data stays in Pingdom for as long as you keep the account, so nothing is lost by starting fresh here — and because you run both in parallel during the move, there is no gap in coverage between the old history and the new. Most teams treat the migration as a clean start for uptime data while keeping the old account read-only for a while as a reference, then close it once they are settled. Since uptime data is simple and stateless, this is far less fraught than migrating, say, years of logs would be.',
+  },
+];
+---
+<Base
+  title="Migrate from Pingdom to 24Observe — when uptime alone isn’t enough | 24Observe"
+  description="Move from a pure uptime checker to a platform: recreate your checks (with content checks that catch silent outages), and gain logs, a SIEM, on-call, status pages, and an analyst that investigates."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Migrate from Pingdom</div>
+          <h1 class="h1">Keep the uptime checks. <em>Gain the answer to “why.”</em></h1>
+          <p class="lede">
+            A pure uptime checker like Pingdom is great at telling you a site is down and silent on why — because it does
+            not hold your logs, metrics, or traces. If every outage sends you bouncing into other tools to investigate,
+            you have outgrown it. This guide recreates your checks in 24Observe — with content checks that catch the
+            silent outages a status code misses — and lands every failure as an incident next to the evidence that
+            explains it.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/uptime" class="btn btn-ghost btn-lg">About uptime monitoring</a>
+          </div>
+          <div class="hero-meta">
+            <span>Full <b>synthetic range</b></span>
+            <span>Content checks <b>catch silent outages</b></span>
+            <span>Failure → <b>investigated incident</b></span>
+            <span>Grow into <b>the rest</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> migration · from pingdom</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Checks recreated</div>
+              <div class="con-meta">+ the platform</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">shop.example.com — content check</div>
+                <div class="con-sub"><span>“Order placed” missing</span><span class="tech">silent outage caught</span></div>
+              </div>
+              <span class="sev sev-crit">DOWN</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">failure → incident next to the logs</div>
+                <div class="con-sub"><span>analyst investigates</span><span class="tech">why, not just that</span></div>
+              </div>
+              <span class="sev sev-high">RCA</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">status page auto-updates · subscribers told</div>
+                <div class="con-sub"><span>built in</span><span class="tech">no extra tool</span></div>
+              </div>
+              <span class="sev sev-med">COMMS</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Uptime, plus everything you used to switch tools for</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Why move</div>
+        <h2 class="h2">The moment a pure uptime tool stops being enough.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          There is a predictable point in a team's growth where a standalone uptime checker quietly becomes a liability
+          rather than a convenience. It is the moment you realise that knowing something is down is the easy half, and the
+          half you are missing — knowing why — lives somewhere your uptime tool cannot see.
+        </p>
+        <p>
+          A pure uptime checker is, by design, an outside observer. It pings your endpoints from afar and reports up or
+          down, which is genuinely useful — but it holds none of your telemetry. So the instant a check goes red, your
+          uptime tool's job is over, and yours begins: you leave it, open your logging tool, your metrics tool, your
+          tracing tool, and start the investigation from cold, during the worst possible minutes to be hopping between
+          products. The alert told you to start running; it could not run a single step with you.
+        </p>
+        <p>
+          There is a second, sneakier limitation: the outage that is not even red. A checker that only verifies a status
+          code will happily report a perfectly healthy site that is, in fact, serving an error page or a broken checkout —
+          because the server answered, and a status code is all it looked at. That silent failure runs until a customer
+          complains, and a tool watching only the response code will never catch it.
+        </p>
+        <p>
+          24Observe fixes both without taking away what you liked about Pingdom. The uptime monitoring is at least as good
+          and broader — including content checks that verify the page is actually correct, not merely present — and a
+          failed check no longer dead-ends. It opens an incident in the same platform that holds your logs, metrics, and
+          traces, so the explanation is one click away and the analyst can begin investigating the cause. You keep the
+          simplicity of "tell me when it's down" and gain the thing you were missing: "and here's why." The rest of this
+          guide is how to make the move, which is refreshingly simple because uptime is the easy part to migrate.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Recreate your checks — and upgrade them.</h2>
+        <p class="lede">
+          A quick, mechanical step you can do while Pingdom keeps running, so you never lose coverage during the move.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">HTTP / HTTPS</div><p>Recreate your standard endpoint checks — status code, response time, redirects — exactly as you have them in Pingdom, same targets and intervals.</p></div>
+        <div class="why-card"><div class="why-num">Content checks (the upgrade)</div><p>For anything that matters, verify the page <em>contains what it should</em> — "Order placed," a product name — so a 200 serving the wrong page is caught, not missed.</p></div>
+        <div class="why-card"><div class="why-num">TCP, ping, TLS</div><p>Port reachability, ICMP, and certificate expiry for the services and certs Pingdom may or may not have covered — all in one place.</p></div>
+        <div class="why-card"><div class="why-num">Cron heartbeats</div><p>Watch the scheduled jobs a pure uptime tool ignores — a backup or sync that goes silent opens an incident, catching the failure of something that should have happened.</p></div>
+      </div>
+      <div class="prose" style="margin-top: 32px;">
+        <p>
+          Because you can run both tools at once, recreate your checks at your own pace and confirm each reports correctly
+          here before you rely on it — you lose no coverage in the meantime. Start with your most important endpoints, and
+          take the opportunity to upgrade the ones that matter from status checks to content checks. That single change
+          closes the silent-outage gap that a status-code-only tool leaves open, and it is often the first thing teams
+          notice they were missing.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Land failures next to the evidence.</h2>
+        <p class="lede">
+          This is the payoff for moving to a platform: a red check stops being a dead end and becomes the start of an
+          answer.
+        </p>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Send your logs too</h3>
+          <p>
+            To get the "why," give the platform the telemetry that explains your failures. Point your application and
+            server logs at 24Observe — over OpenTelemetry, or with the one-line Sensor for hosts — so that when a check
+            fails, the logs from the same moment are right there on the same timeline. This is the step that turns an
+            uptime checker into an observability platform: the alarm and the evidence finally live in the same place. You
+            do not have to do it all at once; start with the services behind your most critical checks.
+          </p>
+          <h3>A failure becomes an incident</h3>
+          <p>
+            With logs flowing, a failed check opens a first-class incident, routes through on-call, and the
+            <a href="/product/ai-analyst">analyst</a> can investigate it — correlating the failure with your logs and
+            recent changes to point at the cause. Where Pingdom handed you a red status and stopped, you now get a red
+            status with the beginning of an explanation attached, in the same view. The half you were missing is no longer
+            a tool away.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Tell your customers, automatically</h3>
+          <p>
+            If you paired Pingdom with a separate status-page tool, that consolidates here. Group your monitors into
+            components on a <a href="/product/status-pages">status page</a>, let customers subscribe, and have incident
+            updates publish automatically from the incidents your team is working — so the page stays accurate during an
+            outage without anyone updating it by hand. One fewer tool, and a more reliable result.
+          </p>
+          <h3>Grow into the rest when you need it</h3>
+          <p>
+            You do not have to adopt everything at once. Use the uptime monitoring today, add logs to get the "why," and
+            turn on security detections, metrics, on-call, and the context graph as you grow — they are already here, so
+            each is a switch rather than a migration. The whole point of moving to a platform is that you never have to
+            re-platform again as your needs expand.
+          </p>
+          <h3>A sensible order to grow in</h3>
+          <p>
+            Because you do not have to adopt everything at once, the question becomes what to turn on and when. A sensible
+            progression for a team coming from pure uptime is: recreate your checks and upgrade the important ones to
+            content checks; add your application and host logs so failures land next to their explanation; wire an alert
+            channel and, when your team is large enough to rotate, on-call; turn on the detection packs for security
+            coverage; and publish a status page if you communicate outages to customers. Each step is independently
+            valuable and independently optional, so you move at the pace your needs actually demand rather than on anyone's
+            schedule but your own.
+          </p>
+          <p>
+            The reason this matters is that it inverts the usual painful pattern. With separate point tools, every new
+            need is a procurement, an integration, and a new bill; growth is friction. Here, every new need is a feature
+            you switch on in a platform you already run, on a bill you already have. The team that starts with uptime today
+            and finds itself needing a SIEM in a year does not face a migration — it faces a toggle. That is the deeper
+            reason to move beyond a single-purpose checker even if uptime is all you need this month: you are buying out of
+            the re-platforming treadmill, not just adding the answer to "why."
+          </p>
+          <h3>Keep both running until you’re sure</h3>
+          <p>
+            As with any migration, the safe approach is to run 24Observe and Pingdom side by side at first. Recreate your
+            checks here, let them report for a week or two alongside Pingdom, and confirm they catch what Pingdom catches —
+            and, with content checks, a few things it does not. Because uptime monitoring is simple and stateless, this
+            parallel period is low-effort and completely reversible: you are not migrating data or rebuilding integrations,
+            just pointing a second set of checks at the same endpoints and comparing. Only when you are satisfied the
+            coverage is at least as good do you turn Pingdom off.
+          </p>
+          <p>
+            The thing to watch for during that period is the difference a platform makes on a real incident, not on a
+            quiet day. Wait for something to actually break and notice the contrast: with Pingdom you get the red status
+            and then go hunting; with 24Observe the failure is an incident sitting next to the logs that explain it, with
+            the analyst already investigating. That moment — the first time an outage explains itself instead of just
+            announcing itself — is usually when teams stop thinking of the move as "replacing Pingdom" and start thinking
+            of it as finally having the half of incident response they were always missing. Once you have felt it, turning
+            off the old checker is an easy call.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What changes</div>
+        <h2 class="h2">From a checker to a platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A pure uptime checker</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">When a check fails</div><div>A red status; investigate elsewhere.</div><div class="cmp-us">An incident next to the logs that explain it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Wrong page, 200 status</div><div>Often missed.</div><div class="cmp-us">Content check catches it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Finding the cause</div><div>Separate tools, cold start.</div><div class="cmp-us">Same platform; the analyst investigates.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Scheduled jobs</div><div>Not covered.</div><div class="cmp-us">Cron heartbeats catch the silent job.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Telling customers</div><div>A separate status tool.</div><div class="cmp-us">Built-in status pages, auto-updated.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Growing up</div><div>Add and integrate more tools.</div><div class="cmp-us">Logs, SIEM, on-call already here.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Migrating from Pingdom — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Keep the uptime. Gain the “why.”</h2>
+      <p class="final-cta-sub">
+        Recreate your checks (and upgrade them to catch silent outages), send your logs, and land every failure as an
+        incident the analyst investigates — with status pages and on-call already built in.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/uptime" class="btn btn-ghost btn-lg">Uptime monitoring</a>
+      </div>
+    </div>
+  </section>
+</Base>

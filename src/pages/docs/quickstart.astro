@@ -1,0 +1,354 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const SEND_OTLP = `export OTEL_EXPORTER_OTLP_ENDPOINT="https://api.24observe.com/api/v1/otlp"
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer obs_<your_token>"`;
+
+const SEND_SENSOR = `curl -sSL https://api.24observe.com/install.sh | sudo bash -s -- --enroll-token=<TOKEN>`;
+
+const SEND_HTTP = `curl -X POST https://api.24observe.com/api/v1/logs \\
+  -H "Authorization: Bearer obs_<your_token>" \\
+  -H "Content-Type: application/json" \\
+  -d '[{"level":"info","service":"checkout","message":"order placed","order_id":"A1842"}]'`;
+
+const faqs = [
+  {
+    q: 'Do I need a credit card to start?',
+    a: 'No. The free tier needs no card and is genuinely usable — you can send real data, run searches, turn on detections, and see the analyst work. Create an organisation, mint a token, and send your first events; you will be looking at live data within a few minutes. Upgrade only when your volume or team outgrows the free plan.',
+  },
+  {
+    q: 'What is the fastest way to get data in?',
+    a: 'If your stack already emits OpenTelemetry, the fastest path is to point your existing exporter at our OTLP endpoint with two environment variables — no code change. If you want a server reporting, the one-line Linux Sensor ships logs and host metrics in under a minute. If you just want to prove the pipeline, a single curl to the logs endpoint lands an event you can search immediately.',
+  },
+  {
+    q: 'Where do I get a token?',
+    a: 'In the dashboard under Settings → API tokens. Create a token scoped to what you need — for sending telemetry, an ingest-capable token is enough; for managing monitors or detections from scripts, add the relevant write scopes. Least privilege is the right habit from the first token: give each token only the scopes its job requires.',
+  },
+  {
+    q: 'How soon will detections start working?',
+    a: 'As soon as relevant telemetry arrives. The detection packs are telemetry-gated, so they begin matching the moment the events they watch for show up — authentication logs light up the access packs, for example. You enable a pack with one action, and from then on any match opens an incident the analyst investigates. There is no waiting period or training phase.',
+  },
+  {
+    q: 'What should I set up first after data is flowing?',
+    a: 'A monitor on the thing you most need to stay up, a detection pack or two for security coverage, and an alert channel so you actually hear about incidents. That trio — know when it breaks, watch for threats, get notified — is the core loop. On-call, status pages, and the context graph are valuable next steps once the basics are flowing.',
+  },
+  {
+    q: 'Can I do all of this from the API instead of the dashboard?',
+    a: 'Yes. Every step here has an API equivalent, and the platform is designed to be driven by scripts and agents as readily as by humans. If you would rather provision monitors, detections, and alerts as code, see the API reference and the agent cookbook — you can encode your whole setup in a pipeline.',
+  },
+  {
+    q: 'I sent data but I don’t see it — what now?',
+    a: 'Check three things: the token is valid and has ingest scope, the endpoint is exactly the OTLP or logs URL shown here, and the payload is well-formed JSON. The logs endpoint returns a clear error code for malformed or oversized bodies. If events were accepted but are not visible, widen your search time range and confirm the service or level filter is not excluding them. Most first-time issues are a wrong token scope or a too-narrow search window.',
+  },
+];
+---
+<Base
+  title="Quickstart — your first ten minutes with 24Observe | 24Observe"
+  description="Get from sign-up to live data, a working monitor, security detections, and an investigated incident in about ten minutes. The fastest path through 24Observe, step by step."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Quickstart</div>
+          <h1 class="h1">Sign-up to an investigated incident, <em>in about ten minutes.</em></h1>
+          <p class="lede">
+            This is the fast path. By the end you will have live telemetry flowing, a search you can run, a monitor
+            watching something that matters, security detections turned on, and — if anything fires — an incident the AI
+            analyst has already investigated. No long onboarding, no professional services. Just the shortest route from
+            nothing to a platform that is genuinely watching your systems.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Create your account <span class="arr">→</span></a>
+            <a href="/docs" class="btn btn-ghost btn-lg">All docs</a>
+          </div>
+          <div class="hero-meta">
+            <span><b>1.</b> Send data</span>
+            <span><b>2.</b> Search it</span>
+            <span><b>3.</b> Monitor + detect</span>
+            <span><b>4.</b> Get the verdict</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/explore</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> First events landed</div>
+              <div class="con-meta">checkout · live</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">order placed · order_id=A1842</div>
+                <div class="con-sub"><span>service:checkout</span><span class="tech">just now</span></div>
+              </div>
+              <span class="sev sev-med">INFO</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">monitor: shop.example.com — up</div>
+                <div class="con-sub"><span>content check</span><span class="tech">60s interval</span></div>
+              </div>
+              <span class="sev sev-med">UP</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">detections enabled · 14 packs</div>
+                <div class="con-sub"><span>telemetry-gated</span><span class="tech">watching</span></div>
+              </div>
+              <span class="sev sev-med">ON</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Ten minutes from sign-up to a platform that’s watching</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Before you start</div>
+        <h2 class="h2">Two things, and then we move.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          You need an account and a token. That is the entire prerequisite list, and both take under a minute.
+        </p>
+        <p>
+          Create your organisation at the registration link — no credit card, and the free tier is real enough to do
+          everything in this guide. An organisation is your isolated tenant: your data, your team, your settings, walled
+          off from everyone else's. The first person in becomes the owner, which is the role that controls billing, team
+          membership, and the most sensitive settings; you can invite teammates and assign lighter roles later.
+        </p>
+        <p>
+          Then mint a token under <b>Settings → API tokens</b>. Tokens are how anything — an application, a script, an
+          agent, a curl command — authenticates to the platform, and they are scoped, so each one can do only what you
+          grant it. For this quickstart an ingest-capable token is all you need. Get into the habit now of giving every
+          token the narrowest scope that lets it do its job; it is the single most important security habit on the
+          platform and it costs nothing to start right. Copy the token somewhere safe when it is created — you will paste
+          it into the commands below.
+        </p>
+        <p>
+          With those two things in hand, the rest of this is just pointing telemetry at an endpoint and clicking a few
+          times. Let's go.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Send your first data.</h2>
+        <p class="lede">
+          Pick whichever path matches where you are. All three land data you can search within seconds; you do not need
+          more than one to continue.
+        </p>
+      </div>
+      <div class="prose">
+        <h3>Option A — you already emit OpenTelemetry</h3>
+        <p>
+          This is the fastest path and the one we recommend if it applies. If your applications or your OpenTelemetry
+          collector already export telemetry, you do not change a line of code — you change a destination. Set two
+          environment variables and restart the exporter:
+        </p>
+        <pre class="code-block">{SEND_OTLP}</pre>
+        <p>
+          Logs, metrics, and traces that were going elsewhere now also arrive here, attributed and searchable. If you run
+          the OpenTelemetry collector, this is a one-line change to a destination in its config, and the collector is the
+          supported bridge for gRPC exporters. Within a few seconds your first spans and logs appear in Explore.
+        </p>
+        <h3>Option B — you want a server reporting</h3>
+        <p>
+          To get a whole Linux host shipping its logs and metrics, generate an install command in the dashboard under
+          <b>Settings → Linux Hosts</b> and run the one-liner on the box as root:
+        </p>
+        <pre class="code-block">{SEND_SENSOR}</pre>
+        <p>
+          The Sensor installs from a signed package, self-enrolls with a per-host token, turns on edge redaction so secrets
+          never leave the machine, and starts shipping system logs and host metrics. In under a minute the host appears in
+          your fleet and its logs show up in Explore. This is the right path when the thing you want to observe is a
+          server rather than an instrumented application.
+        </p>
+        <h3>Option C — you just want to prove the pipeline</h3>
+        <p>
+          If you only want to confirm everything is wired correctly, a single HTTP request lands an event you can
+          immediately search:
+        </p>
+        <pre class="code-block">{SEND_HTTP}</pre>
+        <p>
+          The endpoint accepts a JSON array of events, normalises common fields, and returns quickly. Send that, and you
+          have one searchable log line — enough to do Step 2. Real sources (firewalls, cloud platforms, edge networks)
+          push to the same kind of endpoint, so proving it with one curl also proves the path your production sources will
+          take.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Search what you just sent.</h2>
+        <p class="lede">
+          Open Explore and confirm your data is really there — then learn the one skill that pays off everywhere on the
+          platform.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Open <b>Explore</b> (or <b>Logs</b>) in the dashboard. Your events should be there; if the view looks empty,
+          widen the time range, because a narrow default window is the most common reason new data appears to be missing.
+          Once you see your events, you have proven the whole ingest path end to end — which is the milestone that matters,
+          because everything else builds on data actually arriving.
+        </p>
+        <p>
+          Now try a filter. Search uses a readable query language you can pick up by example: filter by a field, match
+          text, narrow by level. Type the service name you sent, or filter to <em>level:error</em>, and watch the results
+          narrow. The important thing to internalise is that this same query language is used everywhere — the filter you
+          just wrote is the same syntax that will back a saved chart, an alert, and a detection rule. Learn it once here,
+          and the skill compounds across the rest of the platform.
+        </p>
+        <p>
+          If you want to watch events arrive in real time — useful when you are actively shipping a change — switch on
+          live tail, which follows a filtered stream as it happens using the same syntax. Between historical search and
+          live tail you can answer almost any "what is happening / what happened" question, and you now know how to do
+          both. That is Step 2 done.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3</div>
+        <h2 class="h2">Monitor something, and turn on detections.</h2>
+        <p class="lede">
+          Data you can search is useful; data that watches itself is the point. Two quick setups give you reliability and
+          security coverage.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Create a monitor</div><p>Under Monitors, add a check on something that must stay up — a URL, a port, a certificate. Use a content check, not just a status check, so a page that returns 200 but renders the wrong thing still trips. <a href="/product/uptime">Uptime →</a></p></div>
+        <div class="why-card"><div class="why-num">Enable detection packs</div><p>Under detections, turn on the packs relevant to your data. They are telemetry-gated, so they stay quiet until the events they watch for arrive, then begin matching automatically. <a href="/product/siem">SIEM →</a></p></div>
+        <div class="why-card"><div class="why-num">Add an alert channel</div><p>Wire up at least one channel — chat, email, SMS — so incidents actually reach you. Route by severity so an emergency rings a phone and routine signals go somewhere quiet. <a href="/product/alerting">Alerting →</a></p></div>
+        <div class="why-card"><div class="why-num">Set a metric threshold (optional)</div><p>If you sent metrics, add a threshold alert on the series that matters — CPU, latency, free disk — so a breach opens an incident, not just a chart nobody is watching. <a href="/product/metrics">Metrics →</a></p></div>
+      </div>
+      <div class="prose" style="margin-top: 32px;">
+        <p>
+          The reason this trio matters is that it closes the loop from signal to notification. A monitor tells you when
+          something breaks; a detection pack watches for threats and failures in your telemetry; an alert channel makes
+          sure a human hears about it. With those three in place you have gone from "a place my data sits" to "a platform
+          that is actively watching my systems and will tell me when something is wrong" — which is the whole reason to be
+          here. Everything beyond this is depth, not prerequisite.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 4</div>
+        <h2 class="h2">Let the analyst do the first hour for you.</h2>
+        <p class="lede">
+          This is the payoff, and it requires nothing extra from you. When something fires, the investigation is already
+          underway.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Here is what makes the platform different from a place that merely stores and alerts. When a monitor fails, a
+          metric breaches, or a detection matches, it opens a first-class incident — and the AI analyst immediately goes
+          to work on it. It gathers the related events, traces what the incident touches, corroborates against threat
+          intelligence where relevant, and attaches a root-cause verdict with the supporting evidence cited. You do not
+          have to start this; it starts itself.
+        </p>
+        <p>
+          So the first time an incident opens in your new setup, open it and notice what is already there: not a bare
+          alert and a link, but a conclusion you can read and verify. The recommended next action — block a source, roll
+          back a deploy, force a password reset — is proposed for you to approve, never executed automatically, so you
+          stay in control while the laborious gathering is done for you. This is the moment the ten minutes pays off: you
+          went from sign-up to being handed investigated incidents, not raw alerts.
+        </p>
+        <p>
+          From here, the natural next steps are to invite your team and set up on-call so incidents reach the right person,
+          publish a status page so customers stay informed, and let the context graph build a live map of what depends on
+          what. None of those are required to get value — you already have it — but each one deepens the platform's
+          usefulness, and each is a few clicks away now that the foundation is flowing. When you are ready, the
+          <a href="/docs/guide">user guide</a> walks through the day-to-day, and the <a href="/docs/admin">admin guide</a>
+          covers roles, tokens, and governance for a growing team.
+        </p>
+        <h3>What you’ve actually accomplished</h3>
+        <p>
+          It is worth pausing on how much ground those ten minutes covered, because it is more than it feels like in the
+          moment. You stood up an isolated tenant, established authenticated ingest over open standards, proved the
+          pipeline end to end, learned the one query language that runs through the whole platform, put a check on
+          something that matters, turned on real security coverage, wired a notification path, and saw an incident arrive
+          already investigated. In most stacks, each of those is a separate tool, a separate integration, and a separate
+          afternoon. Here they are one short setup, because the platform was built to be adopted in exactly this order.
+        </p>
+        <p>
+          That ordering is deliberate, and it is the same order we would suggest you keep growing in. Get one slice
+          genuinely trustworthy — the service that matters most, its logs, a monitor, a detection pack or two — before you
+          widen, because a handful of signals you believe is worth more than a hundred you have learned to ignore. Then add
+          the next slice the same way, and let coverage accumulate as your confidence does. The platform does not punish
+          incremental adoption; it rewards it, which is why starting small and widening deliberately beats trying to switch
+          everything on at once.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> If something’s off</div>
+        <h2 class="h2">Quick troubleshooting.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">No data appears</div><div class="spec-val">Widen the <b>time range</b> first — a narrow window hides recent events. Then confirm the token has ingest scope and the endpoint URL is exact.</div></div>
+        <div class="spec-row"><div class="spec-key">401 / auth error</div><div class="spec-val">The token is wrong, expired, or lacks scope. Mint a fresh one under <b>Settings → API tokens</b> and check the <code>Authorization: Bearer</code> header.</div></div>
+        <div class="spec-row"><div class="spec-key">Body rejected</div><div class="spec-val">The logs endpoint returns a clear error for <b>malformed or oversized JSON</b>. Validate the payload is a well-formed array and retry.</div></div>
+        <div class="spec-row"><div class="spec-key">Sensor not reporting</div><div class="spec-val">Re-run the install command (it rotates the host token), and check the host has outbound network to the API endpoint.</div></div>
+        <div class="spec-row"><div class="spec-key">Detections quiet</div><div class="spec-val">That is usually correct — they are telemetry-gated and stay silent until matching events arrive. Send relevant data to see them fire.</div></div>
+        <div class="spec-row"><div class="spec-key">No alert received</div><div class="spec-val">Confirm an <b>alert channel</b> is configured and the routing covers the incident's severity. A channel with no route delivers nothing.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Quickstart — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Ten minutes. Then it’s watching for you.</h2>
+      <p class="final-cta-sub">
+        Create your account, send your first events, turn on a monitor and the detection packs, and let the analyst
+        investigate whatever fires. The fastest path from nothing to genuinely covered.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/guide" class="btn btn-ghost btn-lg">Read the user guide</a>
+      </div>
+    </div>
+  </section>
+</Base>

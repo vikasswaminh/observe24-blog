@@ -1,0 +1,144 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Customer-facing changelog. Internal commits live in the repo. Here we
+// summarise what users notice — new check types, alert channels, dashboard
+// improvements, security promises kept.
+const RELEASES = [
+  {
+    version: 'June 2026',
+    tag: 'LATEST',
+    highlights: [
+      'Operational Context Layer: a per-tenant graph built read-only from your telemetry. GET /api/v1/context/incident/{key}/summary returns an incident\'s blast-radius — the services it impacts, who owns them, and what changed just before — every answer deep-linked to the trace, log, incident, or audit record that proves it. Walk any entity\'s neighborhood (/api/v1/context/entity/{id}/neighborhood), and an "Operational context" card now appears on every incident. Exposed as MCP tools so your agent can investigate too. New context:read scope.',
+      'AI agent observability: send OpenTelemetry GenAI spans to /api/v1/otlp and the new AI Agents dashboard shows token usage, estimated cost, latency, and error rate by model, agent, and operation — exact costs when your SDK reports them, your negotiated rates when you set them, never a silent $0.',
+      'AI Agent Security: a "Security signals" view flags prompt-injection / jailbreak markers, oversized outputs, sensitive tool calls (shell / database / payments), and runaway tool loops in your agent traffic — the same signals the AI Agent Security and MCP Traffic detection packs alert on.',
+      'OTLP metrics + traces receiver: native OTLP/HTTP ingest for metrics and traces alongside logs. Query metric names + bucketed time series. New metrics:read / metrics:write scopes.',
+      'SIEM: multi-event correlation rules (sequence + cardinality), threat-intel IOC matching at ingest, GeoIP + identity + asset enrichment, security cases to group incidents into one investigation, and a forward-cursor NDJSON audit-export endpoint for Splunk / Datadog / your own SIEM.',
+      'PAT scopes now number 24: added context:read, metrics:read / metrics:write, on-call:read / write, escalations:read / write, saved-searches:read / write, status-pages:read / write, incidents:read, and maintenance:read — plus the original wildcard *.',
+      'New /llm-observability landing page and a /docs/context guide for the operational graph.',
+    ],
+  },
+  {
+    version: 'May 2026 (Phase 2 — Agent API)',
+    highlights: [
+      'Event webhook subscriptions: register a URL with /api/v1/webhook-subscriptions and receive signed POSTs when incident.opened / incident.acknowledged / incident.resolved / monitor.status_changed / log_alert.fired. HMAC-SHA256 with your org\'s webhook secret, 5-attempt exponential retry, auto-disable after 10 consecutive failures, per-subscription delivery log. Replaces polling.',
+      'Pre-converted LLM tool definitions: /openapi/openai-tools.json, /openapi/anthropic-tools.json, /openapi/langchain-tools.json, /openapi/tools-index.json. Drop straight into your agent framework — no schema wrangling.',
+      'Per-PAT rate-limit headers on every authenticated response: X-PAT-Mut-Limit, X-PAT-Mut-Remaining, X-PAT-Mut-Reset (unix timestamp), plus X-PAT-LogBytes-{Limit,Used,Remaining,Reset} on /logs/ingest. Your agent reads its budget without burning a mutation.',
+      'PAT scopes: 14 narrow scopes (monitors:read, monitors:write, webhooks:read, webhooks:write, logs:write, incidents:write, audit:read, secrets:read, and others) plus the original wildcard *. Per-PAT dailyMutationLimit and dailyLogBytesLimit bound the blast radius of a leaked token to a day.',
+      'Idempotency-Key body-mismatch detection: same key + different body returns 409 IDEMPOTENCY_KEY_REPLAY_CONFLICT. A buggy retry loop surfaces immediately instead of silently replaying a stale response.',
+      'New error codes that agents can branch on: MONITOR_TARGET_UNSAFE (write-time SSRF guard on monitor URLs — was check-time only before), WEBHOOK_URL_UNSAFE (SSRF on webhook URLs), WEBHOOK_URL_UNRESOLVABLE (DNS failure, distinct from SSRF), IDEMPOTENCY_KEY_REPLAY_CONFLICT.',
+      'New "Event webhooks" section in the Settings page: create / disable / delete subscriptions, view the last 50 delivery attempts inline with HTTP code, error message, and the bytes we sent.',
+      'New /docs/api-for-agents/ page: the six concrete things that make this API safe to hand to a Claude or GPT tool call.',
+    ],
+  },
+  {
+    version: 'May 2026 (Logs v1)',
+    highlights: [
+      'Logs v1: ship structured events with a PAT, search by time + substring + service + level, live-tail in the dashboard, log-based alerts that fan out through the existing alert channels (email / webhook / Slack / Discord / Teams / Telegram).',
+      'Plan tiers now include monthly log volume caps (Free 1 GB, Startup 10 GB, Pro 100 GB).',
+      'New /docs/logs marketing page with curl, TypeScript, Python, and Vector ingest examples.',
+    ],
+  },
+  {
+    version: 'May 2026 (early)',
+    highlights: [
+      'Sign in with Google or GitHub (OIDC). Auto-links to existing accounts by verified email; password remains optional.',
+      'Cloudflare Turnstile on /register and /forgot-password — invisible bot challenge, no friction for humans.',
+      'DNS monitor type: resolve A/AAAA/MX/TXT/NS/CNAME records and assert the value. Catches DNS failures before HTTP does.',
+      'SMTP monitor type: TCP connect and verify the 220 banner. Useful for outbound mail servers.',
+      'Status page v2: 90-day daily uptime bars, per-component 24h/30d/90d stats, hourly response-time sparklines.',
+      'Status-page email subscribers: visitors can subscribe; we email them on every incident open / update / resolve.',
+      'Incident severity (critical / major / minor / none) and postmortems with public timeline.',
+      'Encrypted alert URLs at rest. Webhook URLs, Slack/Discord/Teams, Telegram bot tokens — all encrypted; a DB dump no longer yields live credentials.',
+      'Encryption key rotation: rotate ENCRYPTION_KEY in production without bricking the database. CLI re-encrypts existing rows in place.',
+      'Tier-D agent-friendly API: PAT-attributed audit log, Idempotency-Key support, machine-readable validation errors, response schemas in the OpenAPI spec for typed clients.',
+      'Plan tier bumps: free → 25 monitors, startup → 100, pro → 500.',
+    ],
+  },
+  {
+    version: 'Apr 2026',
+    highlights: [
+      'Heartbeat / cron-job monitor type: your job pings us when it succeeds. Auto-resolves on next heartbeat.',
+      'Status page custom branding (logo + accent color + custom domain).',
+      'Microsoft Teams alert channel.',
+      'Personal access tokens for scripts and CI.',
+      'Audit log CSV export.',
+    ],
+  },
+  {
+    version: 'Mar 2026',
+    highlights: [
+      'Slack, Discord, Telegram alert channels.',
+      'Per-channel test alert (preview your message before saving).',
+      'Acknowledge incidents (stop paging without resolving).',
+      'Manual incident updates with public timeline.',
+    ],
+  },
+  {
+    version: 'Feb 2026',
+    highlights: [
+      'SLO targets per monitor (set 99.9% / 30 days, get green/red badge + breach alerts).',
+      '24-hour status timeline + response-time sparkline on the monitors list.',
+      'Pause / resume monitors without deleting them.',
+      'Bulk operations (pause / resume / delete selected).',
+      'Search + filter + sort on the monitors list.',
+    ],
+  },
+  {
+    version: 'Jan 2026',
+    highlights: [
+      'Public status pages with components.',
+      'Maintenance windows that pause alerts but keep checking.',
+      'Signed webhooks with one-click secret rotation.',
+      'Plan tiers and usage tracking.',
+    ],
+  },
+];
+---
+<Base
+  title="Blog — 24Observe"
+  activeNav="changelog"
+  description="Engineering blog & release notes for 24Observe."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Blog</div>
+      <h1 class="h1">Engineering Blog &amp; Releases</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Every release, architecture breakdown, and engineering post that changes what you see, configure, or rely on. Internal
+        improvements (refactors, ops, dependencies) live in
+        <a href="https://github.com/vikasswaminh/observe24/commits/main" target="_blank" rel="noopener">the repo</a>.
+      </p>
+    </div>
+  </section>
+
+  {RELEASES.map((r) => (
+    <section class="section" id={r.version.replace(/\s+/g, '-')}>
+      <div class="container">
+        <div class="eyebrow">
+          <span class="bar"></span>
+          <b style="color: var(--ink);">{r.version}</b>
+          {r.tag && <span class="price-pop mono" style="margin-left: 12px;">{r.tag}</span>}
+        </div>
+        <div class="why-grid" style="grid-template-columns: 1fr; margin-top: 24px;">
+          {r.highlights.map((h) => (
+            <div class="why-card" style="padding: 16px 20px;">
+              <div class="check-body">{h}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Want every change?</h2>
+      <p class="final-cta-sub">The full commit history is public.</p>
+      <div class="final-cta-buttons">
+        <a href="https://github.com/vikasswaminh/observe24/commits/main" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Browse commits ↗</a>
+      </div>
+    </div>
+  </section>
+</Base>

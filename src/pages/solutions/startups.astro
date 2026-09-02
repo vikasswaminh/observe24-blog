@@ -1,0 +1,321 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'We’re a small team. Is this going to be too much platform for us?',
+    a: 'No — it is built to start small and reward you for staying simple. You begin with the one thing that hurts most, point your telemetry at one endpoint, and turn on more as you need it. There is no enterprise onboarding, no professional-services engagement, and no six-tool integration project. A two-person team can have meaningful monitoring and security running the same afternoon they sign up.',
+  },
+  {
+    q: 'How does it help when we can’t hire a SOC or an SRE on-call rotation?',
+    a: 'By doing the work those roles would do. The AI analyst investigates every incident — reliability and security — and returns a root-cause verdict with evidence, which is the closest thing to hiring a 24/7 investigation function that a small team can buy. You get the output of a senior responder doing the first hour of every incident, without the headcount you cannot yet afford. See <a href="/product/ai-analyst">the analyst</a>.',
+  },
+  {
+    q: 'What does it actually cost?',
+    a: 'There is a genuinely usable free tier with no credit card, and paid plans are flat and predictable rather than the open-ended, surprise-on-the-invoice pricing that makes observability scary for small teams. One platform on one volume allowance replaces several separate bills. See <a href="/pricing">pricing</a> for the current plans — the headline is that it is priced to be affordable for a small team, not gated behind a sales call.',
+  },
+  {
+    q: 'Will we outgrow it?',
+    a: 'The opposite — it is designed so you grow into it, not out of it. The capabilities a larger company needs (a real SIEM, on-call and escalation, a context graph, an agent-programmable API, self-hosting) are already here, so adding them later is flipping a switch rather than migrating to a new vendor. You start at the edge of a full platform, which means your first tool does not become a rip-and-replace in eighteen months.',
+  },
+  {
+    q: 'We don’t have a security team. Can we still get real security?',
+    a: 'Yes, and that is much of the point. Eighty-seven detections across fourteen packs are telemetry-gated and largely self-seeding, so meaningful coverage turns on without a security engineer to author rules, and every detection that fires is investigated by the analyst. A small team gets a SIEM that works the alerts for them — which is the only kind of security a team without a SOC can realistically run. See <a href="/product/siem">the SIEM</a>.',
+  },
+  {
+    q: 'How much instrumentation work is it?',
+    a: 'Very little. Applications send over OpenTelemetry, and any server gets a one-line Sensor — no proprietary agent to roll out, no schema to define. If your stack already emits OpenTelemetry, you are minutes from a working dashboard. The whole design assumes you do not have time for a big integration project, because you do not.',
+  },
+  {
+    q: 'Can we manage it as code from day one?',
+    a: 'Yes. Monitors, detections, alerts, and on-call are all in the API, so even a small team can keep its observability in version control and provision coverage for a new service in the same pull request that ships it. Good habits that usually only big teams can afford are available from the start. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'Is it open source?',
+    a: 'Yes, and self-hostable with an identical contract — which is a real reassurance for a small team worried about vendor lock-in or a future price shock. You can run it yourself if you ever need to, and your data stays yours. The combination of a generous free tier and a credible self-host path means you are never trapped. See the <a href="/solutions/self-host">self-host solution</a>.',
+  },
+  {
+    q: 'What should we turn on first?',
+    a: 'Whatever hurts most. For most small teams that is uptime monitoring plus logs, so you know when something breaks and can see why — then turn on the detection packs for security coverage, and add on-call when the team is big enough to rotate. The platform does not punish you for adopting it gradually; start with one painful thing and widen as you grow.',
+  },
+];
+---
+<Base
+  title="For startups — one platform, one bill | 24Observe"
+  description="Monitoring, logs, and a real SIEM with an AI analyst that does the first hour of every incident — one affordable platform with a free tier for small teams."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> For startups &amp; small teams</div>
+          <h1 class="h1">You can’t hire a SOC and an on-call rotation yet. <em>So let the platform be them.</em></h1>
+          <p class="lede">
+            A small team carries the same responsibilities as a big one — keep it up, keep it secure, know what broke and
+            why — with a fraction of the people and none of the specialist roles. 24Observe is built for exactly that
+            gap: monitoring, logs, and a real SIEM in one affordable platform, with an AI analyst that does the first hour
+            of every investigation. You get the output of roles you cannot yet hire, starting on a free tier, the same
+            afternoon you sign up.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/pricing" class="btn btn-ghost btn-lg">See pricing</a>
+          </div>
+          <div class="hero-meta">
+            <span>Free <b>tier</b></span>
+            <span>One <b>bill</b></span>
+            <span>An AI <b>on call</b></span>
+            <span>Grow <b>into it</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Your whole stack · one place</div>
+              <div class="con-meta">2-person team</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">uptime · logs · metrics — live in an afternoon</div>
+                <div class="con-sub"><span>one endpoint</span><span class="tech">no integration project</span></div>
+              </div>
+              <span class="sev sev-med">UP</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">detections on — investigated for you</div>
+                <div class="con-sub"><span>no security hire</span><span class="tech">analyst triages</span></div>
+              </div>
+              <span class="sev sev-med">SECURE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">incident → verdict attached</div>
+                <div class="con-sub"><span>first hour done</span><span class="tech">you decide &amp; fix</span></div>
+              </div>
+              <span class="sev sev-high">RCA</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> The roles you can’t hire yet, running on day one</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The small-team reality</div>
+        <h2 class="h2">Same responsibilities as a big company. A fraction of the people.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The hardest thing about running infrastructure with a small team is that the responsibilities do not scale down
+          with the headcount. Your customers expect the same uptime, the same security, and the same competence as they
+          would from a company ten times your size — and you have to deliver it with the people you have.
+        </p>
+        <p>
+          The first place this bites is tooling cost and complexity. The "proper" observability stack — a logging product,
+          a metrics product, a tracing product, an uptime checker, an on-call router, a status page, a SIEM — is a set of
+          enterprise tools with enterprise bills and enterprise onboarding, and most of them price in a way that turns
+          terrifying as you grow, with the real number arriving on an invoice you did not see coming. For a small team,
+          standing all of that up is a project you do not have time for and a cost you cannot justify, so you under-invest
+          and hope.
+        </p>
+        <p>
+          The second place it bites is roles. Real reliability wants an on-call rotation; real security wants a SOC. A
+          small team has neither, and cannot conjure them — you cannot run a 24/7 investigation rotation with three
+          engineers who also have to build the product. So the work that those roles would do simply does not happen: the
+          alerts go uninvestigated, the security coverage is thin, and you find out about problems from customers. It is
+          not negligence; it is arithmetic.
+        </p>
+        <p>
+          The third is the trap of choosing a tool you will outgrow. Pick a cheap point solution now and you may be
+          ripping it out and migrating in eighteen months when you need a SIEM, on-call, or self-hosting — a painful,
+          distracting project at exactly the moment you are scaling. The decision you make small has consequences when you
+          are no longer small.
+        </p>
+        <p>
+          24Observe is designed for the team that has the responsibilities before the resources. One affordable platform —
+          with a genuinely usable free tier — replaces the stack and its stacked bills. The
+          <a href="/product/ai-analyst">AI analyst</a> does the investigation that an on-call engineer or a SOC analyst
+          would, so the work happens even without the headcount. And because the enterprise-grade capabilities are already
+          here, you grow into the platform rather than out of it — the tool you pick at three people is still the right
+          tool at three hundred.
+        </p>
+      </div>
+      <blockquote class="quote">
+        The responsibilities don’t scale down with the team. The only way a small group covers them is to let the platform
+        do the work the missing roles would have done.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you get on day one</div>
+        <h2 class="h2">The roles you can’t hire, running as software.</h2>
+        <p class="lede">
+          Each of these stands in for something a bigger company would staff or buy separately. For a small team, they
+          arrive together, affordably, with almost no setup.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">An AI on call</div><p>The analyst investigates every incident and attaches a verdict — the first hour of a senior responder's work, on every alert, without the rotation. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">A SIEM without a SOC</div><p>87 telemetry-gated detections that mostly self-seed and get investigated for you — real security coverage without a security hire. <a href="/product/siem">SIEM →</a></p></div>
+        <div class="why-card"><div class="why-num">Monitoring in an afternoon</div><p>Uptime, logs, and metrics live the same day, over open standards — no integration project, no proprietary agent rollout. <a href="/product/uptime">Uptime →</a></p></div>
+        <div class="why-card"><div class="why-num">One affordable bill</div><p>A free tier to start, flat and predictable paid plans, one volume allowance instead of several scary meters. <a href="/pricing">Pricing →</a></p></div>
+        <div class="why-card"><div class="why-num">Grows with you</div><p>On-call, escalation, context graph, full API, self-host — already here, so scaling up is a switch, not a migration to a new vendor.</p></div>
+        <div class="why-card"><div class="why-num">No lock-in</div><p>Open source and self-hostable, so you are never trapped by a future price shock or a vendor decision. <a href="/solutions/self-host">Self-host →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Built for the way you work</div>
+        <h2 class="h2">Start small, stay simple, grow without re-buying.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>The analyst is your missing headcount</h3>
+          <p>
+            The single most valuable thing 24Observe gives a small team is the analyst, because it directly substitutes
+            for the role you most wish you could hire. When something breaks at an awkward hour, the investigation that a
+            senior engineer or a SOC analyst would do — gather the evidence, trace the blast radius, work out the root
+            cause — happens automatically, and the incident arrives with a verdict you can act on. You are not pretending a
+            three-person team can do everything; you are letting the platform do the part that does not need to be a
+            person, so your people focus on the part that does.
+          </p>
+          <h3>Real security without a specialist</h3>
+          <p>
+            Security is where small teams are most exposed and least equipped, because writing and tuning detections is
+            specialist work. Here the detection packs are telemetry-gated and largely self-seeding, so meaningful coverage
+            turns on without a security engineer, and every hit is investigated for you. It is not a checkbox that says
+            "security"; it is a SIEM that actually works the alerts — which is the only form of security a team without a
+            SOC can realistically operate.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Pricing that doesn’t punish growth</h3>
+          <p>
+            Observability has a reputation for terrifying bills, and that reputation is earned — open-ended pricing that
+            balloons as you add data is exactly the wrong shape for a startup watching its burn. A genuinely usable free
+            tier and flat, predictable plans on one shared volume allowance mean you can adopt the platform early without
+            betting the runway, and the number you see is the number you get. See <a href="/pricing">pricing</a> for the
+            current plans.
+          </p>
+          <h3>The tool you won’t have to replace</h3>
+          <p>
+            The quiet cost of a point solution is the migration you do later. Because the enterprise capabilities — a real
+            SIEM, on-call and escalation, a context graph, an agent-programmable API, self-hosting — are already part of
+            the platform, you turn them on as you need them instead of ripping out your first tool and starting over. The
+            decision you make at three engineers is one you can live with at three hundred, which is rarer than it should
+            be in this category.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A 2 a.m. incident with no one on call.</h2>
+        <p class="lede">
+          The scenario every small team dreads — something breaks and there is no rotation, no SOC, no senior responder
+          awake — and how the platform covers the gap.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          It is 2 a.m. and a small team is asleep, as a small team should be, because three people cannot run a follow-the-
+          sun rotation. Something breaks: a burst of failed logins against the app, the early signature of a credential
+          stuffing attempt. In most small-team setups this either goes entirely unnoticed until morning, or it trips a
+          raw alert that wakes a founder who then has to investigate it half-asleep, with no security background, hoping
+          they make the right call.
+        </p>
+        <p>
+          Here the detection fires and the analyst investigates immediately, without waiting for a human. It checks whether
+          any of the failed logins were followed by a success, whether the source is flagged by threat intelligence,
+          whether the geography is plausible — the exact questions a SOC analyst would ask — and returns a verdict. If the
+          evidence is benign (a customer fat-fingering their password), it dispositions it quietly and nobody is woken over
+          nothing. If it is real, it opens an investigated incident and pages the founder — but with the investigation
+          already done.
+        </p>
+        <p>
+          So in the bad case, the founder is woken not by a cryptic alert but by a conclusion: this looks like a real
+          credential-stuffing attempt, here is the evidence, here is the recommended response — block the source, force
+          resets on the affected accounts. They do not have to be a security expert at 2 a.m.; they have to read a verdict,
+          sanity-check the cited evidence, and approve an action. The platform did the part that needed expertise and
+          stamina; the human did the part that needed authority.
+        </p>
+        <p>
+          In the morning, the whole episode is a clean record — what fired, what the analyst concluded, what was approved,
+          when it resolved — so the team can review it properly over coffee instead of reconstructing a panic. There was no
+          SOC and no on-call rotation, and yet the incident was caught, investigated, and handled competently, because the
+          roles a small team cannot staff were running as software.
+        </p>
+        <p>
+          That is the whole proposition for a small team: not that you suddenly have a big company's headcount, but that
+          you no longer need it to cover a big company's responsibilities. The analyst, the detections, and the
+          consolidation do the work that otherwise simply would not get done — which is the difference between a small team
+          that is exposed and one that is genuinely covered.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A pile of point tools vs one platform that grows with you.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Point tools + missing roles</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Investigation</div><div>No one to do it.</div><div class="cmp-us">The analyst, on every incident.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Security</div><div>Thin, no specialist to run it.</div><div class="cmp-us">A SIEM that works the alerts for you.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Setup</div><div>A multi-tool integration project.</div><div class="cmp-us">Live the same afternoon.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Cost</div><div>Several bills; surprise invoices.</div><div class="cmp-us">Free tier; flat, predictable plans.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Growing up</div><div>Rip and replace in 18 months.</div><div class="cmp-us">Flip a switch; same platform.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Lock-in</div><div>Trapped by the vendor.</div><div class="cmp-us">Open source, self-hostable.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">For startups &amp; small teams — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Cover a big company’s job with a small company’s team.</h2>
+      <p class="final-cta-sub">
+        Monitoring, logs, and a real SIEM in one affordable platform — with an AI analyst doing the first hour of every
+        incident, so the roles you can't hire yet are running on day one.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/pricing" class="btn btn-ghost btn-lg">See pricing</a>
+      </div>
+    </div>
+  </section>
+</Base>

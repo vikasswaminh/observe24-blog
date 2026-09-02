@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-06-22';
+---
+<Base
+  title="Terms of Service — 24Observe"
+  description="Plain-English terms for using 24observe — monitoring, logs, SIEM, and the AI SOC analyst. No surprises, no liability traps, no hidden billing."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · last updated {updated}</div>
+      <h1 class="h1">Terms of Service</h1>
+      <p class="lede" style="margin-top: 24px;">
+        These terms govern your use of 24observe (the "Service") operated by the maintainers of
+        <a href="https://github.com/vikasswaminh/observe24">github.com/vikasswaminh/observe24</a>.
+        By creating an account or self-hosting the Service, you agree to these terms.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">1. The Service</h2>
+      <p>
+        24observe is an observability and security platform. It includes synthetic and uptime
+        monitoring; log, metric, and trace ingestion with search; a SIEM with detections, correlation,
+        and threat-intel enrichment; an AI SOC analyst that triages incidents; an operational context
+        graph; and a programmable API/agent surface. We process the telemetry and configuration you send
+        us, store the results, and notify or act per your configuration. Both a hosted SaaS at
+        <code class="inline-code">api.24observe.com</code> and a self-hostable open-source distribution
+        are offered under the same brand. These terms apply to the hosted SaaS only — the self-hosted
+        distribution is provided under its own distribution terms; <a href="/contact">contact us</a> for details.
+      </p>
+      <p>
+        Some features rely on third-party model providers (the AI analyst and AI-assisted configuration).
+        Those run at config or incident time on redacted inputs; outputs are assistive and you remain
+        responsible for verifying them before acting.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">2. Acceptable use</h2>
+      <p>You agree NOT to:</p>
+      <ul style="line-height: 1.8;">
+        <li>Monitor URLs, hosts, or services you do not own or have explicit authorization to monitor.</li>
+        <li>Use the Service to scan for vulnerabilities, brute-force credentials, or otherwise attack third parties.</li>
+        <li>Configure check intervals or volumes designed to overwhelm a target (we cap intervals per plan;
+          chained accounts to bypass these caps will be terminated).</li>
+        <li>Store secrets, PII, or regulated data in monitor names, URLs, or webhook bodies. Headers are encrypted
+          at rest; the rest is not.</li>
+        <li>Resell, sublicense, or white-label the hosted Service. (You may freely fork the OSS distribution.)</li>
+      </ul>
+      <p>
+        This is a summary; our full <a href="/legal/acceptable-use">Acceptable Use Policy</a> governs in
+        detail. We may suspend or terminate any account that violates it without notice, and will refund
+        any unused prepaid balance on a good-faith termination that isn't for serious abuse.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">3. Plans, billing &amp; usage</h2>
+      <p>
+        We offer a Free plan and paid monthly plans (Team, Business, Scale). Paid plans are recurring
+        subscriptions billed in advance through our payment provider, Dodo Payments; we don't store your
+        card details. Each plan includes monthly allowances (e.g. monitors, log volume, AI investigations,
+        connected endpoints) shown on the <a href="/pricing">pricing page</a>.
+      </p>
+      <p>
+        Log ingestion above your plan's included allowance is billed as <b>usage-based metered charges</b>
+        at the per-GB rate on the pricing page; other allowances are enforced as caps (an HTTP 429 — they
+        do not silently auto-upgrade you). You can cancel, change plan, or update payment any time from the
+        in-product billing portal. Cancellation, refunds, downgrades, and failed-payment handling are
+        governed by our <a href="/legal/refunds">Refund &amp; Cancellation Policy</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">4. Data ownership</h2>
+      <p>
+        You own the monitor configs and check-result data in your account. We make no claim to it.
+        You can export it at any time via the API. On account deletion, all of your data is purged
+        within 30 days from production and within 90 days from backups.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">5. Uptime &amp; SLA</h2>
+      <p>
+        We target 99.9% monthly availability for the hosted Service. There is no formal SLA credit on the
+        free or paid plans today — if you need a contractual SLA, self-host or contact us about an
+        enterprise tier (not yet generally available).
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">6. Liability</h2>
+      <p>
+        The Service is provided "as is." Our total liability for any claim is capped at the greater of (a) what
+        you paid us in the preceding 12 months and (b) US$50. We are not liable for missed alerts, false alerts,
+        downstream consequential damages, or anything covered by force majeure (provider outages, regional
+        network failures, etc.). <b>Treat 24observe as a best-effort second pair of eyes — not as your only
+        layer of monitoring.</b>
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">7. Termination</h2>
+      <p>
+        Either side may terminate at any time. You can delete your account from the dashboard. We may
+        terminate for breach of section 2, non-payment, or to discontinue the Service entirely (with
+        ≥30 days notice + data export window).
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">8. Changes</h2>
+      <p>
+        We will email account owners ≥30 days before a material change to these terms. Continued use after
+        the effective date constitutes acceptance.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">9. Contact</h2>
+      <p>
+        Questions: <a href="mailto:support@24observe.com">support@24observe.com</a>.
+        Security disclosures: <a href="mailto:security@24observe.com">security@24observe.com</a>
+        (see <a href="/.well-known/security.txt">/.well-known/security.txt</a>).
+      </p>
+    </div>
+  </section>
+</Base>

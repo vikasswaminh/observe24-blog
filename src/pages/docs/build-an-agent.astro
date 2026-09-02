@@ -1,0 +1,108 @@
+---
+import Base from '../../layouts/Base.astro';
+
+
+const MINT = `curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_<your-admin-token>' \\
+  -H 'content-type: application/json' \\
+  -d '{
+    "name": "incident-responder-agent",
+    "scopes": ["incidents:read", "incidents:write", "context:read"],
+    "dailyMutationLimit": 200
+  }'
+# → { "token": "obs_…", ... }   (shown once)`;
+
+const TOOLS = `# Point any agent framework at the pre-converted tool definitions:
+#   OpenAI:     https://api.24observe.com/openapi/openai-tools.json
+#   Anthropic:  https://api.24observe.com/openapi/anthropic-tools.json
+#   LangChain:  https://api.24observe.com/openapi/langchain-tools.json
+# Every tool call becomes an HTTP request with:
+#   Authorization: Bearer obs_<agent-token>`;
+
+const LOOP = `# Event-driven: subscribe to incident.opened (no polling), then the loop:
+# 1. OBSERVE   GET  /api/v1/incidents/{id}                 # the incident
+#              GET  /api/v1/incidents/{id}/analysis        # the AI-Analyst verdict
+#              GET  /api/v1/context/incident/{id}/blast     # impacted services + owners
+# 2. REASON    your model decides from the evidence (every edge is deep-linked)
+# 3. ACT       POST /api/v1/incidents/{id}/updates          # post what you found
+#              POST /api/v1/incidents/{id}/acknowledge|resolve
+#              POST /api/v1/maintenance-windows              # mute alerts during a fix`;
+
+const SAFE = `Authorization: Bearer obs_<agent-token>   # scoped — only what you granted
+Idempotency-Key: <uuid>                  # safe to retry; a dup is a no-op
+X-Agent-Id: incident-responder           # who acted  (lands in the audit log)
+X-Conversation-Id: conv-8f21             # which run  (lands in the audit log)`;
+---
+<Base
+  title="Build an AI ops agent on 24Observe — scoped, safe, observe→reason→act"
+  description="Program your own AI agent against 24observe: mint a least-privilege token, point it at the tool definitions, and run an observe→reason→act loop with daily caps, idempotency, and full attribution. Guardrails included."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · build an agent</div>
+      <h1 class="h1">Build your own AI ops agent. Scoped, safe, accountable.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        24observe is built to be driven by <b>your</b> AI agent, not just ours. Mint a
+        least-privilege token, point your agent at the tool definitions, and it can run an
+        <b>observe → reason → act</b> loop over your telemetry, incidents, detections, and
+        topology — with hard guardrails, daily caps, and a full audit trail.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">1. Mint a least-privilege token</h2>
+      <p>
+        Grant only the scopes the agent needs — and cap how much it can change per day.
+        From the dashboard (<b>Settings → API tokens</b>) or the API:
+      </p>
+      <pre class="code-block">{MINT}</pre>
+      <p>Pick scopes for the job (combine a read scope to reason with a narrow write scope to act):</p>
+      <table style="width:100%; font-size:13px; border-collapse:collapse; margin-top:8px;">
+        <thead><tr style="text-align:left; color:var(--ink-3); border-bottom:1px solid var(--ink-2);"><th style="padding:6px 8px;">Agent</th><th style="padding:6px 8px;">Scopes</th></tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--ink-1);"><td style="padding:6px 8px;">Incident responder</td><td style="padding:6px 8px;"><code>incidents:read incidents:write context:read</code></td></tr>
+          <tr style="border-bottom:1px solid var(--ink-1);"><td style="padding:6px 8px;">Detection engineer</td><td style="padding:6px 8px;"><code>siem:read siem:write</code></td></tr>
+          <tr style="border-bottom:1px solid var(--ink-1);"><td style="padding:6px 8px;">AI-agent cost/security watchdog</td><td style="padding:6px 8px;"><code>ai-agents:read</code></td></tr>
+          <tr style="border-bottom:1px solid var(--ink-1);"><td style="padding:6px 8px;">Monitor provisioner</td><td style="padding:6px 8px;"><code>monitors:read monitors:write</code></td></tr>
+          <tr><td style="padding:6px 8px;">On-call / maintenance ops</td><td style="padding:6px 8px;"><code>on-call:write escalations:write maintenance:write</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="h2" style="margin-top: 40px;">2. Wire it up — no integration code</h2>
+      <p>
+        Use the <a href="/docs/api-for-agents">MCP server</a> with any MCP client, or hand the
+        pre-converted tool definitions straight to your framework:
+      </p>
+      <pre class="code-block">{TOOLS}</pre>
+
+      <h2 class="h2" style="margin-top: 40px;">3. The loop — observe → reason → act</h2>
+      <pre class="code-block">{LOOP}</pre>
+      <p>
+        The same shape works for any agent: a <b>detection engineer</b> reads the catalog and
+        <code>POST</code>s new rules; a <b>monitor provisioner</b> creates + tunes monitors; a
+        <b>cost watchdog</b> reads <code>/ai-agents/overview</code> and opens a case when spend
+        spikes. Reasoning is grounded — every context-graph edge carries evidence that deep-links
+        back into the product, so the agent cites, it doesn't guess.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">Safety rails (on by design)</h2>
+      <pre class="code-block">{SAFE}</pre>
+      <ul>
+        <li><b>Scoped token</b> — the agent can only reach what you granted; org-locked server-side.</li>
+        <li><b>Daily mutation cap</b> — <code>dailyMutationLimit</code> on the token; a runaway agent gets <code>429</code>, not a mess.</li>
+        <li><b>Idempotent writes</b> — send an <code>Idempotency-Key</code>; retries can't double-act.</li>
+        <li><b>Full attribution</b> — every change records the token + <code>X-Agent-Id</code> + <code>X-Conversation-Id</code> in the audit log, readable via <code>audit:read</code>.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 40px;">What an agent can never do</h2>
+      <p>
+        Even with a write token, the agent cannot <b>disable or rewrite a detection</b> (no
+        switching off the SIEM), <b>delete</b> anything, read <b>secrets</b> (monitor credentials,
+        webhook URLs), or touch <b>billing / settings / data export</b> — those require a full
+        token or a human session. You can hand an agent real power without handing it the keys.
+      </p>
+      <p style="margin-top: 8px; font-size: 13px; color: var(--ink-3);">
+        See also <a href="/docs/api-for-agents">API for Agents</a> and
+        <a href="/docs/connect-agent">Connect an AI agent</a> (instrument your own agent's telemetry).
+      </p>
+    </div>
+  </section>
+</Base>

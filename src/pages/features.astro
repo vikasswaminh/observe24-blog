@@ -1,0 +1,398 @@
+---
+import Base from '../layouts/Base.astro';
+import PageSchema from '../components/PageSchema.astro';
+
+const CHECK_TYPES = [
+  {
+    id: 'http',
+    icon: 'GET',
+    title: 'HTTP / HTTPS',
+    body: 'Verify status codes, measure response time, flag slowdowns before full outages. Pass custom request headers (encrypted at rest) for endpoints that require auth, expect a specific status, and treat slow responses as degraded — paged before they go fully down.',
+    stats: '200 · 418 · 503',
+    details: [
+      'Status-code-exact assertions (expect 200, fail on 418)',
+      'Degraded tier fires before full down',
+      'Custom request headers — stored encrypted',
+      'Follows redirects, validates the cert chain',
+    ],
+  },
+  {
+    id: 'tcp',
+    icon: 'TCP',
+    title: 'TCP & port',
+    body: 'Reachable-or-not checks for databases, message queues, anything that speaks TCP. Configurable timeouts. Fast.',
+    stats: ':5432 :6379 :27017',
+    details: [
+      'Raw TCP connect with configurable timeout (1–30s)',
+      'Use for any service on a port — DB, queue, SSH, anything',
+      'Defended against being misdirected to your internal network',
+    ],
+  },
+  {
+    id: 'ssl',
+    icon: 'SSL',
+    title: 'SSL / TLS certificates',
+    body: 'Get warned 7 days before a certificate expires. Validates the full chain, not just "did the handshake complete." SNI-correct.',
+    stats: 'expires in 87d',
+    details: [
+      'Degraded at 7 days to expiry, down after',
+      'Reads the full peer certificate chain',
+      'Hostname (SNI) correct even when connecting by IP',
+    ],
+  },
+  {
+    id: 'ping',
+    icon: 'PNG',
+    title: 'ICMP ping',
+    body: 'Classic reachability. Cross-platform. Fast.',
+    stats: '24ms · 18ms · 22ms',
+    details: [
+      'Cross-platform (Linux, macOS, Windows ping syntaxes)',
+      'No shell-injection surface',
+      'Subsecond round-trip on the happy path',
+    ],
+  },
+  {
+    id: 'keyword',
+    icon: 'KWD',
+    title: 'Keyword match',
+    body: 'Does the page still say "Order placed" — or is the 200 just a generic landing page? Catches silent content regressions that status codes miss.',
+    stats: 'match=true',
+    details: [
+      'Contains / not-contains modes',
+      '1 MB body cap to keep checks fast',
+      'Custom headers supported',
+    ],
+  },
+  {
+    id: 'browser',
+    icon: 'BRW',
+    title: 'Browser (synthetic)',
+    body: 'Loads the page in real headless Chromium, runs its JavaScript, and checks the fully rendered DOM — not the raw HTTP response. For single-page apps and JS-gated content where a 200 says nothing about what the user actually sees.',
+    stats: 'renders JS',
+    details: [
+      'Keyword assertion against the post-JavaScript DOM',
+      'Expected status + degraded-render threshold',
+      'Runs on a dedicated browser pool — never slows your other checks',
+    ],
+  },
+  {
+    id: 'port',
+    icon: 'PRT',
+    title: 'Port probe',
+    body: 'Like TCP, but when the URL format does not include the port. Same anti-abuse defenses, same timeouts.',
+    stats: ':22 :3306 :11211',
+    details: [
+      'Explicit port override on the monitor',
+      'Same anti-abuse defense as TCP',
+    ],
+  },
+  {
+    id: 'heartbeat',
+    icon: 'HB',
+    title: 'Heartbeat / cron job',
+    body: 'Inverted check — your job pings us when it succeeds. If a heartbeat does not arrive within your configured interval plus grace, we open an incident. Auto-resolved when the next heartbeat lands.',
+    stats: 'POST /heartbeats/<token>',
+    details: [
+      'Generated unique receive URL per monitor — rotate any time',
+      'POST or HEAD — works from any cron-friendly tool',
+      'Auto-resolve on next successful ping',
+    ],
+  },
+];
+
+const LOGS_FEATURES = [
+  {
+    title: 'Send from anywhere. No SDK.',
+    body: 'Lambda via CloudWatch + Kinesis Firehose. Heroku in one `heroku drains:add`. Vercel projects in one paste. Docker daemons via the syslog driver. systemd via journald. OpenTelemetry SDKs in any language. Vector and Fluent Bit pipelines. Or just curl JSON straight to a URL. Twelve sources, one ingest pipe, one set of quotas.',
+  },
+  {
+    title: 'Wire compression on every ingest path.',
+    body: 'Ship compressed log bodies and the platform decompresses them natively — a busy batch arrives at a fraction of its raw size, so you spend less on bandwidth and your events land faster. Vector, Fluent Bit, and the OpenTelemetry collector each turn it on with a single line of config, and our own collector enables it for you by default. No extra work for a meaningfully smaller wire bill.',
+  },
+  {
+    title: 'Search by typing the words you remember.',
+    body: 'No SPL to learn. No proprietary DSL. Plain substring works for the 80% case. KQL-lite (`level:error AND service:checkout`) covers the rest. Auto-extracted facets appear in the side rail — every primitive JSON field becomes a click-to-filter chip without you declaring a schema. Cursor pagination. 5-second hard timeout on every query.',
+  },
+  {
+    title: 'Live tail at sub-100ms.',
+    body: 'Server-Sent Events. New matching events stream the moment they land. Same filters as search. 30-minute connection cap so a forgotten browser tab cannot leak forever. Works from curl (header auth) and from any modern browser (bind-cookie auth, no PAT in the URL).',
+  },
+  {
+    title: 'Pattern grouping — 10,000 lines become one row.',
+    body: 'Click "Patterns" on the Logs page. Each row is a normalized template ("ERROR DB query took <NUM>ms for user_id=<NUM> trace=<HEX>") with a count, a real sample, and the dominant level. Numbers, UUIDs, IPs, hex blobs, timestamps, and quoted strings all collapse. Computed on read — no background job to fall behind, no extra table to bloat the bill.',
+  },
+  {
+    title: 'Error tracking — see each bug once.',
+    body: 'Recurring stack traces auto-group by signature: normalized header + 1-3 frames, FNV-1a hashed. JavaScript, Python tracebacks, Java/JVM, Go panic, generic ERROR/FATAL. Same logical error across different deploys, paths, line numbers — same row. First-seen, last-seen, total count. Resolve when fixed. Ignore known noise. The thing Sentry charges a separate seat for, bundled. Already on Sentry? Keep your @sentry/* SDK and just point the DSN at us — same envelope, same grouping, no migration. And beacon Core Web Vitals (LCP/INP/CLS) straight from Google\'s web-vitals library.',
+  },
+  {
+    title: 'Anomaly alerts when normal varies.',
+    body: 'Threshold alerts work when you know the magic number. Anomaly alerts work when you do not. Compares the current window against a rolling baseline (default 7 days, 3× spike) and fires through email, Slack, Discord, Teams, Telegram, or any HMAC-signed webhook. No ML configuration, no model tuning, no false fires on tiny baselines (built-in event-count floor). PagerDuty / Opsgenie / SMS / voice for log alerts is on the roadmap; today they route only from monitor checks.',
+  },
+  {
+    title: 'Saved searches as time-series.',
+    body: 'Turn any log query into a chartable metric: count of matches per bucket (60s / 5m / 15m / 30m / 1h). Auto-refreshes every 60 seconds on the dashboard. Sparkline + last bucket + peak + window total. Alertable like a regular monitor. Datadog charges 10¢ per metric per month for this; here it is free.',
+  },
+  {
+    title: 'Alert routing without a vendor lock-in.',
+    body: 'Monitor alerts route through email, Slack, Discord, Microsoft Teams, Telegram, PagerDuty, Opsgenie, SMS, voice, or any HTTPS endpoint with HMAC-SHA256 signing — ten channels. Log alerts route through the first six today; the four pager / SMS / voice destinations are on the roadmap. Per-channel test. One incident per fire, never a hundred. Latch logic prevents re-paging on the same condition. No "Enterprise" tier locks anything behind a quote.',
+  },
+];
+
+const CORE_FEATURES = [
+  {
+    title: 'Monitor metrics and network devices, not just endpoints',
+    body: 'Set thresholds on any metric — host CPU, memory, disk, load, request latency — and breach opens an incident through the same pipeline as a failed check. Poll your Cisco, Palo Alto, and FortiGate gear over SNMP straight from the collector (interface bandwidth and errors, device CPU and memory) with no per-vendor code. The network and the application monitored in one place, alerting through one set of rules.',
+  },
+  {
+    title: 'Event webhooks',
+    body: 'Subscribe to incident.opened, incident.acknowledged, incident.resolved, monitor.status_changed, log_alert.fired — and the rest of the catalog: correlation rules, AI-analyst verdicts and escalations, Sensor offline/online, alert-storm collapse, and metric-threshold breaches. We POST a signed JSON envelope to your URL — HMAC-SHA256 with your org\'s shared secret. Auto-retry up to 5 times with exponential backoff. Auto-disable after 10 consecutive failures so a broken receiver never wakes our on-call. Full per-subscription delivery log: status, HTTP code, response excerpt, payload bytes — visible via API and dashboard.',
+  },
+  {
+    title: 'Pure-REST API for agents',
+    body: 'No SDK to keep in step. Pre-converted tool definitions at /openapi/openai-tools.json, /openapi/anthropic-tools.json, /openapi/langchain-tools.json — drop into your agent framework. Every authenticated response carries X-PAT-Mut-Limit / Remaining / Reset so an agent can read its budget without burning a mutation. Every mutating endpoint accepts Idempotency-Key; same key + different body returns 409 IDEMPOTENCY_KEY_REPLAY_CONFLICT so a buggy retry loop surfaces fast.',
+  },
+  {
+    title: 'PAT scopes + daily caps',
+    body: 'Mint a token with a narrow scope list — 24 in all: monitors:read, monitors:write, incidents:write, logs:write, webhooks:write, context:read, audit:read, and 17 more. Pair with dailyMutationLimit + dailyLogBytesLimit to bound the blast radius of a leaked token to a day. Audit log records every PAT-attributed mutation, so a human can answer "what did the agent actually do?" with one SQL-style query.',
+  },
+  {
+    title: 'Status pages',
+    body: 'Public, slugged, optionally on your custom domain (status.yourco.com). Group monitors into components. Custom logo + accent color, footer links, and full white-label: inject your own CSS, hide our branding, or lock an internal status page to an IP allowlist (off-list visitors get a 404). Atom feed for incident subscribers. Optional password-protect.',
+  },
+  {
+    title: 'Incidents with timeline',
+    body: 'Auto-opened when a monitor crosses its threshold. Acknowledge to stop paging without resolving. Post updates ("we have identified the cause") that show on your public status page. Close it when fixed.',
+  },
+  {
+    title: 'Maintenance windows',
+    body: 'Schedule downtime by monitor or org-wide. Checks still run; alerts pause. Uptime math respects the window.',
+  },
+  {
+    title: 'Alert routing',
+    body: 'Email, generic webhook (signed), Slack, Discord, Telegram, Microsoft Teams, PagerDuty, Opsgenie. Per-channel test. Per-monitor consecutive-failure threshold so a single blip never pages you.',
+  },
+  {
+    title: 'SLO targets',
+    body: 'Set an uptime target (default 99.9%) and a rolling window (default 30 days). Get a green/red badge in your dashboard. Get notified when you drift below target.',
+  },
+  {
+    title: 'CSV export',
+    body: 'Download all your monitor configs at any time. Migrate in or out without filing a support ticket.',
+  },
+  {
+    title: 'Public uptime badge',
+    body: 'A status badge image you can drop into your README. Live-updates from your monitor\'s actual state.',
+  },
+];
+
+const SECURITY_FEATURES = [
+  {
+    title: '87 prebuilt detections across 14 packs',
+    body: 'Fourteen packs — access, exfiltration, secret exposure, web-attacks, reliability, threat-intel, AI-agent security, MCP traffic, platform self-monitoring, cloud control-plane (AWS · Azure · GCP), identity & SaaS (Okta / Entra / Google Workspace / M365), endpoint & runtime (EDR — CrowdStrike / SentinelOne / Defender / Falco / Wazuh), Linux host security (auditd: privilege escalation, ssh-key / cron persistence, reverse shells, recon), and infrastructure & network health (OOM, disk-full, kernel faults, restart loops, interface / routing-adjacency down, HA failover) — most carrying a MITRE ATT&CK technique. Enable a pack with one call; tune the queries + thresholds to your own log shapes.',
+  },
+  {
+    title: 'AI NOC + SOC analyst — root cause, not just an alert',
+    body: 'Hand it any incident, security or operational, and it investigates with read-only tools the way a responder does: classify the incident, walk the dependency graph to the common upstream, blame the recent change, confirm with the metrics, and return an evidence-cited verdict — root cause, blast radius, and the fix. It learns from your team\'s corrections, proposes (never auto-runs) response actions, and runs on the model you choose — no model lock-in.',
+  },
+  {
+    title: 'Alert-storm correlation — page once, not fifty times',
+    body: 'When one root failure lights up the board — a switch dies and fifty hosts go unreachable — the platform clusters the incidents that share a root in the context graph and collapses them into a single case with one notification. Precise (same proven root), not a blunt "many alerts at once" mute. The signal survives; the noise does not.',
+  },
+  {
+    title: 'Write a detection in one line of KQL-lite',
+    body: 'Same query language as log search: `message:"failed login"` over a 5-minute window with a threshold, or an anomaly rule that fires at 3× a rolling baseline. A detection is just a log alert with a severity + ATT&CK tag — it opens an incident through the exact same pipeline, alert routing, and webhooks as a failed health check.',
+  },
+  {
+    title: 'Multi-event correlation',
+    body: "The signals a single stream can't express. Sequence rules catch \"many failed logins THEN a success\" for one user. Cardinality rules catch \"one source IP, ten distinct accounts\" — password spray, account enumeration. One detection per rule, evaluated every minute, joined on any field or attribute.",
+  },
+  {
+    title: 'Threat-intel matched at ingest',
+    body: 'Every public source IP is checked the moment an event lands — known-bad indicators, Tor exit nodes, DNSBL listings, VPN and datacenter ranges. Bring your own IOCs (IP, domain, hash), per-org and private, or ride the built-in feeds. A DNSBL or Tor verdict stamps `ioc_match`, so a one-line rule (`attrs.ioc_match:true`) fires.',
+  },
+  {
+    title: 'GeoIP + identity + asset enrichment',
+    body: 'Source IPs resolve to country, region, city, ASN, and org inline at ingest. A directory of identities (risk) and assets (criticality) you maintain stamps `identity_risk` and `asset_criticality` onto matching events — so "an error on a critical asset from a high-risk country" is a plain search (`asset_criticality:critical AND geo_country:RU`), not a join across three tools.',
+  },
+  {
+    title: 'ECS normalization',
+    body: 'Common shapes — OpenSSH auth, nginx / apache access — are parsed into Elastic-Common-Schema-style fields (`ecs_event_outcome`, `ecs_source_ip`, `ecs_http_status` …) at ingest, so detections and search behave the same regardless of how the upstream log was formatted.',
+  },
+  {
+    title: 'Security cases',
+    body: 'Group incidents into one investigation: status (open → investigating → contained → closed), severity, assignee, a notes timeline, and a true-/false-positive / benign disposition. Attach incidents across detections and correlations. The analyst workspace — org-scoped and audited like everything else.',
+  },
+  {
+    title: 'SIEM-ready export',
+    body: 'A forward-cursor NDJSON endpoint streams your audit trail gap-free and dup-free, so Splunk, Datadog, Loki, or your own SIEM polls it on a cron. Signed event webhooks (`log_alert.fired`, `correlation_rule.fired`) route every detection to SOAR. The whole security layer is on every plan — no "security tier", no per-GB intelligence meter.',
+  },
+];
+
+const CONTEXT_FEATURES = [
+  {
+    title: 'A live operational graph, built from your telemetry',
+    body: 'Services, hosts, incidents, assets, owners, and AI agents — plus the relationships between them — derived read-only from the traces, logs, monitors, incidents, and inventory you already send. Nothing to install, no graph to maintain: the context engine builds it on a schedule and keeps it current.',
+  },
+  {
+    title: 'Incident blast-radius in one call',
+    body: 'GET /api/v1/context/incident/{key}/summary returns the services an incident impacts, who is responsible for them, and what changed just before it fired. The work of opening five tabs to reconstruct what an incident touches, collapsed into a single response.',
+  },
+  {
+    title: 'A topology health map of everything you run',
+    body: 'The whole graph — services, hosts, and devices, with the dependencies between them — rendered as one map with a live health overlay: a node goes red when its host stops reporting or an open incident implicates it. The single pane that shows you, at a glance, what is broken and what depends on it.',
+  },
+  {
+    title: 'Every edge carries its evidence',
+    body: 'No black-box inference. Every relationship deep-links to the exact trace, log, incident, or audit record that proves it — so you use context to narrow the search and the underlying telemetry to confirm. Confidence and recency travel on every edge.',
+  },
+  {
+    title: 'Walkable by humans and agents',
+    body: 'The graph is read through the same REST API and exposed as MCP tools, so an investigation agent can traverse topology and blast-radius the way a responder does — evidence included. Read-only, org-scoped, gated behind the context:read scope.',
+  },
+];
+---
+<Base
+  title="Features — seven primitives, one platform | 24Observe"
+  activeNav="monitors"
+  description="Uptime, logs, metrics, traces, SIEM, an AI analyst, and an agent-native API — eight check types, white-label status pages, SSO, SLO targets, and audit log."
+>
+  <PageSchema type="SoftwareApplication" name="24Observe" path="/features"
+    description="The full platform surface — uptime monitoring, logs, SIEM, an AI analyst, and an agent-native API — self-hostable, on one bill."
+    features={["12 monitor types incl. headless-browser", "Log ingest + search + live tail + error tracking", "87 detections across 14 packs", "AI analyst on every incident", "Signed event webhooks + white-label status pages", "Pure-REST + MCP API, SSO, audit log, SLO targets"]}
+  />
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Features</div>
+      <h1 class="h1">Seven primitives. Every real thing your stack breaks at.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Nothing below is on a roadmap. Nothing is gated behind a "talk to sales" tier.
+        Every check type, every alert channel, every integration — open the docs, mint a
+        token, ship it.
+      </p>
+    </div>
+  </section>
+
+  {CHECK_TYPES.map((c) => (
+    <section class="section" id={c.id}>
+      <div class="container">
+        <div class="eyebrow"><span class="bar"></span> {c.title}</div>
+        <div style="display: grid; grid-template-columns: 1.05fr 1.35fr; gap: 56px; align-items: start;">
+          <div>
+            <div class="check-icon mono" style="margin-bottom: 24px;">{c.icon}</div>
+            <h2 class="h2">{c.title}</h2>
+            <p class="lede" style="margin-top: 16px;">{c.body}</p>
+          </div>
+          <div class="why-card">
+            <div class="why-num mono">CAPABILITIES</div>
+            <ul style="margin: 0; padding-left: 20px; color: var(--ink-1); font-size: 14px; line-height: 1.7;">
+              {c.details.map((d) => <li>{d}</li>)}
+            </ul>
+            <div class="mono" style="color: var(--ink-3); font-size: 11px; margin-top: 20px; letter-spacing: 0.04em;">
+              {c.stats}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Beyond checks</div>
+      <h2 class="h2">The work that happens after a check turns red.</h2>
+      <p class="lede" style="margin: 16px 0 32px;">
+        Checks are the easy part. What separates a tool from a service is what happens in
+        the next sixty seconds — who gets paged, what your customers see, and whether your
+        Sunday morning stays quiet.
+      </p>
+      <div class="why-grid why-grid--2">
+        {CORE_FEATURES.map((f) => (
+          <div class="why-card">
+            <div class="why-num mono">◉</div>
+            <h3 class="h3">{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="logs">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> After your logs land</div>
+      <h2 class="h2">Logs that do more than scroll past.</h2>
+      <p class="lede" style="margin: 16px 0 32px;">
+        Logs are easy. Knowing which line out of a million is the one that
+        woke up your customer is the hard part. Eight things we do once your
+        events land — every one of them on every plan, none of them gated
+        behind an "intelligence" SKU.
+      </p>
+      <div class="why-grid why-grid--2">
+        {LOGS_FEATURES.map((f) => (
+          <div class="why-card">
+            <div class="why-num mono">◉</div>
+            <h3 class="h3">{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="security">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Security · SIEM</div>
+      <h2 class="h2">Detections that open incidents in the same pipeline.</h2>
+      <p class="lede" style="margin: 16px 0 32px;">
+        A SIEM where a detection is just another rule — same incidents, same cases,
+        same API as your uptime checks. Threat-intel and enrichment run inline at
+        ingest, so the signal is already on the event before a rule looks at it.
+        Every item below ships today; every one is on every plan.
+      </p>
+      <div class="why-grid why-grid--2">
+        {SECURITY_FEATURES.map((f) => (
+          <div class="why-card">
+            <div class="why-num mono">◉</div>
+            <h3 class="h3">{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="context">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Operational context</div>
+      <h2 class="h2">Context that narrows the search — before you start digging.</h2>
+      <p class="lede" style="margin: 16px 0 32px;">
+        Detections and checks tell you something is wrong. The context graph tells you what it
+        touches, who owns it, and what changed — in one call, every answer backed by the record
+        that proves it. Built read-only from telemetry you already send; on every plan.
+      </p>
+      <div class="why-grid why-grid--2">
+        {CONTEXT_FEATURES.map((f) => (
+          <div class="why-card">
+            <div class="why-num mono">◉</div>
+            <h3 class="h3">{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Every feature, every plan.</h2>
+      <p class="final-cta-sub">No "pro tier" gating what should be default.</p>
+      <div class="final-cta-buttons">
+        <a href="/pricing" class="btn btn-primary btn-lg">See pricing <span class="arr">→</span></a>
+        <a href="https://login.24observe.com/register" class="btn btn-ghost btn-lg">Start free</a>
+      </div>
+    </div>
+  </section>
+</Base>

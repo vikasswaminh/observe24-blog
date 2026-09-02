@@ -1,0 +1,105 @@
+---
+import Base from '../../layouts/Base.astro';
+
+
+const ENV = `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.24observe.com/api/v1/otlp
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer <YOUR_INGEST_TOKEN>
+OTEL_SERVICE_NAME=my-agent`;
+
+const PY = `# OpenLLMetry (works the same with OpenLIT / the official OTel GenAI instrumentations)
+pip install traceloop-sdk
+
+from traceloop.sdk import Traceloop
+Traceloop.init(app_name="my-agent")   # reads the OTEL_* env above
+
+# Your OpenAI / Anthropic / LangChain / LlamaIndex calls now emit gen_ai.* spans
+# automatically — no per-call changes.`;
+
+const NODE = `npm install @observe24/genai
+
+import { instrument, recordChat, wrapTool } from '@observe24/genai';
+const h = instrument({
+  endpoint: 'https://api.24observe.com/api/v1/otlp',
+  token: process.env.OBSERVE_TOKEN!,   // the ingest token from step 1
+  serviceName: 'my-agent',
+  captureContent: false,               // see Content & privacy
+});
+recordChat({ system: 'openai', model: 'gpt-4o-mini', inputTokens: 42, outputTokens: 128 });
+const out = await wrapTool('read_file', () => readFile(path), { type: 'function' });
+await h.shutdown();   // flush on exit`;
+---
+<Base
+  title="Connect your AI agent to 24Observe in 5 minutes — cost + security from the first span"
+  description="Point any OpenTelemetry GenAI instrumentation at 24observe: token usage, cost, latency, and AI-agent security detections (prompt injection, token abuse, tool misuse) that fire automatically from the first span."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · connect an agent</div>
+      <h1 class="h1">Connect your AI agent in 5 minutes.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Point any OpenTelemetry GenAI instrumentation at 24observe and your agent reports
+        <b>token usage, cost, latency, and errors</b> — and the <b>AI-agent security detections</b>
+        (prompt injection, token/cost abuse, runaway tool loops, sensitive tool use, MCP
+        injection-via-tool-result) start watching <b>from the first span</b>. They're auto-enabled
+        on every account, so there's nothing to turn on.
+      </p>
+      <p>
+        The dashboard has a guided version of this with a live "connected" check:
+        <b>AI Agents → “+ Connect an agent.”</b> The steps below are the same.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">1. Get an ingest token</h2>
+      <p>
+        In the dashboard, <b>AI Agents → “+ Connect an agent” → “Generate ingest token,”</b> or
+        Settings → API tokens with scope <code>logs:write</code>. The token is ingest-only — it
+        can ship telemetry, nothing else. Shown once; revoke anytime.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">2. Set the OTLP env</h2>
+      <p>Any OTel GenAI instrumentation reads these:</p>
+      <pre class="code-block">{ENV}</pre>
+      <p>
+        Already running <b>OpenLLMetry</b>, <b>OpenLIT</b>, or the official <b>OTel GenAI</b>
+        instrumentations? You're done — just set the env and they export to us. No SDK swap.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">3. Instrument (if you aren't already)</h2>
+      <p><b>Python</b> — the most common agent runtime:</p>
+      <pre class="code-block">{PY}</pre>
+      <p style="margin-top: 16px;"><b>Node</b> — a tiny, dependency-light wrapper with opt-in tool-result capture:</p>
+      <pre class="code-block">{NODE}</pre>
+
+      <h2 class="h2" style="margin-top: 40px;">4. Verify</h2>
+      <p>
+        Spans carrying <code>gen_ai.*</code> attributes land in <b>AI Agents</b> within seconds,
+        with cost + per-model / per-agent / per-operation breakdowns. The connect panel flips to
+        <b>“✓ Receiving agent telemetry.”</b> If a span trips a rule (e.g. a prompt-injection
+        marker, or an oversized output), an incident opens automatically with the MITRE technique
+        attached — same incident timeline + alert routing as the rest of the platform.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">Content &amp; privacy</h2>
+      <p>
+        <code>captureContent</code> is <b>off by default</b> — only metadata (model, token counts,
+        tool names, operation, finish reason) is sent, never prompt/completion text. Turning it on
+        unlocks the highest-signal detections (prompt-injection and the MCP <i>tool-result</i>
+        injection that is the dominant agent attack vector), because they scan content. When on,
+        <b>edge redaction runs at ingest</b> — bearer tokens, JWTs, AWS/LLM/GitHub keys are stripped
+        before storage. Decide per your threat model; you can capture content for tool results only.
+      </p>
+
+      <h2 class="h2" style="margin-top: 40px;">What gets detected</h2>
+      <ul>
+        <li><b>Prompt injection / jailbreak</b> — known markers in prompt/completion content.</li>
+        <li><b>Token / cost blowout</b> — oversized outputs (unbounded generation).</li>
+        <li><b>Runaway tool loops</b> — excessive tool-call volume in a window.</li>
+        <li><b>Sensitive tool use</b> — shell / exec / payment / SQL / delete tool names.</li>
+        <li><b>MCP tool-result injection &amp; secret exfil</b> — injection or keys inside a tool result returned to the model (needs tool-result capture).</li>
+      </ul>
+      <p style="margin-top: 8px; font-size: 13px; color: var(--ink-3);">
+        See also the <a href="/docs/api-for-agents">API for Agents</a> and the
+        <a href="/docs/collector">OTel Collector</a> docs.
+      </p>
+    </div>
+  </section>
+</Base>

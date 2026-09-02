@@ -1,0 +1,314 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Where do I start as a brand-new user?',
+    a: 'Create your account, then send the platform something to work with — point a monitor at a URL, ship a stream of logs, or connect a host. Within minutes you will have data flowing and the first dashboards populated. From there, turn on the detection packs that match your environment and let the analyst start investigating incidents. The <a href="/docs/quickstart">quickstart</a> walks the first ten minutes; this guide covers the day-to-day after that.',
+  },
+  {
+    q: 'Do I need to install anything to use 24Observe?',
+    a: 'Not necessarily. You can monitor URLs, receive webhooks, and ingest logs over plain HTTPS with nothing installed. To collect from your own hosts and network devices you run a lightweight collector inside your environment — one command to install, and it gathers host and device telemetry for you. Everything is driven from the dashboard or the API.',
+  },
+  {
+    q: 'How do monitors, logs, metrics, and detections fit together?',
+    a: 'They are different ways the same platform notices something is wrong, and they all converge on one place: the incident. A monitor failing, a metric crossing a threshold, a log detection matching, or a host going quiet each opens an incident, which the analyst then investigates. Learning the platform is mostly learning that everything funnels into that single incident-and-investigation flow.',
+  },
+  {
+    q: 'What is an incident, exactly?',
+    a: 'An incident is the platform’s unit of "something needs attention." It has a lifecycle — open, acknowledged, resolved — a severity, a timeline of updates, and, once the analyst has run, a verdict with the root cause, blast radius, evidence, and recommended fix. You acknowledge it to stop the paging, post updates that can appear on your status page, and resolve it when it is fixed.',
+  },
+  {
+    q: 'How do I read an analyst verdict?',
+    a: 'Top to bottom: the classification (security or operational), the root cause in plain language, the blast radius (what it touches), the cited evidence (each a link you can open to verify), and the recommended fix. A confidence level tells you how much weight to give it. If the analyst was not sure, it will say so and route the incident to you rather than guess.',
+  },
+  {
+    q: 'How do I cut down on noisy alerts?',
+    a: 'Three levers. Tune a detection’s threshold or window so it fires on real signal. Use maintenance windows to pause alerts during planned work. And rely on storm correlation, which automatically collapses many related incidents from one root cause into a single case — so a big failure pages you once, not fifty times. You rarely need to mute a rule outright.',
+  },
+  {
+    q: 'Can my whole team use it, with the right permissions?',
+    a: 'Yes. Invite teammates, assign roles, and set up on-call schedules and escalation policies so the right person is paged at the right time. Roles, tokens, billing, and data-retention settings are covered in the <a href="/docs/admin">admin guide</a>; this guide focuses on the day-to-day operator workflow.',
+  },
+  {
+    q: 'Where do I see how everything connects?',
+    a: 'The topology map shows your services, hosts, and devices and the dependencies between them, with a health overlay — a node turns red when it stops reporting or an incident implicates it. It is the fastest way to see what is broken and everything downstream of it during an incident.',
+  },
+  {
+    q: 'Can I drive 24Observe from the API instead of the UI?',
+    a: 'Yes — everything in the dashboard is available through a plain REST API, and it is designed to be driven by scripts and AI agents as well as people. If you want to automate workflows or build an agent against it, see the <a href="/docs/agent-cookbook">agent cookbook</a>.',
+  },
+  {
+    q: 'Is there a status page I can give customers?',
+    a: 'Yes. Publish a status page that groups your monitors into components, post incident updates that appear on it automatically, and let customers subscribe for notifications — so you are not fielding "is it down?" messages during an outage.',
+  },
+];
+---
+<Base
+  title="User Guide — running 24Observe day to day | 24Observe"
+  description="The complete operator’s guide to 24Observe: set up monitoring, ship and search logs, alert on metrics, enable detections, read analyst verdicts, work incidents, use the topology map, and run on-call."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-text">
+        <div class="eyebrow"><span class="bar"></span> User Guide</div>
+        <h1 class="h1">Everything you need to <em>run 24Observe</em>, day to day.</h1>
+        <p class="lede">
+          This is the operator’s manual — the practical, end-to-end guide to using the platform once you are past the
+          first login. It walks the whole workflow in the order you will actually meet it: get data flowing, set up
+          monitoring, ship and search logs, alert on metrics, turn on detections, read the analyst’s verdicts, work
+          incidents, and keep your team and your customers informed. No reference-doc shorthand — just how it works and
+          how to use it well.
+        </p>
+        <div class="hero-ctas">
+          <a href="/docs/quickstart" class="btn btn-primary btn-lg">Quickstart <span class="arr">→</span></a>
+          <a href="/docs/admin" class="btn btn-ghost btn-lg">Admin guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The mental model</div>
+        <h2 class="h2">One idea makes the whole platform click.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          24Observe has a lot of surface area — monitoring, logs, metrics, detections, an analyst, a topology map, on-call.
+          It is far easier to learn once you see the single idea underneath all of it.
+        </p>
+        <p>
+          Everything the platform does is a different way of <em>noticing</em> that something needs attention, and every
+          one of those ways funnels into the same place: an <strong>incident</strong>. A monitor that fails opens an
+          incident. A metric that crosses a threshold opens an incident. A security detection that matches opens an
+          incident. A host that goes quiet opens an incident. They look like different features, but they all arrive at
+          the same destination — and once an incident exists, the <strong>analyst</strong> investigates it and the
+          <strong>context graph</strong> tells you what it touches.
+        </p>
+        <p>
+          So the platform is really a funnel. The wide top is all the ways you can feed it signal — checks, logs, metrics,
+          device telemetry, agent traces. The narrow bottom is a single, consistent incident-and-investigation flow that
+          works the same no matter which input opened the incident. Learn that flow once and you have learned the product;
+          everything else is just choosing which signals to send and how sensitive to make them. The sections below follow
+          that funnel from top to bottom.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1 · Get data flowing</div>
+        <h2 class="h2">Give the platform something to watch.</h2>
+        <p class="lede">There are four front doors. Use whichever fit what you want to see — most teams use several.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-n">A</div><div><h3>Monitor a URL or endpoint</h3><p>The fastest start: point a monitor at a website, API, port, or certificate. No install — the platform checks it from the outside on the interval you set, and opens an incident when it fails or degrades.</p></div></div>
+        <div class="step"><div class="step-n">B</div><div><h3>Ship logs</h3><p>Send application and system logs over HTTPS, from your existing log shippers, or from common cloud sources. They are searchable within seconds, and detections run over them automatically.</p></div></div>
+        <div class="step"><div class="step-n">C</div><div><h3>Connect a host or device</h3><p>Install the lightweight collector on a server to gather its logs and metrics, or have it poll your network devices. One command per host; the network gear needs nothing installed on it.</p></div></div>
+        <div class="step"><div class="step-n">D</div><div><h3>Connect an AI agent or app</h3><p>If you run AI agents or instrumented services, point their telemetry at the platform to get cost, latency, and security visibility alongside everything else.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2 · Monitoring &amp; metrics</div>
+        <h2 class="h2">Set up what "healthy" means.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Create a monitor</h3>
+          <p>
+            Choose a type — website, API, port, certificate, keyword, or an inverted heartbeat where your job pings the
+            platform on success — and set the interval, the timeout, and what counts as a failure. You can treat a slow
+            response as degraded and alert on that before it goes fully down, and you can run checks from more than one
+            location so a single bad vantage point does not flip a healthy service.
+          </p>
+          <h3>Alert on metrics</h3>
+          <p>
+            Beyond up-or-down, set thresholds on the numbers that matter — host CPU and memory, request latency, queue
+            depth, interface utilisation on a network device. Pick the metric, the comparison, and the window, and a breach
+            opens an incident through the same pipeline as everything else. This is how you catch the slow degradations
+            that a simple availability check never sees.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Choose how you’re told</h3>
+          <p>
+            Every incident routes through your notification channels — email, chat tools, phone and text, or a signed
+            webhook to your own systems. You decide which channels carry which severities, and on-call schedules decide
+            <em>who</em> gets the page. Set this up once and it applies to every kind of incident, security or operational.
+          </p>
+          <h3>Pause for planned work</h3>
+          <p>
+            Before a deploy or a maintenance window, schedule a quiet period for the affected monitors. Checks keep
+            running so you still have the data, but the alerts pause, and your uptime math respects the window so planned
+            work does not dent your reliability numbers or wake anyone.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3 · Logs &amp; detections</div>
+        <h2 class="h2">Search what happened, and detect what matters.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Searching logs.</strong> Type the words you remember. Plain text works for most questions, and a
+          readable filter syntax narrows it down by service, level, or any field — no query language to study. Live tail
+          streams new matching events as they land, so you can watch a deploy or an incident unfold in real time.
+          Repeating patterns are grouped so ten thousand near-identical lines collapse into a single row with a count, and
+          recurring errors are tracked so you see each distinct bug once rather than a thousand times.
+        </p>
+        <p>
+          <strong>Turning on detections.</strong> The platform ships with a large library of prebuilt detections grouped
+          into packs — authentication abuse, data exfiltration, secret exposure, web attacks, threat-intel matches,
+          AI-agent threats, cloud control-plane, host security, and infrastructure health. Enable the packs that match
+          your environment and they begin matching your incoming events immediately. Each detection that matches opens an
+          incident, which the analyst then investigates. You can tune any detection’s threshold to your own volume, and
+          you can write your own in a single readable line — a query, a window, a threshold, and a severity.
+        </p>
+        <p>
+          The important thing to internalise is that a detection is not a dead-end alert. It is the start of an
+          investigation. You do not have to triage detections by hand; you read the verdicts the analyst produces. See the
+          next section, and the dedicated <a href="/product/siem">SIEM &amp; detections</a> page for the full picture.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 4 · Incidents &amp; the analyst</div>
+        <h2 class="h2">Work the incident — starting from an answer.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          When something opens an incident, you do not start from a blank page. The <a href="/product/ai-analyst">analyst</a>
+          investigates it automatically and attaches a verdict. Read it top to bottom: the classification tells you whether
+          this is a security or an operational problem; the root cause states, in plain language, what actually happened;
+          the blast radius lists what it touches; the evidence section links every claim to a record you can open and
+          check; and the recommended fix names the next action. A confidence level tells you how seriously to take it, and
+          if the analyst was not sure, it says so and hands the incident to you rather than guessing.
+        </p>
+        <p>
+          From there the workflow is simple. <strong>Acknowledge</strong> to stop the paging while you work — the incident
+          stays open, but the team knows someone has it. <strong>Post updates</strong> as you learn more; those can flow
+          straight to your public status page so customers are informed without you writing a separate notice. If the
+          analyst proposed a response action — block a source, roll back a change — you review and approve it; nothing is
+          executed automatically. When it is fixed, <strong>resolve</strong> it.
+        </p>
+        <p>
+          <strong>Group related work into a case.</strong> When several incidents are really one event, gather them into a
+          case — a single investigation with its own status, owner, and notes. Often the platform does this for you:
+          storm correlation automatically collapses many incidents that share a root cause into one case, so a big failure
+          is one thing to work, not fifty. And when you correct a verdict — confirm it, downgrade it, add context — that
+          correction teaches the analyst, so it gets better at reading your environment over time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 5 · See it all together</div>
+        <h2 class="h2">Topology, on-call, and status.</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-card"><div class="why-num">Topology health map</div><p>A live map of your services, hosts, and devices with the dependencies between them, coloured by health. During an incident it is the fastest way to see what is broken and everything downstream of it. <a href="/product/context-graph">Learn more →</a></p></div>
+        <div class="why-card"><div class="why-num">On-call &amp; escalation</div><p>Define who is on call with rotations and overrides, and build escalation chains so an unacknowledged incident steps up to the next responder. One schedule covers every kind of incident.</p></div>
+        <div class="why-card"><div class="why-num">Status pages</div><p>Publish a status page, group monitors into components, post incident updates that appear automatically, and let customers subscribe — so the operator is not also the press office during an outage.</p></div>
+      </div>
+      <div class="prose" style="margin-top: 40px;">
+        <p>
+          Those are the day-to-day surfaces. Settings that affect the whole organisation — inviting teammates, assigning
+          roles and permissions, managing API tokens, billing, and data retention — live in the
+          <a href="/docs/admin">admin guide</a>, because they are an administrator’s job rather than an operator’s. And if
+          you would rather drive any of this from scripts or an AI agent than from the dashboard, every action here is
+          available through the API; the <a href="/docs/agent-cookbook">agent cookbook</a> shows you how.
+        </p>
+        <p>
+          That is the whole loop: feed the platform signal, decide what healthy means, let detections and the analyst do
+          the noticing and the investigating, and work incidents from an answer instead of a blank page. Once it is
+          running, the platform should feel less like a set of tools you operate and more like a colleague who has already
+          done the first hour of every investigation before you sit down.
+        </p>
+        <h3>The rhythms that emerge once you’ve lived with it</h3>
+        <p>
+          New users sometimes ask what a normal day looks like. A few patterns settle in within the first week.
+          <strong>The morning sweep</strong> is the simplest: open the incident list, and because each open incident
+          already carries a verdict, you are reading conclusions rather than starting investigations — a few minutes tells
+          you whether anything overnight needs a human, instead of an hour of catching up. <strong>Watching a
+          deploy</strong> becomes a habit: open live tail filtered to the service you are shipping, keep the topology map
+          in view, and you see errors or a metric turning the moment they appear, while you can still roll back cheaply.
+        </p>
+        <p>
+          <strong>The incident itself</strong> is where the platform earns its keep. The page arrives, the verdict is
+          already attached, you acknowledge to quiet the noise, read the root cause and blast radius, post an update that
+          your status page picks up automatically, approve any proposed fix, and resolve — a flow that used to span four
+          tools, done in one. When several incidents are really one event, you work the case the storm-correlation already
+          built rather than fifty separate pages. <strong>The weekly look-back</strong> closes the loop: skim resolved
+          incidents and analyst verdicts, correct any the analyst got wrong so it learns, tune a detection that has been
+          a little noisy, and note any monitor or threshold worth adding. None of this is heavy process — it is just what
+          falls out naturally when noticing and investigating are handled for you and your attention is freed for the
+          decisions that actually need a person.
+        </p>
+        <h3>How to grow into it without being overwhelmed</h3>
+        <p>
+          You do not have to adopt everything at once, and you should not try to. The teams who get the most from the
+          platform tend to start narrow and widen deliberately. Begin with a single service or a single class of problem
+          — the thing that pages you most often — and get its monitors, its logs, and one or two detections genuinely
+          trustworthy before you expand. A handful of monitors you believe is worth far more than a hundred you have
+          learned to ignore, because the moment an alert becomes background noise it has stopped doing its job. Once that
+          first slice feels solid and quiet, add the next service the same way, and let coverage accumulate as confidence
+          does.
+        </p>
+        <p>
+          The same principle applies to the analyst and to enforcement. Let it investigate in an advisory role first, read
+          its verdicts against incidents you already understand, and only widen its remit once it has earned your trust on
+          familiar ground — exactly the way you would extend responsibility to a new hire. Treat the early weeks as a
+          conversation: every verdict you confirm or correct, every threshold you nudge, every detection you tune is you
+          teaching the system what your environment considers normal. That investment compounds. A platform you have spent
+          a month shaping around your own services is dramatically more useful than one fresh out of the box, and the
+          shaping is the ordinary work of using it — not a separate project you have to schedule.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">User guide — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Ready to run it for real?</h2>
+      <p class="final-cta-sub">Send your first signal, turn on the packs that fit, and let the analyst start working incidents while you set up the rest.</p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/admin" class="btn btn-ghost btn-lg">Admin guide</a>
+      </div>
+    </div>
+  </section>
+</Base>

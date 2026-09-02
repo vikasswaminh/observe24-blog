@@ -1,0 +1,143 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Error tracking + Real User Monitoring — 24Observe"
+  description="Point your Sentry SDK at us, and report Core Web Vitals — no new SDKs, no per-seat bill."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · error tracking + RUM</div>
+      <h1 class="h1">Error tracking + Real User Monitoring.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Two drop-in integrations that reuse the SDKs you already run. Keep your
+        existing <code>@sentry/*</code> client and just repoint its DSN at us for
+        Sentry-style error grouping. Keep Google's <code>web-vitals</code> library
+        and beacon its readings to us for Core Web Vitals. No re-instrumentation,
+        no second agent, no per-seat bill — errors and vitals land in the same
+        Logs and metrics pipeline you already use.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Sentry-SDK error ingest</h2>
+      <p>
+        Keep the free, open-source <code>@sentry/*</code> SDK exactly as it is.
+        Change one value — the DSN — to point at us. The unmodified SDK then
+        ships its error events to us instead of Sentry, and they flow straight
+        into the Error-tracking view you already have.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">DSN format</h3>
+      <pre class="code-block">https://&lt;obs_PAT&gt;@api.24observe.com/&lt;project&gt;</pre>
+      <ul style="line-height: 1.9;">
+        <li><code>&lt;obs_PAT&gt;</code> is a 24Observe Personal Access Token with the <code>logs:write</code> scope. Like a normal Sentry DSN key, it's a public, write-only credential — safe to ship in your application bundle. It can write errors; it can't read your data.</li>
+        <li><code>&lt;project&gt;</code> can be any identifier you like — it labels the source of the events.</li>
+      </ul>
+      <p>
+        Under the hood, the unmodified SDK POSTs its envelope to
+        <code>/api/&lt;project&gt;/envelope/?sentry_key=&lt;obs_PAT&gt;</code> —
+        the standard Sentry envelope endpoint. You don't call this directly; the
+        SDK does, the moment you set the DSN.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">JavaScript</h3>
+      <pre class="code-block">{`import * as Sentry from '@sentry/node'; // or @sentry/browser, etc.
+
+Sentry.init({
+  dsn: 'https://obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@api.24observe.com/my-app',
+});
+
+// Then capture as usual — no other changes.
+Sentry.captureException(new Error('something broke'));`}</pre>
+      <p>
+        This works with <b>any</b> Sentry SDK — Node, browser, Python, and the
+        rest — because they all speak the same envelope protocol. Initialize with
+        the 24Observe DSN and your existing capture calls just work.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">What we do with it</h3>
+      <p>
+        We translate each Sentry error event into one of our error-level log
+        events. The message becomes <code>"ExceptionType: value"</code> — the
+        same string Sentry groups on — so it fingerprints and groups exactly the
+        way you're used to. From there, everything downstream works unchanged:
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><b>Error fingerprint grouping</b> — repeated occurrences collapse into a single row with first-seen, last-seen, and a running count in the Error-tracking view.</li>
+        <li><b>Search</b> — errors are queryable alongside the rest of your logs (KQL-lite, facets, the lot).</li>
+        <li><b>Redaction + quota</b> — the same privacy and volume controls that govern your logs apply automatically; no separate config.</li>
+      </ul>
+      <p>
+        The result: Sentry-style error grouping inside the same Logs pipeline you
+        already pay for, with no separate per-seat bill. Grouped errors surface
+        in the dashboard under <a href="/docs/logs#error-tracking">Logs → Error
+        tracking</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Real User Monitoring (Core Web Vitals)</h2>
+      <p>
+        Keep Google's free, open-source <code>web-vitals</code> library on your
+        site. Report its readings to us and they become first-class metrics —
+        queryable and alertable like anything else. No new SDK, no bundle bloat.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Endpoint</h3>
+      <pre class="code-block">POST https://api.24observe.com/api/v1/rum/vitals?key=&lt;obs_PAT&gt;</pre>
+      <p>
+        <code>&lt;obs_PAT&gt;</code> is a Personal Access Token with the
+        <code>metrics:write</code> scope — again a public, write-only key, safe to
+        ship in the page. The standard pattern is
+        <code>navigator.sendBeacon(url, JSON.stringify(payload))</code>, which
+        fires reliably even as the page is unloading.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Payload shapes</h3>
+      <p>The endpoint accepts three shapes, so you can wire it up however the library hands you data:</p>
+      <ul style="line-height: 1.9;">
+        <li><b>Batched object:</b> <code>{`{ service, url, metrics: [ { name, value, rating?, id?, navigationType? } ] }`}</code></li>
+        <li><b>Bare array</b> of metric objects.</li>
+        <li><b>Single metric object</b> — the exact shape the web-vitals <code>onLCP</code> / <code>onCLS</code> / … callbacks hand you, so you can forward each reading as it arrives.</li>
+      </ul>
+
+      <h3 class="h3" style="margin-top: 24px;">Metric names</h3>
+      <ul style="line-height: 1.9;">
+        <li><code>LCP</code>, <code>FCP</code>, <code>INP</code>, <code>FID</code>, <code>TTFB</code> — recorded in milliseconds.</li>
+        <li><code>CLS</code> — the unitless cumulative layout-shift score.</li>
+      </ul>
+      <p>
+        Each reading becomes a metric named <code>web_vitals.lcp</code>,
+        <code>web_vitals.cls</code>, and so on — queryable and alertable like any
+        other metric in 24Observe. <code>service</code> defaults to the URL host
+        when omitted, so a single line of config tags every reading by site.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Response + CORS</h3>
+      <ul style="line-height: 1.9;">
+        <li>Returns <code>202</code>.</li>
+        <li><code>sendBeacon</code> is a simple request and needs no CORS preflight — it just works from any page.</li>
+        <li>A <code>{`fetch(url, { keepalive: true })`}</code> reporter from any origin works too, if you prefer fetch over beacon.</li>
+      </ul>
+
+      <h3 class="h3" style="margin-top: 24px;">JavaScript</h3>
+      <pre class="code-block">{`import { onLCP, onCLS, onINP, onFCP, onTTFB } from 'web-vitals';
+
+const URL = 'https://api.24observe.com/api/v1/rum/vitals?key=obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+
+function report(metric) {
+  // metric = { name, value, rating, id, navigationType } from web-vitals
+  navigator.sendBeacon(URL, JSON.stringify(metric));
+}
+
+// Wire each Core Web Vital to the reporter.
+onLCP(report);
+onCLS(report);
+onINP(report);
+onFCP(report);
+onTTFB(report);`}</pre>
+      <p>
+        Prefer to batch? Collect the callbacks into an array and send a single
+        <code>{`{ service, url, metrics: [...] }`}</code> beacon on
+        <code>visibilitychange</code> — the endpoint accepts that shape directly.
+      </p>
+    </div>
+  </section>
+</Base>

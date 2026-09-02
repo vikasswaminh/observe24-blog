@@ -1,0 +1,172 @@
+---
+// Live status pill — fetches our own public status page (dog-food: 24observe
+// monitors itself) and computes aggregate state across all components.
+// Falls back to "unknown" if API is unreachable / CORS-blocked / timeout.
+// Cached in sessionStorage for 60s so navigating between pages doesn't re-fetch.
+
+interface Props {
+  /** Override the status URL. Defaults to public dog-food status page. */
+  apiUrl?: string;
+}
+const { apiUrl = 'https://api.24observe.com/api/v1/status-pages/public/24observe' } = Astro.props;
+---
+<span class="status-pill" id="status-pill" data-api-url={apiUrl} data-state="checking">
+  <span class="status-dot" id="status-dot"></span>
+  <span id="status-label">checking…</span>
+</span>
+
+<style>
+  /* State-driven colors — overrides the default green dot when state changes. */
+  #status-pill[data-state="up"] .status-dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-dim), 0 0 8px var(--accent);
+  }
+  #status-pill[data-state="degraded"] .status-dot,
+  #status-pill[data-state="unknown"] .status-dot {
+    background: var(--amber);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--amber) 25%, transparent), 0 0 8px var(--amber);
+    animation: blink 2.4s ease-in-out infinite;
+  }
+  #status-pill[data-state="down"] .status-dot {
+    background: var(--red);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--red) 25%, transparent), 0 0 8px var(--red);
+    animation: blink 1s ease-in-out infinite;
+  }
+  #status-pill[data-state="checking"] .status-dot {
+    background: var(--ink-3);
+    box-shadow: none;
+    animation: none;
+  }
+</style>
+
+<script>
+  type State = 'checking' | 'up' | 'degraded' | 'down' | 'unknown';
+
+  const LABELS: Record<State, string> = {
+    checking: 'checking…',
+    up: 'all systems go',
+    degraded: 'degraded',
+    down: 'incident',
+    unknown: 'status unknown',
+  };
+
+  const CACHE_KEY = '24o:health';
+  const CACHE_TTL_MS = 60_000;
+  const FETCH_TIMEOUT_MS = 5_000;
+  const REFRESH_MS = 60_000;
+
+  type Cached = { state: State; ts: number };
+
+  const pill = document.getElementById('status-pill');
+  const label = document.getElementById('status-label');
+  if (pill && label) {
+    const apiUrl = pill.dataset.apiUrl ?? '';
+
+    const set = (state: State) => {
+      pill.dataset.state = state;
+      label.textContent = LABELS[state];
+    };
+
+    const readCache = (): Cached | null => {
+      try {
+        const raw = sessionStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const c = JSON.parse(raw) as Cached;
+        if (Date.now() - c.ts > CACHE_TTL_MS) return null;
+        return c;
+      } catch { return null; }
+    };
+
+    const writeCache = (state: State) => {
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ state, ts: Date.now() }));
+      } catch { /* private mode etc */ }
+    };
+
+    type StatusPagePayload = {
+      monitors?: Array<{ lastStatus?: 'up' | 'down' | 'degraded' | null }>;
+    };
+
+    // Combine all component statuses into a single pill state.
+    // Worst-case wins: any down → down; else any degraded → degraded;
+    // else any never-checked → checking; else up.
+    const aggregate = (payload: StatusPagePayload): State => {
+      const monitors = payload.monitors ?? [];
+      if (monitors.length === 0) return 'unknown';
+      let sawDegraded = false;
+      let sawUnchecked = false;
+      for (const m of monitors) {
+        if (m.lastStatus === 'down') return 'down';
+        if (m.lastStatus === 'degraded') sawDegraded = true;
+        if (m.lastStatus == null) sawUnchecked = true;
+      }
+      if (sawDegraded) return 'degraded';
+      if (sawUnchecked) return 'checking';
+      return 'up';
+    };
+
+    const check = async (): Promise<void> => {
+      if (!apiUrl) {
+        set('unknown');
+        return;
+      }
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+      try {
+        const r = await fetch(apiUrl, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'omit',
+          cache: 'no-store',
+          signal: ctrl.signal,
+        });
+        if (!r.ok) {
+          // The status-page endpoint itself failed — API is in trouble.
+          const next: State = r.status >= 500 ? 'down' : 'degraded';
+          set(next);
+          writeCache(next);
+          return;
+        }
+        const data = (await r.json()) as StatusPagePayload;
+        const next = aggregate(data);
+        set(next);
+        writeCache(next);
+      } catch {
+        // CORS-blocked, network down, DNS fails, timeout, etc.
+        // We can't tell the difference between "API down" and "API not reachable
+        // from this browser's network" — call it unknown rather than down.
+        set('unknown');
+        writeCache('unknown');
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    // Use cache on initial render to avoid a flash of "checking…"
+    const cached = readCache();
+    if (cached) set(cached.state);
+
+    // Always re-check in the background
+    void check();
+
+    // Refresh periodically while the tab is visible
+    let interval: number | undefined;
+    const startRefresh = () => {
+      if (interval) return;
+      interval = window.setInterval(() => { void check(); }, REFRESH_MS);
+    };
+    const stopRefresh = () => {
+      if (interval) { window.clearInterval(interval); interval = undefined; }
+    };
+
+    if (document.visibilityState === 'visible') startRefresh();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        void check();
+        startRefresh();
+      } else {
+        stopRefresh();
+      }
+    });
+  }
+</script>

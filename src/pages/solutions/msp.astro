@@ -1,0 +1,333 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'How does 24Observe keep one customer’s data separate from another’s?',
+    a: 'Tenant isolation is enforced in the data layer, not bolted on as a UI filter. Reads are scoped by organisation in the query itself, and the cold archive of every data type — logs, check results, audit, webhook deliveries — is keyed per organisation, so one tenant\'s data is structurally separated from another\'s. Cross-organisation isolation is regression-tested. For an operator running many customers on one platform, that separation is the foundation everything else stands on.',
+  },
+  {
+    q: 'Can I operate many customers efficiently, or is it per-tenant clicking?',
+    a: 'Through the API. Provisioning monitors, detections, alerts, on-call schedules, and the rest is all programmable, so you operate at fleet scale — onboard a new customer from a template, roll a policy change across every tenant, or let an agent manage routine configuration. The platform is designed to be driven by automation, which is the only way running dozens of customers stays sane. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'Does the AI analyst help across many customers?',
+    a: 'That is where it pays off most for an operator. An MSP cannot staff a deep investigation rotation per customer, so an analyst that does the first hour of every incident across every tenant is the closest thing to scaling your senior engineers. Each customer\'s incidents arrive investigated, with a verdict and evidence, so your team spends its time on the decisions and the genuinely hard cases rather than triaging the same routine alert a hundred times across a hundred clients. See <a href="/product/ai-analyst">the analyst</a>.',
+  },
+  {
+    q: 'Can each customer have their own status page?',
+    a: 'Yes. You can publish a status page per customer — components in their language, email subscribers, public or password-protected — and have it update automatically from the incidents your team is working. That turns a support burden into a self-serve channel, per tenant, without anyone hand-writing updates during an outage. See <a href="/product/status-pages">status pages</a>.',
+  },
+  {
+    q: 'How does consolidation help my margins?',
+    a: 'Directly. Most MSPs assemble a stack per customer — an uptime tool, a logging tool, an on-call router, a status page — and the integration toil and the stacked bills eat the margin on every account. One platform covering observability, security, on-call, and status, on one shared volume allowance, replaces that sprawl. Fewer tools to integrate per customer and fewer bills to mark up against means more of each contract is margin, not cost.',
+  },
+  {
+    q: 'Can I run it on my own infrastructure?',
+    a: 'Yes. 24Observe is open source and self-hostable with an identical contract, which matters for operators who need data residency control, want to run inside a customer\'s environment, or simply prefer to own the stack they resell. You can keep customer telemetry on infrastructure you control. See the <a href="/solutions/self-host">self-host solution</a>.',
+  },
+  {
+    q: 'What about the audit trail across tenants?',
+    a: 'Every meaningful action is recorded — who did it, when, from where, and whether it came from a person or an automated token — and the log is queryable and exportable. For an operator, that is the difference between being able to answer a customer\'s "who changed this?" in one search and reconstructing it from memory. It also keeps your own team\'s actions and your automation\'s actions clearly distinguished.',
+  },
+  {
+    q: 'Does it cover both reliability and security for my customers?',
+    a: 'Yes — that breadth is part of the appeal for an operator, because you can offer monitoring and a real SIEM with investigation from one platform rather than sourcing and integrating two. A customer gets uptime, logs, metrics, traces, on-call, detections, and an investigating analyst under one roof, and you operate all of it through one consistent surface.',
+  },
+];
+---
+<Base
+  title="For MSPs — many customers, one platform | 24Observe"
+  description="Strong per-tenant data isolation, full API automation, per-customer status pages, and an AI analyst that investigates across every tenant you operate."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> For MSPs &amp; multi-tenant operators</div>
+          <h1 class="h1">Running many customers shouldn’t mean running many stacks. <em>Consolidate.</em></h1>
+          <p class="lede">
+            The economics of managed services live and die on what it costs to operate each customer — and a per-tenant
+            pile of tools, integrations, and bills quietly eats the margin on every account. 24Observe gives operators
+            one platform with strong per-tenant isolation, full API automation, per-customer status pages, and an AI
+            analyst that investigates incidents across every tenant — so you run more customers, with better margins, on
+            far less glue.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/agents" class="btn btn-ghost btn-lg">The automation API</a>
+          </div>
+          <div class="hero-meta">
+            <span>Per-tenant <b>isolation</b></span>
+            <span>Fleet-scale <b>API</b></span>
+            <span>Analyst <b>across tenants</b></span>
+            <span>Self-<b>hostable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/orgs</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Customer fleet · 38 tenants</div>
+              <div class="con-meta">isolated · API-managed</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">acme-corp · 2 incidents · verdicts ready</div>
+                <div class="con-sub"><span>investigated</span><span class="tech">own status page</span></div>
+              </div>
+              <span class="sev sev-med">OK</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">new tenant provisioned from template</div>
+                <div class="con-sub"><span>via API</span><span class="tech">monitors + detections</span></div>
+              </div>
+              <span class="sev sev-med">AUTO</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">data keyed per org · cross-tenant isolated</div>
+                <div class="con-sub"><span>scoped in query</span><span class="tech">regression-tested</span></div>
+              </div>
+              <span class="sev sev-med">SAFE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> One platform, many customers, isolated and automated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The operator reality</div>
+        <h2 class="h2">Your margin is being eaten by the stack you run per customer.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          For a managed-service operator, every tool in the per-customer stack is not just a cost — it is a cost
+          multiplied by your customer count, plus the integration labour to keep it working, plus the cognitive load of
+          your team context-switching across all of it. The sprawl that an in-house team merely tolerates, an operator
+          pays for many times over.
+        </p>
+        <p>
+          The arithmetic is unforgiving. Assemble an uptime tool, a logging tool, an on-call router, and a status page per
+          customer, and you have four bills to mark up against — eroding the margin on the contract before you have done
+          any work — and four integrations to stand up and maintain for every new account. Onboarding becomes a project,
+          which caps how many customers each engineer can carry, which caps the business. The thing limiting your growth
+          is not demand; it is the per-tenant operational overhead.
+        </p>
+        <p>
+          Then there is the triage tax, which is uniquely brutal for operators. The same routine alert — a disk filling, a
+          certificate expiring, a brute-force burst — fires across customer after customer, and your team investigates the
+          same patterns a hundred times over because each tenant's alerts land cold. You cannot staff a deep investigation
+          rotation per customer, so either the senior engineers drown or the junior ones make calls above their pay grade.
+          Neither scales, and both show up in churn and burnout.
+        </p>
+        <p>
+          And underneath it all sits the thing you cannot get wrong: isolation. The instant one customer can see another's
+          data, the business is over. Bolting tenancy on as a UI filter over a shared store is a breach waiting to happen,
+          and an operator feels that risk more acutely than anyone because the blast radius is every customer at once.
+        </p>
+        <p>
+          24Observe is built to fix the operator's specific problems. One platform covering observability, security,
+          on-call, and status replaces the per-customer sprawl and its stacked bills. A full API means you provision and
+          operate at fleet scale instead of clicking per tenant. The <a href="/product/ai-analyst">analyst</a> does the
+          first hour of investigation across every customer, so your team scales. And tenant isolation is enforced in the
+          data layer and regression-tested, so the foundation is sound. More customers per engineer, more margin per
+          contract, less risk on the thing that matters most.
+        </p>
+      </div>
+      <blockquote class="quote">
+        For an operator, every tool in the per-customer stack is a cost times your customer count. Consolidation isn’t a
+        nicety — it’s the margin.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What operators get</div>
+        <h2 class="h2">The pieces that make many-customer operations work.</h2>
+        <p class="lede">
+          Isolation you can trust, automation that scales, and a force-multiplier that lets a small team carry a large
+          book of customers.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Data-layer isolation</div><p>Reads scoped by organisation in the query; cold archives keyed per organisation; cross-tenant isolation regression-tested. Separation that is structural, not a UI filter.</p></div>
+        <div class="why-card"><div class="why-num">Fleet-scale API</div><p>Provision and operate every tenant programmatically — onboard from a template, push a policy to all customers, let agents handle routine config. <a href="/agents">API for agents →</a></p></div>
+        <div class="why-card"><div class="why-num">Analyst across tenants</div><p>Every customer's incidents arrive investigated, with a verdict and evidence — the first hour of work, done, for your whole book. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">Per-customer status pages</div><p>A status page per tenant, auto-updated from incidents, public or private — a self-serve channel instead of a support burden. <a href="/product/status-pages">Status pages →</a></p></div>
+        <div class="why-card"><div class="why-num">Reliability and security</div><p>Uptime, logs, metrics, traces, on-call, and a real SIEM with investigation — one platform to offer both, not two to integrate.</p></div>
+        <div class="why-card"><div class="why-num">Self-hostable</div><p>Run it on infrastructure you control for data residency, in-environment deployment, or simply to own the stack you resell. <a href="/solutions/self-host">Self-host →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The operator advantages</div>
+        <h2 class="h2">Scale the book without scaling the team linearly.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Onboard from a template, not from scratch</h3>
+          <p>
+            The cost of adding a customer determines how many you can carry, so the API is the lever that matters most.
+            Define a standard package once — the monitors, detection packs, alert routing, and escalation a typical
+            customer should have — and provision a new tenant from it programmatically, in minutes, consistently. A policy
+            improvement you make does not have to be re-clicked into thirty consoles; you push it across the fleet through
+            the same API. Onboarding stops being the thing that caps your growth.
+          </p>
+          <h3>The analyst is your senior bench, cloned</h3>
+          <p>
+            The reason MSPs struggle to scale quality is that good investigation is senior work and seniors do not clone.
+            An analyst that investigates every incident across every customer is the nearest thing to cloning them: the
+            routine cases are dispositioned automatically across your whole book, and the incidents that reach your humans
+            arrive with the evidence gathered and a verdict proposed. Your seniors spend their scarce time on the genuinely
+            hard cases, not on triaging the same disk-full alert across a hundred clients.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Isolation you can put in a contract</h3>
+          <p>
+            Because separation is enforced in the data layer — reads scoped by organisation, archives keyed per
+            organisation, the boundary regression-tested — you can speak to it concretely in a security questionnaire or a
+            contract rather than hand-waving about a shared database with filters. For an operator, the ability to make a
+            credible, specific isolation claim is not a feature; it is a prerequisite for winning the customers worth
+            having.
+          </p>
+          <h3>Per-customer transparency, automatically</h3>
+          <p>
+            A status page per customer turns your biggest support driver during an incident — "is it down, what's
+            happening, when's it back" — into a self-serve channel that updates itself from the incidents your team is
+            already working. Multiply that across your book and it is a meaningful reduction in inbound support load,
+            achieved without anyone hand-writing a single update. Transparency that scales is transparency you can actually
+            afford to offer.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">Onboarding the thirty-ninth customer.</h2>
+        <p class="lede">
+          The moment that exposes whether a platform was built for operators — adding another customer — and how it should
+          feel when the tooling is on your side.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A new customer signs. In a per-tenant-stack world this kicks off a small project: stand up an uptime account,
+          provision a logging workspace, configure an on-call router, create a status page, wire them together, and hope
+          you matched the configuration you use for everyone else. It takes a skilled engineer the better part of a day,
+          it is slightly different every time, and the inconsistency becomes its own maintenance burden later.
+        </p>
+        <p>
+          Here it is an API call against a template. You have already encoded what a standard customer gets — the monitors
+          for their service types, the detection packs appropriate to their stack, the alert routing into your operations
+          channels, the escalation policy, a status page with their components. Provisioning the new tenant applies all of
+          it at once, identically to the thirty-eight before, in minutes. The customer's data is isolated from every other
+          tenant from the first event, because that separation is in the data layer, not something you had to remember to
+          configure.
+        </p>
+        <p>
+          Within the hour the customer is fully monitored and their telemetry is being watched by the detection packs. The
+          first time one of their incidents opens — a certificate creeping toward expiry, say — it does not land cold in
+          your queue alongside the same alert from a dozen other customers. The analyst has already investigated it, scoped
+          to that customer's environment, and attached a verdict: which endpoint, how many days of runway, what to do. Your
+          engineer reads a conclusion and acts, rather than re-running the same investigation they have run a hundred times
+          for other clients.
+        </p>
+        <p>
+          The customer, meanwhile, has their own status page, which updated itself when the incident opened and will update
+          again when it resolves — so they are informed without anyone on your team composing a message. If they ask "who
+          changed this setting last week," the audit trail answers it in one search. And if you decide to tighten a
+          detection threshold based on something you learned, you push that change across all thirty-nine customers through
+          the same API, not by editing thirty-nine consoles.
+        </p>
+        <p>
+          The whole point is that the thirty-ninth customer cost you almost nothing more to operate than the thirty-eighth.
+          That flat marginal cost — onboarding from a template, investigation handled by the analyst, isolation by
+          construction, transparency that runs itself — is what lets an operator grow the book without growing the team in
+          lockstep, which is the entire game in managed services.
+        </p>
+        <p>
+          The compounding effect is what makes this strategic rather than merely convenient. Each customer you add on a
+          consolidated, automated, analyst-backed platform improves your unit economics instead of straining them: the
+          template gets more refined, the automation covers more cases, and the analyst is already doing the triage. On a
+          per-customer-stack model the opposite happens — every new account adds integration surface, bills, and triage
+          load, so growth makes the operation heavier. Whether scale works for you or against you comes down to this
+          choice, and it is the difference between a managed-service business that gets healthier as it grows and one that
+          slowly chokes on its own success.
+        </p>
+        <p>
+          None of this asks you to compromise on the things a customer actually evaluates you on. They get a real platform —
+          uptime, logs, metrics, traces, on-call, and an investigating SIEM — not a thin reseller wrapper; their data is
+          isolated in a way you can describe concretely in a security review; and their incidents are investigated with
+          the same rigour whether they are your largest account or your smallest. You are not trading customer quality for
+          operator efficiency. The same consolidation that protects your margin is what lets every customer, regardless of
+          size, get the kind of coverage that used to require a dedicated team.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A per-customer stack vs one multi-tenant platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A stack per customer</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Onboarding a tenant</div><div>A day of setup, slightly different each time.</div><div class="cmp-us">An API call from a template, minutes.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Tenant isolation</div><div>Filters over a shared store, or separate accounts.</div><div class="cmp-us">Enforced in the data layer, regression-tested.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Investigation</div><div>Re-run per customer, by hand.</div><div class="cmp-us">The analyst, across every tenant.</div></div>
+        <div class="cmp-row"><div class="cmp-k">A policy change</div><div>Re-clicked into every console.</div><div class="cmp-us">Pushed across the fleet via API.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Per-customer status</div><div>A separate tool, hand-updated.</div><div class="cmp-us">Auto-updated, per tenant.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Margin per account</div><div>Eaten by stacked bills and glue.</div><div class="cmp-us">One platform, one allowance.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">For MSPs &amp; multi-tenant operators — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Run more customers on less stack.</h2>
+      <p class="final-cta-sub">
+        Per-tenant isolation, fleet-scale automation, per-customer status pages, and an analyst that investigates across
+        your whole book — so you grow the business without growing the overhead in lockstep.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/agents" class="btn btn-ghost btn-lg">See the API</a>
+      </div>
+    </div>
+  </section>
+</Base>

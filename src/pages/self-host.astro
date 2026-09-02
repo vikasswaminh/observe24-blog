@@ -1,0 +1,177 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="Self-hosted observability and SIEM | 24Observe"
+  activeNav="self-host"
+  description="Run the full platform on your own infrastructure — uptime, logs, SIEM, and the AI analyst. Two paths: full stack on a single host, or bring your own Postgres."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Self-host</div>
+      <h1 class="h1">Two paths. Pick the one that fits your ops.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        The self-hosted distribution works two ways: <b style="color: var(--ink);">full stack</b> on
+        a single host (everything included, zero external services), or <b style="color: var(--ink);">bring your own
+        managed Postgres</b> (you handle the DB, we run the rest). Pick what fits.
+      </p>
+      <div class="hero-ctas">
+        <a href="https://github.com/vikasswaminh/observe24" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Clone the repo ↗</a>
+        <a href="#full-stack" class="btn btn-ghost btn-lg">Full-stack quickstart ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="full-stack">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Path A · Full stack</div>
+      <h2 class="h2">Everything on one host. Zero external services.</h2>
+      <p class="lede">
+        Best for: small teams, on-prem, air-gapped, learning the codebase, evaluating before paying.
+      </p>
+
+      <div class="specs" style="margin-top: 40px;">
+        <div class="spec-row">
+          <div class="spec-key">01 · Clone</div>
+          <div class="spec-val"><code>git clone https://github.com/vikasswaminh/observe24.git && cd observe24</code></div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">02 · Generate secrets</div>
+          <div class="spec-val">
+            <code>{`cat > .env <<EOF
+JWT_SECRET=$(openssl rand -hex 32)
+ENCRYPTION_KEY=$(openssl rand -hex 16)
+POSTGRES_PASSWORD=$(openssl rand -hex 20)
+CLICKHOUSE_PASSWORD=$(openssl rand -hex 20)
+EOF
+chmod 600 .env`}</code>
+          </div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">03 · Build + start</div>
+          <div class="spec-val"><code>docker compose build && docker compose up -d</code></div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">04 · Migrate</div>
+          <div class="spec-val">
+            <code>docker compose run --rm --entrypoint "" -w /app/packages/db api node dist/migrate.js</code>
+          </div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">05 · Register the first user</div>
+          <div class="spec-val">
+            <code>{`curl -X POST http://localhost/api/v1/auth/register \\
+  -H 'content-type: application/json' \\
+  -d '{"email":"you@example.com","password":"secretLongEnough"}'`}</code>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 24px; color: var(--ink-2); font-size: 14px;">
+        Total time: ~5 minutes on a fresh host. Container resource ceilings are baked into compose
+        — runs comfortably on a 4-core / 8 GB instance.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Path B · Bring your own Postgres</div>
+      <h2 class="h2">Use a managed Postgres (Neon, Supabase, RDS, anything PG 16+).</h2>
+      <p class="lede">
+        Best for: teams who already have a managed-DB story, want PITR / branching / read-replicas
+        out of the box, or don't want to operate Postgres themselves. The compose stack drops the
+        bundled Postgres + backup containers; everything else stays.
+      </p>
+
+      <div class="specs" style="margin-top: 40px;">
+        <div class="spec-row">
+          <div class="spec-key">01 · Provision Postgres</div>
+          <div class="spec-val">Create a Postgres 16+ database (any provider). Note the pooled connection string.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">02 · Apply migrations</div>
+          <div class="spec-val">
+            <code>{`for f in packages/db/drizzle/*.sql; do
+  psql "$DATABASE_URL_DIRECT" -f "$f"
+done`}</code>
+          </div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">03 · Set DATABASE_URL</div>
+          <div class="spec-val"><code>{`echo "DATABASE_URL=$YOUR_POOLED_CONNECTION_STRING" >> .env`}</code></div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">04 · Start without bundled Postgres</div>
+          <div class="spec-val">
+            <code>{`docker compose up -d api worker scheduler redis clickhouse caddy prometheus grafana loki promtail`}</code>
+            <div style="font-size: 12px; color: var(--ink-2); margin-top: 8px;">
+              Skip <code>postgres</code> and <code>postgres_backup</code> — your provider handles both.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 24px; color: var(--ink-2); font-size: 14px;">
+        Note: when using a transaction-pooled connection (e.g. Neon's <code>-pooler</code>
+        endpoint or PgBouncer), the application client is configured to disable prepared
+        statements, which is required for transaction pooling to work correctly.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> What runs after up</div>
+      <h2 class="h2">Behind one reverse proxy.</h2>
+      <div class="why-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="why-card">
+          <div class="why-num mono">API</div>
+          <h3 class="h3">REST + OpenAPI on port 80</h3>
+          <p>OpenAPI spec at <code class="inline-code">/openapi.json</code>, Swagger UI at <code class="inline-code">/docs</code>, Prometheus metrics at <code class="inline-code">/metrics</code>.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">OBSERVABILITY</div>
+          <h3 class="h3">Grafana, Prometheus, Loki bundled</h3>
+          <p>Grafana on :3002, Prometheus on :9090, Loki on :3100. Datasources pre-wired.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">DATA</div>
+          <h3 class="h3">Postgres + ClickHouse + Redis</h3>
+          <p>Postgres for entities, ClickHouse for time-series check results, Redis for queues + sessions. (Bundled in Path A; you provide Postgres in Path B.)</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num mono">BACKUPS</div>
+          <h3 class="h3">Daily dumps · 7-day retention (Path A only)</h3>
+          <p>Automated with a tiny cron container. In Path B your provider handles PITR — usually better.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> System requirements</div>
+      <h2 class="h2">Runs on modest hardware.</h2>
+      <div class="specs" style="margin-top: 40px;">
+        <div class="spec-row"><div class="spec-key">CPU</div><div class="spec-val">2 cores (4 recommended)</div></div>
+        <div class="spec-row"><div class="spec-key">RAM</div><div class="spec-val">4 GB (8 GB recommended for full-stack; 2 GB enough for BYO-Postgres)</div></div>
+        <div class="spec-row"><div class="spec-key">Disk</div><div class="spec-val">20 GB (90-day check-result TTL dominates usage)</div></div>
+        <div class="spec-row"><div class="spec-key">OS</div><div class="spec-val">Any Linux with Docker Engine 20+ and Compose v2</div></div>
+        <div class="spec-row"><div class="spec-key">Ports</div><div class="spec-val">80 inbound; outbound HTTPS to the endpoints you monitor</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Sovereignty by default.</h2>
+      <p class="final-cta-sub">Your database, your backups, your domain — no vendor lock-in, and monitoring that runs entirely on your own infrastructure.</p>
+      <div class="final-cta-buttons">
+        <a href="https://github.com/vikasswaminh/observe24" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Clone and go ↗</a>
+        <a href="/docs" class="btn btn-ghost btn-lg">Full docs</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+
+const SECTIONS = [
+  {
+    title: 'Getting started',
+    links: [
+      { href: 'https://login.24observe.com/register', label: 'Hosted quickstart',  desc: 'Sign up, get a personal access token, create a monitor.' },
+      { href: '/self-host',            label: 'Self-host quickstart',   desc: 'Run the full stack on your own host.' },
+      { href: 'https://api.24observe.com/openapi.json', label: 'OpenAPI spec', desc: 'Machine-readable spec — generate a typed client in any language.' },
+    ],
+  },
+  {
+    title: 'Testing & validation',
+    links: [
+      { href: '/docs/test-guide', label: 'Test guide', desc: 'Use AI to generate synthetic telemetry, send it, and verify detections, incidents, alerts, and the AI analyst — with exact commands and expected outcomes.' },
+    ],
+  },
+  {
+    title: 'API for agents and scripts',
+    links: [
+      { href: '/docs/api-for-agents',  label: 'The agent API, in 6 features', desc: 'Rate-limit headers, signed event webhooks, scoped tokens, idempotency, error codes, tool-format URLs.' },
+      { href: '/docs/api',             label: 'API reference',           desc: 'PAT auth, base URL, 24 scopes, error codes, rate limits, curl + TS + Python examples.' },
+      { href: '/docs/context',         label: 'Operational context graph', desc: 'Resolve entities, walk evidence-ranked neighborhoods, get an incident blast-radius. Read API + MCP tools, behind context:read.' },
+      { href: '/docs/openapi',         label: 'Interactive OpenAPI',     desc: 'Every endpoint with schemas + try-it-now, rendered live from the spec the API publishes.' },
+      { href: '/docs/heartbeats',      label: 'Heartbeats / cron jobs',  desc: 'Receive URL spec, two-step token retrieval, end-to-end agent example.' },
+      { href: '/docs/webhook-subscriptions', label: 'Event webhook subscriptions', desc: 'Subscribe to incident.opened / acknowledged / resolved / monitor.status_changed / log_alert.fired. Signed delivery, retry, auto-disable, full delivery log.' },
+      { href: '/docs/webhooks',        label: 'Verify webhook signatures', desc: 'HMAC-SHA256 signature recipe with Node, Python, and Go examples. Same scheme for per-monitor alerts AND event subscriptions.' },
+    ],
+  },
+  {
+    title: 'Logs',
+    links: [
+      { href: '/docs/logs',                              label: 'Send your first event',  desc: 'Pick a source. Ship in five minutes. JSON, NDJSON, OpenTelemetry, anything that speaks syslog.' },
+      { href: '/docs/logs#search',                       label: 'Search & live tail',     desc: 'Type the words you remember. Live-tail at sub-100ms. KQL-lite when you need filters.' },
+      { href: '/docs/logs#auto-extracted-facets',        label: 'Auto-extracted facets',  desc: 'Every primitive JSON field becomes a click-to-filter chip. No schema to declare.' },
+      { href: '/docs/logs#pattern-grouping',             label: 'Pattern grouping',       desc: 'Collapse 10,000 similar lines into one template. Numbers, UUIDs, IPs, timestamps all normalize.' },
+      { href: '/docs/logs#error-tracking',               label: 'Error tracking',         desc: 'Stack-trace fingerprinting. JS, Python, Java, Go, generic ERROR/FATAL. See each bug once.' },
+      { href: '/docs/error-tracking',                    label: 'Sentry SDK & Web Vitals', desc: 'Point your @sentry/* DSN at us; beacon Core Web Vitals from web-vitals. No new SDKs, no per-seat bill.' },
+      { href: '/docs/logs#log-derived-metrics',          label: 'Log-derived metrics',    desc: 'Save any search as a time-series. Chartable, alertable, free.' },
+      { href: '/docs/logs#anomaly-spike-vs-baseline-alerts', label: 'Anomaly alerts',     desc: 'Spike-vs-baseline when "normal" varies by service. No ML to tune.' },
+      { href: '/docs/logs#log-alerts',                   label: 'Threshold alerts',       desc: 'Page on-call when N matches in W seconds. Same routing as your monitors.' },
+    ],
+  },
+  {
+    title: 'Log sources',
+    links: [
+      { href: '/docs/logs#aws-cloudwatch-logs',  label: 'AWS CloudWatch / Lambda', desc: 'Subscription filter → Firehose → us. Lambda, ECS, EKS, RDS, anything CloudWatch-logged.' },
+      { href: '/docs/logs#heroku-log-drains',    label: 'Heroku',                  desc: 'One `heroku drains:add` and every dyno log line flows. No buildpack, no SDK.' },
+      { href: '/docs/logs#vercel-log-drains',    label: 'Vercel',                  desc: 'Paste the drain URL. Lambda, edge, static, build logs — all of them.' },
+      { href: '/docs/logs#docker-daemon-logs',   label: 'Docker daemon',           desc: 'Switch the log-driver to syslog. Daemon-wide or per-container. No agent.' },
+      { href: '/docs/logs#systemd-journald',     label: 'systemd-journald',        desc: 'Mount /var/log/journal into our collector. Every unit, with severity preserved.' },
+      { href: '/docs/collector',                 label: '24observe collector',     desc: 'One Docker container for syslog, fluentforward, OTLP. The "everything else" path.' },
+    ],
+  },
+  {
+    title: 'Concepts',
+    links: [
+      { href: '/features',             label: 'Check types',             desc: 'The check primitives and when to use each.' },
+      { href: '/docs/browser-monitors', label: 'Browser (synthetic) monitors', desc: 'Headless Chromium renders the page, runs its JS, and asserts on the real DOM. For SPAs and JS-gated content.' },
+      { href: '/docs/heartbeats',      label: 'Heartbeats / cron jobs',  desc: 'Inverted check: your job pings us; we alert when the pings stop.' },
+      { href: '/docs/sso',             label: 'Enterprise SSO (OIDC)',   desc: 'Sign in through Okta, Azure AD, Google Workspace, Auth0, or OneLogin. One connection per org, owner-configured.' },
+      { href: '/features',             label: 'Status pages',            desc: 'Public, slugged, optional custom domain, custom CSS, IP allowlist, white-label.' },
+      { href: '/security',             label: 'Trust commitments',       desc: 'What we promise about your data.' },
+      { href: '/docs/runbook',         label: 'Incident response runbook', desc: 'What to check, in what order, when something is wrong.' },
+    ],
+  },
+  {
+    title: 'Integrations',
+    links: [
+      { href: '/features',             label: 'Slack / Discord / Telegram / Teams', desc: 'Paste an incoming webhook URL — done.' },
+    ],
+  },
+];
+---
+<Base
+  title="Docs — 24Observe"
+  activeNav="docs"
+  description="What you need to run 24Observe yourself or integrate with the hosted API."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Documentation</div>
+      <h1 class="h1">Pick your starting point.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Hosted in 60 seconds, or self-host on your own infra. Either way, the API surface is the same.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-top: 56px;">
+        {SECTIONS.map((s) => (
+          <div>
+            <h3 class="h3" style="margin-bottom: 16px;">{s.title}</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              {s.links.map((l) => (
+                <a href={l.href} style="display: block; padding: 16px; border: 1px solid var(--ink-2); border-radius: 8px; text-decoration: none;">
+                  <div style="color: var(--ink); font-weight: 500;">{l.label} <span class="arr">→</span></div>
+                  <div style="color: var(--ink-3); font-size: 13px; margin-top: 4px;">{l.desc}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

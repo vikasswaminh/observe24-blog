@@ -1,0 +1,372 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Which network devices can 24Observe monitor?',
+    a: 'Anything that speaks SNMP or sends syslog — which is effectively every enterprise router, switch, firewall, and load balancer. The collector polls your Cisco, Palo Alto, FortiGate, and other gear over SNMP for interface and device health, and receives their syslog for events and configuration changes. You point the devices at the collector; nothing is installed on the device itself.',
+  },
+  {
+    q: 'Do I have to install an agent on my routers and firewalls?',
+    a: 'No, and you could not even if you wanted to — network gear does not run agents. Instead a lightweight collector runs on a host inside your network and reaches the devices over SNMP and syslog. One collector can front an entire segment, so a handful of collectors covers a large estate. The devices stay untouched.',
+  },
+  {
+    q: 'What do I actually get from a device once it’s connected?',
+    a: 'Interface throughput and error and discard counters, device CPU and memory, link state, and the device’s own log stream — configuration changes, interface up/down events, routing-adjacency changes, and high-availability failovers. That feeds dashboards, threshold alerts, security detections, and the analyst, all from the same telemetry.',
+  },
+  {
+    q: 'Can I alert when an interface saturates or a link goes down?',
+    a: 'Yes. Set a threshold on any device metric — interface utilisation above eighty percent, error rate climbing, device CPU pinned — and a breach opens an incident. Link-down, routing-adjacency drops, and failover events arrive as device log events and trip the infrastructure detections. Both flow into the same incident pipeline as the rest of your monitoring.',
+  },
+  {
+    q: 'How is this different from a traditional network monitoring system?',
+    a: 'A traditional NMS lives in its own silo — it watches the network and nothing else, and it certainly does not know about your applications or your security posture. 24Observe puts the network on the same platform as your logs, metrics, application monitoring, and security detections. When a routing change upstream takes down a dozen services, the analyst can see the device event and the service impact in one place and name the cause. Cross-domain root cause is the whole point.',
+  },
+  {
+    q: 'Does the analyst understand network incidents?',
+    a: 'Yes. The analyst treats a device or link failure as an operational incident and runs root-cause analysis on it: it walks the map of what depends on the affected device, blames the recent change, and confirms the mechanism in the device metrics — then returns the cause and the fix. A switch dying and the fifty hosts it took offline are one investigation, not fifty pages. See <a href="/product/ai-analyst">the AI analyst</a>.',
+  },
+  {
+    q: 'Can I see how my network and services connect?',
+    a: 'Yes. Connected devices and the services that depend on them appear in a live topology map with a health overlay — a node turns red when it stops reporting or an incident implicates it. It is the single view that shows you, at a glance, what is broken and everything downstream of it.',
+  },
+  {
+    q: 'Is network monitoring a separate product or add-on?',
+    a: 'It is part of the platform. The same place you keep logs, metrics, uptime checks, and security detections is where your network lives too — one bill, one login, one investigation workflow. Consolidating the network desk and the application desk is exactly the value, so it is not carved out into a separate SKU.',
+  },
+  {
+    q: 'How quickly can I get a device reporting?',
+    a: 'Stand up a collector on a host in the segment, enable SNMP on the device with a read community or credential, add the device’s address to the collector, and point the device’s logging at it. Within a poll cycle you have interface and device metrics; device events arrive as they happen. It is the work of minutes per device, not a deployment project.',
+  },
+  {
+    q: 'Does it work for an MSP managing many networks?',
+    a: 'Yes. Every customer is fully isolated as its own tenant, so an MSP can run a collector in each customer network, keep the data separated, and operate them all from one console. The unified detection, alerting, and analyst workflow applies per tenant.',
+  },
+];
+---
+<Base
+  title="SNMP network monitoring for Cisco and FortiGate | 24Observe"
+  description="Poll routers, switches, and firewalls over SNMP, ingest device syslog, and alert on interface and link health — on the same platform as your apps run on."
+  activeNav="monitors"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Network monitoring</div>
+          <h1 class="h1">Watch the network the way you watch <em>everything else.</em></h1>
+          <p class="lede">
+            Your routers, switches, and firewalls have been monitored by a tool that knows nothing about your
+            applications or your security — and your application observability has been blind to the network underneath
+            it. 24Observe ends that split. Poll your devices over SNMP, take in their event streams, alert on interface
+            and link health, and let one analyst reason across the network and the services that ride on it.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/docs/network" class="btn btn-ghost btn-lg">Connect a device</a>
+          </div>
+          <div class="hero-meta">
+            <span>SNMP <b>polling</b></span>
+            <span>Device <b>syslog</b></span>
+            <span>Agentless <b>on devices</b></span>
+            <span>Cisco · Palo Alto · FortiGate</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/network</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Devices</div>
+              <div class="con-meta">SNMP · syslog</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">core-sw-01 · Gi0/3 utilisation 92%</div>
+                <div class="con-sub"><span>threshold 80%</span><span class="tech">incident opened</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">edge-fw-02 · HA failover → standby active</div>
+                <div class="con-sub"><span>14:31:08</span><span class="tech">verify pair</span></div>
+              </div>
+              <span class="sev sev-med">MED</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">rtr-04 · BGP neighbor down</div>
+                <div class="con-sub"><span>adjacency lost</span><span class="tech">analyst triaging</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">access-sw-09 · config changed</div>
+                <div class="con-sub"><span>running-config write</span><span class="tech">who/when</span></div>
+              </div>
+              <span class="sev sev-med">MED</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Device health, events, and config changes — in one console with your apps</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The silo problem</div>
+        <h2 class="h2">The network has been monitored in a vacuum for thirty years.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Ask most teams how they watch the network and you will hear the name of a tool that does exactly one thing,
+          lives on its own server, and has never once heard of the applications running across the links it polls.
+        </p>
+        <p>
+          That separation made sense in 1998. It makes no sense now. When checkout slows to a crawl, the cause might be a
+          saturated uplink, a flapping interface, a routing change a network engineer made an hour ago, or a failover that
+          quietly cut capacity in half — and none of that is visible from the application side, because the application
+          tools cannot see the network and the network tool cannot see the application. So two teams open two sets of
+          dashboards, argue about whose problem it is, and burn an hour proving it was the network all along.
+        </p>
+        <p>
+          The cost of the silo is not just duplicate tooling. It is the gap in the middle, where an incident lives that
+          neither side can see whole. The network team sees a device event with no business context. The application team
+          sees latency with no idea what changed underneath them. The truth — that a two-line routing change took down a
+          dozen services — sits in the seam between the two products, invisible to both.
+        </p>
+        <p>
+          24Observe closes the seam by putting the network on the same platform as everything else. The same place that
+          holds your logs, your <a href="/product/metrics">metrics</a>, your uptime checks, and your
+          <a href="/product/siem">security detections</a> holds your device health and device events too. One console, one
+          alerting pipeline, and one <a href="/product/ai-analyst">analyst</a> that can look at the device event and the
+          service impact together and tell you, in plain language, which caused which.
+        </p>
+      </div>
+      <blockquote class="quote">
+        The outage was rarely just the app or just the network. It was the network <em>and</em> the app — and the answer
+        was hiding in the gap between two tools that never spoke.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> How it connects</div>
+        <h2 class="h2">No agent on the device. A collector fronts the segment.</h2>
+        <p class="lede">
+          Network gear cannot run software agents, so 24Observe does not ask it to. A lightweight collector runs on a host
+          inside your network and reaches the devices the way they expect to be reached.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div>
+            <h3>Stand up a collector in the segment</h3>
+            <p>One small collector per network segment is enough; a handful covers a large estate. It runs on an ordinary Linux host and reaches outward to the devices — nothing touches the routers and firewalls themselves.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div>
+            <h3>Poll the devices over SNMP</h3>
+            <p>Enable SNMP with a read community or credential and add the device addresses. The collector polls interface throughput, error and discard counters, link state, and device CPU and memory on a steady cycle — the vital signs of every port and box.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div>
+            <h3>Receive the device event stream</h3>
+            <p>Point each device’s logging at the collector and its syslog flows in: configuration changes, interface up/down, routing-adjacency changes, authentication events, and high-availability failovers — normalised so they search and alert consistently.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div>
+            <h3>Alert, detect, and investigate</h3>
+            <p>Device metrics feed threshold alerts; device events feed the infrastructure and security detections; and every incident is investigated by the analyst against the live map of what depends on that device. The network is now a first-class citizen of your operations and security workflow.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you can watch</div>
+        <h2 class="h2">From a single port to the whole fabric.</h2>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Interface health</div><p>Throughput, utilisation, errors, and discards per port — so a saturating uplink or a flapping interface is a threshold alert, not a customer complaint.</p></div>
+        <div class="why-card"><div class="why-num">Device health</div><p>CPU and memory on the device itself — control-plane exhaustion and creeping resource pressure caught before the box falls over.</p></div>
+        <div class="why-card"><div class="why-num">Link &amp; routing state</div><p>Interface up/down and routing-adjacency changes from the device’s own events — the upstream cause of most multi-service outages.</p></div>
+        <div class="why-card"><div class="why-num">Configuration changes</div><p>Every running-config write surfaced with who and when, so the change that broke the network is the first thing the analyst checks.</p></div>
+        <div class="why-card"><div class="why-num">High-availability failover</div><p>Failover and role-change events flagged immediately, so a silent loss of redundancy does not become an outage in waiting.</p></div>
+        <div class="why-card"><div class="why-num">Security on the wire</div><p>Brute-force against management planes, scanning, and known-bad sources, watched on the network alongside your other detections.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The payoff</div>
+        <h2 class="h2">Network and applications, finally on one investigation.</h2>
+        <p class="lede">
+          Because the device telemetry lands on the same platform as everything else, the analyst can reason across the
+          boundary that used to hide the truth.
+        </p>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Cross-domain root cause</h3>
+          <p>
+            When a routing change on an edge router takes down a wave of services, the analyst sees both halves: the device
+            event and the service impact. It names the device as the common upstream cause, points at the change that
+            triggered it, and tells you the fix — instead of leaving two teams to argue over a boundary neither can see
+            across. This is the single capability a standalone network tool can never offer, because it does not know your
+            applications exist.
+          </p>
+          <h3>One topology, one health view</h3>
+          <p>
+            Your devices and the services that depend on them appear together in a live topology map with a health overlay.
+            A node turns red when it stops reporting or an incident implicates it, so the blast radius of a failed device is
+            visible at a glance — what is down, and everything downstream of it. See
+            <a href="/product/context-graph">the context graph</a>.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>One alerting pipeline</h3>
+          <p>
+            An interface saturating and an application erroring open the same kind of incident, route through the same
+            channels, and obey the same on-call schedule. No second alerting tool for the network, no separate escalation
+            policy, no reconciling two pagers. The network simply joins the queue your team already works — and benefits
+            from the same <a href="/product/alerting">alerting</a> and storm-grouping as the rest.
+          </p>
+          <h3>Built for fleets and for MSPs</h3>
+          <p>
+            One collector fronts a whole segment, so scaling to hundreds of devices is a matter of collectors, not
+            licences-per-port gymnastics. For a managed-service provider, every customer is an isolated tenant: run a
+            collector in each network, keep the data cleanly separated, and operate them all from one console with the same
+            analyst working every one.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Caught early, not at the help desk</div>
+        <h2 class="h2">The failures that hide until a user finds them first.</h2>
+        <p class="lede">
+          Most network incidents do not announce themselves. They build quietly for hours, invisible to a tool that only
+          flips between up and down, until the symptoms reach a customer and the ticket lands on the NOC. Here are the
+          everyday failures the platform surfaces while they are still cheap to fix.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>The slowly saturating uplink.</strong> A link does not fail at eighty percent utilisation — it just gets
+          slower, retransmits more, and quietly degrades every service that crosses it. A simple up/down monitor sees
+          nothing wrong because the link is, technically, up. A threshold on interface utilisation sees the curve climbing
+          and opens an incident while you still have time to shift traffic or add capacity, instead of after checkout has
+          been mysteriously slow for an afternoon.
+        </p>
+        <p>
+          <strong>The flapping interface.</strong> An interface that bounces up and down every few minutes is one of the
+          most disruptive faults in networking and one of the easiest to miss — each individual flap looks like a blip.
+          Watching the link-state events together turns a scatter of blips into a clear pattern and a single incident, so a
+          failing transceiver or a marginal cable is replaced before it takes a segment with it.
+        </p>
+        <p>
+          <strong>The silent failover.</strong> A high-availability pair fails over, the standby takes the load, and
+          everything keeps working — so nobody notices. Except now you are running on one device with no redundancy, one
+          fault away from a real outage, and you will not find out until the second device also fails at the worst possible
+          moment. The failover event is flagged the instant it happens, so a silent loss of redundancy becomes a
+          same-day fix, not a future catastrophe.
+        </p>
+        <p>
+          <strong>The change that broke routing.</strong> Someone makes a well-intentioned edit to a routing policy, a
+          neighbour relationship drops, and traffic quietly reroutes the long way around — or stops reaching part of the
+          network entirely. Because the configuration change and the adjacency-down event both arrive on the same
+          platform, the analyst can put them side by side and tell you the change at 14:02 caused the reachability problem
+          at 14:03, instead of leaving you to suspect a change you cannot see.
+        </p>
+        <p>
+          <strong>The creeping error counter.</strong> Interface error and discard counters climbing slowly are the
+          early warning of duplex mismatches, bad optics, and congestion — the kind of fault that shaves a few percent off
+          performance for weeks before anyone connects the dots. Surfaced as a trend with a threshold, it becomes a ticket
+          you open on your terms, not a degradation users learn to live with.
+        </p>
+        <p>
+          <strong>The exhausted control plane.</strong> A device whose CPU or memory is creeping toward its limit will,
+          eventually, stop forwarding or stop responding to management — and it rarely gives much warning at the moment it
+          tips over. Watching device CPU and memory the same way you watch a server’s catches the slow climb, so an
+          overloaded box is rebalanced or upgraded before it becomes an outage.
+        </p>
+        <p>
+          Every one of these is invisible to a tool that only knows reachable-or-not, and every one of them is a quiet tax
+          on reliability that the network team pays in firefighting. Watching the real signals — utilisation, errors, link
+          state, config changes, failovers, device health — turns reactive 3 a.m. surprises into proactive,
+          business-hours maintenance. And because it all lands on one platform with the analyst, the rare time a failure
+          does cascade, you get the cause and the blast radius in seconds rather than a war room.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A standalone NMS vs the network on your platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Standalone NMS</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Scope</div><div>The network, and only the network.</div><div class="cmp-us">Network, apps, logs, metrics, and security together.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Root cause across the boundary</div><div>Impossible — it cannot see your services.</div><div class="cmp-us">The analyst sees the device event and the service impact as one.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Alerting &amp; on-call</div><div>Its own silo of pagers and policies.</div><div class="cmp-us">The same pipeline, schedules, and storm-grouping.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Investigation</div><div>A blinking red node and a manual hunt.</div><div class="cmp-us">An investigated incident with cause and fix.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Footprint</div><div>Its own server, its own bill.</div><div class="cmp-us">A collector per segment, one platform, one bill.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Network monitoring — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Bring the network in from the cold.</h2>
+      <p class="final-cta-sub">
+        Stand up a collector, point your devices at it, and watch interface health, device events, and config changes land
+        on the same platform — and the same investigation — as your applications.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/solutions/noc" class="btn btn-ghost btn-lg">For NOC teams</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,323 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import PageSchema from '../../components/PageSchema.astro';
+
+const faqs = [
+  {
+    q: 'What threats does AI-agent security actually cover?',
+    a: 'The ones unique to running LLMs and agents in production: prompt injection, where untrusted input hijacks the model\'s instructions; runaway tool loops, where an agent calls tools endlessly and burns budget or causes damage; token and cost abuse; sensitive tool use, where an agent reaches for a capability it should not in a given context; and tool-protocol manipulation between agents and the services they call. These are dedicated detections, not a generic anomaly model pointed at AI logs.',
+  },
+  {
+    q: 'Where does the data come from?',
+    a: 'From the telemetry your AI applications already emit. Spans and events from model calls, tool calls, and agent steps arrive over OpenTelemetry, their AI-specific attributes are promoted so the prompt and response content is searchable and token usage rolls into cost, and the security detections run over that stream. If your agents are instrumented for <a href="/llm-observability">observability</a>, they are already producing what security needs.',
+  },
+  {
+    q: 'What is prompt injection, and how do you catch it?',
+    a: 'Prompt injection is when content the model reads — a web page, a document, a tool result — contains instructions that hijack the agent\'s behaviour, getting it to ignore its guardrails, exfiltrate data, or misuse a tool. Because the platform can see the agent\'s inputs, the instructions it followed, and the tools it then called, it can flag the patterns that signal an injection attempt and open an incident the analyst investigates — rather than the attempt passing as ordinary agent activity.',
+  },
+  {
+    q: 'What is a runaway tool loop and why does it matter?',
+    a: 'An agent that calls a tool, reacts to the result by calling it again, and never converges — sometimes from a bug, sometimes from adversarial input. Left unwatched it can exhaust your token budget in minutes, hammer a downstream service, or take repeated real-world actions. A detection watches for the loop signature and opens an incident, so a stuck agent becomes a page instead of a surprise bill and a damaged dependency.',
+  },
+  {
+    q: 'What is tool-protocol manipulation?',
+    a: 'As agents increasingly talk to tools and to each other through standard tool protocols, that channel becomes an attack surface — malicious or malformed tool definitions, responses crafted to manipulate the calling agent, capabilities invoked out of their intended context. Dedicated detections watch the agent-to-tool boundary so manipulation there is caught the same way a web attack on a traditional app would be.',
+  },
+  {
+    q: 'How is this different from generic LLM observability?',
+    a: 'Observability tells you what your agents did and what it cost; security tells you when what they did was an attack or an abuse. The two share a data source but answer different questions. 24Observe does both on the same telemetry — see <a href="/llm-observability">agent observability</a> for the cost-and-behaviour side — but this page is specifically about the detections, incidents, and investigation that protect agents in production.',
+  },
+  {
+    q: 'Do agent-security incidents get investigated like the rest?',
+    a: 'Yes — that is the whole design. An AI-agent detection opens a first-class incident, and the <a href="/product/ai-analyst">AI analyst</a> investigates it exactly as it would a brute-force or an exfiltration: gathering the related events, tracing what the agent touched, and returning a verdict with the evidence cited. Agent threats are not a side channel; they sit alongside your traditional security signals in one pipeline.',
+  },
+  {
+    q: 'Why does a SIEM need an AI-agent pack at all?',
+    a: 'Because the attack surface moved and most security tooling has not followed. Teams are shipping agents that read untrusted content, call tools, spend money, and take actions — a genuinely new class of risk that traditional detections were never written for. Treating agent activity as just more logs misses the threats specific to it. Dedicated detections, on telemetry that understands agents, are how you actually cover it.',
+  },
+  {
+    q: 'Is this only useful if I am an AI company?',
+    a: 'No. If you have added a chatbot, a copilot, a retrieval feature, or any agentic automation to your product or your internal tooling — which is most teams now — you have taken on these risks, whether or not you have named them. The point of building this into the platform is that you do not need to stand up a separate AI-security practice; the coverage is there alongside the security you already run.',
+  },
+  {
+    q: 'How do I turn it on?',
+    a: 'Send your agent telemetry over OpenTelemetry and enable the AI-agent and tool-protocol detection packs — a single action each. From then on, agent threats open incidents and get investigated automatically, with zero additional noise when your agents are behaving, because the detections are telemetry-gated to your actual activity.',
+  },
+];
+---
+<Base
+  title="AI agent security — prompt injection, tool abuse"
+  description="Dedicated detections for the threats unique to LLMs and agents in production — prompt injection, runaway tool loops, cost abuse — each one investigated."
+  activeNav="ai-agents"
+>
+  <PageSchema type="SoftwareApplication" name="24Observe AI-Agent Security" path="/product/ai-agent-security"
+    description="Dedicated detections for LLM/agent threats — prompt injection, runaway tool loops, cost abuse, sensitive tool use — investigated by an AI analyst."
+    features={["Prompt-injection detection", "Runaway tool-loop detection", "Token/cost abuse", "Sensitive tool-call detection", "Tool-protocol (MCP) manipulation"]}
+  />
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> AI-agent security</div>
+          <h1 class="h1">You shipped an agent that reads untrusted input and calls tools. <em>Who’s watching it?</em></h1>
+          <p class="lede">
+            The moment you gave a model the ability to read the open web, act on documents, call tools, and spend money,
+            you took on a class of risk your traditional security stack was never written for. Prompt injection, runaway
+            tool loops, cost abuse, tool-protocol manipulation — these are real attacks happening to real agents now.
+            24Observe has dedicated detections for them, on telemetry that actually understands agents, with every hit
+            investigated by the same analyst that works your traditional security signals.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/llm-observability" class="btn btn-ghost btn-lg">Agent observability</a>
+          </div>
+          <div class="hero-meta">
+            <span>Prompt <b>injection</b></span>
+            <span>Tool <b>loops</b></span>
+            <span>Cost <b>abuse</b></span>
+            <span>Tool-protocol <b>defense</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/detections?pack=ai-agent</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> AI-agent &amp; tool-protocol packs</div>
+              <div class="con-meta">enabled · telemetry-gated</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Prompt injection · instructions in tool result</div>
+                <div class="con-sub"><span>support-agent</span><span class="tech">→ incident #771</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Runaway tool loop · 240 calls / 2m</div>
+                <div class="con-sub"><span>cost spiking</span><span class="tech">→ analyst triaging</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Sensitive tool invoked out of context</div>
+                <div class="con-sub"><span>delete_records()</span><span class="tech">unexpected</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Agent threats open incidents the analyst investigates — beside your traditional ones</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The new attack surface</div>
+        <h2 class="h2">The threat model changed. Most security tooling didn’t.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          For decades the rule was simple: code does what it is told, and the danger is in who gets to tell it. Agents
+          broke that rule. An agent does what it is <em>persuaded</em> to do, by whatever text it happens to read.
+        </p>
+        <p>
+          That is a genuinely new category of risk, and it is spreading faster than anyone is securing it. A support
+          assistant that reads customer messages, a research agent that browses the web, a coding copilot that ingests
+          repositories, an internal automation that acts on documents — each of them is a program whose instructions can
+          be rewritten by its inputs. A web page can tell your browsing agent to ignore its guardrails. A document can
+          instruct your summariser to exfiltrate the data it was summarising. A tool result can hijack the agent that
+          called it. None of this looks like a traditional exploit, because there is no buffer overflow and no injected
+          SQL — there is just text, doing exactly what text now does to a model.
+        </p>
+        <p>
+          And the blast radius is bigger than a classic app, because agents do not just answer — they act. They call
+          tools, hit APIs, spend tokens, and take real-world actions. A hijacked or stuck agent can drain a budget in
+          minutes, hammer a downstream service into the ground, or take a destructive action it was tricked into
+          believing was appropriate. The same autonomy that makes agents useful is what makes a compromised one
+          dangerous.
+        </p>
+        <p>
+          The problem is that almost none of this is visible to a security stack built for traditional applications.
+          Pointed at agent logs, a conventional SIEM sees a stream of model calls and tool calls and has no notion of what
+          a prompt injection looks like, when a tool loop has gone runaway, or that a particular capability should never
+          have been invoked in this context. Treating agent activity as just more logs misses precisely the threats that
+          are specific to it.
+        </p>
+        <p>
+          24Observe was built for the wedge most tools have not reached. The detections here understand agents — they run
+          on telemetry that knows what a model call, a tool call, and an agent step are — and they watch for the failure
+          modes that only exist because your software can now be talked into things. When one fires, it opens an incident
+          the <a href="/product/ai-analyst">analyst</a> investigates, right beside your traditional security signals.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Your agent does what it’s persuaded to do, by whatever it reads. Securing it means watching for persuasion, not
+        just for exploits — and that needs detections built for agents.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The coverage</div>
+        <h2 class="h2">Dedicated detections for agent-specific threats.</h2>
+        <p class="lede">
+          Not a generic anomaly model aimed at AI logs — purpose-built detections for the ways agents actually get
+          attacked and abused in production, each opening an incident the analyst investigates.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Prompt injection</div><p>Untrusted content that carries instructions hijacking the agent — flagged from the inputs it read, the directives it followed, and the tools it then reached for.</p></div>
+        <div class="why-card"><div class="why-num">Runaway tool loops</div><p>An agent calling tools without converging — burning budget, hammering a dependency, or repeating an action. Caught by the loop signature, before the bill or the damage lands.</p></div>
+        <div class="why-card"><div class="why-num">Token &amp; cost abuse</div><p>Spending that spikes outside normal patterns — whether from an attack, a bug, or abuse of a public-facing agent — surfaced as an incident, not a month-end surprise.</p></div>
+        <div class="why-card"><div class="why-num">Sensitive tool use</div><p>An agent invoking a high-consequence capability where it should not — a destructive action, an unexpected reach for sensitive data — flagged for review.</p></div>
+        <div class="why-card"><div class="why-num">Tool-protocol manipulation</div><p>Attacks at the agent-to-tool boundary: malicious tool definitions, responses crafted to manipulate the caller, capabilities invoked out of context.</p></div>
+        <div class="why-card"><div class="why-num">Beside your traditional signals</div><p>Agent detections share the pipeline with authentication, exfiltration, and the rest — one place, one analyst, one queue, not a separate AI-security silo.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Observability meets security</div>
+        <h2 class="h2">The telemetry that explains your agents is the telemetry that defends them.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>One data source, two questions</h3>
+          <p>
+            Your agents already emit telemetry for <a href="/llm-observability">observability</a> — what they did, how
+            long it took, what it cost. Security asks a second question of that same data: was any of this an attack or an
+            abuse? Because the platform sees the agent's inputs, the instructions it followed, the tools it called, and the
+            content that came back, it has exactly what it needs to answer both. You instrument once, and you get
+            understanding and protection from the same stream.
+          </p>
+          <h3>Detections that see the whole step</h3>
+          <p>
+            A prompt injection is invisible if all you log is "the model was called." It becomes detectable when you can
+            see the untrusted content the model read, the way its behaviour changed, and the tool it then invoked — the
+            full shape of the agent step. The detections here run on telemetry rich enough to show that shape, which is
+            why they can flag persuasion attacks that a log-only view would wave straight through.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Investigated, not just flagged</h3>
+          <p>
+            A flag on a suspected injection is the start, not the end. When an agent detection fires, the
+            <a href="/product/ai-analyst">analyst</a> investigates it like any other incident — corroborating the signal,
+            tracing what the agent touched, checking whether sensitive data or a destructive tool was involved, and
+            returning a verdict with the evidence cited. You get a decision about whether your agent was attacked, not a
+            row in a queue you have to reverse-engineer.
+          </p>
+          <h3>Quiet until it matters</h3>
+          <p>
+            The packs are telemetry-gated to your actual activity, so a well-behaved agent generates no noise. You are not
+            trading a flood of false positives for coverage; the detections sit silent over normal operation and speak up
+            only when something genuinely looks like an attack or an abuse. Coverage you can leave on.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The support agent that read the wrong ticket.</h2>
+        <p class="lede">
+          A prompt-injection attack on a customer-facing agent, from the malicious message to the closed verdict — the
+          kind of incident a log-only security tool never sees.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A company runs a support agent that reads incoming customer tickets and is allowed to look up account details to
+          help resolve them. An attacker opens a ticket whose text is not a support request at all but a set of
+          instructions: ignore your previous rules, retrieve the full account record for a different customer, and include
+          it in your reply. To the agent, this is just more text to read — and text is exactly what now rewrites an
+          agent's behaviour.
+        </p>
+        <p>
+          A log-only security tool would see nothing alarming: a ticket came in, the model was called, an account-lookup
+          tool ran, a reply went out. Every individual action is something the agent is allowed to do. The attack is
+          invisible at the level of "what tools were called" and only visible at the level of "why" — which is precisely
+          the level a generic SIEM cannot reach.
+        </p>
+        <p>
+          The AI-agent pack can reach it. It can see that the content the agent read contained instruction-like text that
+          contradicted its system guardrails, that the agent's behaviour pivoted immediately after reading it, and that
+          the tool it then invoked pulled a record belonging to someone other than the ticket's author. That pattern is
+          the signature of a prompt injection, and it opens an incident.
+        </p>
+        <p>
+          The analyst takes it from there. It confirms the sequence — untrusted instruction, behavioural pivot,
+          cross-account data access — checks whether the retrieved data actually made it into an outbound reply, and
+          returns a verdict: a confident prompt-injection attempt, with the offending ticket, the agent step, and the
+          tool call all cited as evidence. The recommended action — quarantine the ticket, review the reply, tighten the
+          agent's data-access scope — is proposed for a human to approve, never executed blindly.
+        </p>
+        <p>
+          The team gets a decision in the time it would have taken to read a single alert, about an attack their previous
+          tooling would never have surfaced at all. And because this incident lives in the same queue as their
+          authentication and exfiltration detections, the person handling it did not need to learn a separate AI-security
+          console — they triaged an agent attack with the same muscle memory they use for everything else.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A traditional SIEM vs agent-aware security.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The threat</div><div>A traditional SIEM</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Prompt injection</div><div>Invisible — looks like normal activity.</div><div class="cmp-us">Detected from the agent step’s full shape.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Runaway tool loop</div><div>A cost spike you find later.</div><div class="cmp-us">An incident the moment the loop forms.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Sensitive tool use</div><div>No concept of agent tools.</div><div class="cmp-us">Flagged when out of context.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Tool-protocol attacks</div><div>Not covered.</div><div class="cmp-us">Watched at the agent-to-tool boundary.</div></div>
+        <div class="cmp-row"><div class="cmp-k">After a hit</div><div>An alert in a queue.</div><div class="cmp-us">An investigated verdict with evidence.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Where it lives</div><div>A separate AI-security project.</div><div class="cmp-us">Beside your traditional detections.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">AI-agent security — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Secure the agents you already shipped.</h2>
+      <p class="final-cta-sub">
+        Turn on detections built for prompt injection, runaway tool loops, cost abuse, and tool-protocol manipulation —
+        on telemetry that understands agents, with every hit investigated beside your traditional security signals.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/siem" class="btn btn-ghost btn-lg">See the full SIEM</a>
+      </div>
+    </div>
+  </section>
+</Base>

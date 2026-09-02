@@ -1,0 +1,350 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import PageSchema from '../components/PageSchema.astro';
+
+const SETUP = `export OTEL_EXPORTER_OTLP_ENDPOINT="https://api.24observe.com/api/v1/otlp"
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer obs_<your_token>"`;
+
+const faqs = [
+  {
+    q: 'How long does it take to see my agents?',
+    a: 'About five minutes. If your stack already emits OpenTelemetry — through OpenLLMetry, OpenInference, the Vercel AI SDK, or your own instrumentation — you point the exporter at one endpoint with two environment variables and your spans start appearing immediately. Any span carrying standard GenAI attributes shows up with no schema to define and no agent to install. You are not adopting a new SDK; you are sending the telemetry you already produce somewhere that understands it.',
+  },
+  {
+    q: 'How is cost calculated?',
+    a: 'As precisely as your data allows, and honestly when it cannot be precise. When your SDK reports exact cost, that is used; when you have set your own negotiated rates, those are applied; otherwise public list pricing is the fallback. Calls that cannot be priced are flagged as unpriced rather than silently counted as zero — because a cost view that quietly undercounts is worse than no cost view at all. You can break spend down by model and by agent to find what is quietly burning the budget.',
+  },
+  {
+    q: 'What performance signals do I get?',
+    a: 'Latency, error rate, and call volume, broken down by agent and operation — so the stuck loop, the retry storm, and the agent that tripled its call count overnight are visible in one view rather than buried in raw spans. These are the operational vital signs of a system that, unlike traditional software, can change its own behaviour based on what it reads.',
+  },
+  {
+    q: 'Is this the same as an evaluation or prompt-testing tool?',
+    a: 'No, and they are complementary. Evaluation tools tell you whether an agent gave a good answer in testing; observability tells you what your agents are actually doing in production — what they cost, how fast they are, how often they fail, and how that changes over time. You want both, but only one of them is watching the live system at 3 a.m., and that is this one.',
+  },
+  {
+    q: 'How does observability relate to agent security?',
+    a: 'They run on the same telemetry and answer adjacent questions. Observability asks "what did my agents do and what did it cost"; security asks "was any of that an attack or an abuse." Because the platform sees the prompts, completions, tool calls, and content, it can do both from one stream — see <a href="/product/ai-agent-security">AI-agent security</a> for the detections, incidents, and investigation side. Instrument once, get understanding and protection together.',
+  },
+  {
+    q: 'Will my prompts and completions leave my network?',
+    a: 'Only if you choose a hosted deployment — and 24Observe is open source and self-hostable with an identical contract, so you can run the whole thing on your own infrastructure and keep every prompt inside your perimeter. Either way, redaction strips secrets before storage. You are not forced to send sensitive AI traffic to a third party to understand it.',
+  },
+  {
+    q: 'Does it work across different models and providers?',
+    a: 'Yes. Because it keys off standard GenAI telemetry attributes rather than any one provider\'s API, agents calling different models and providers all land in the same view, attributed and costed consistently. As you swap models or run several at once, the picture stays coherent instead of fragmenting into a dashboard per provider.',
+  },
+  {
+    q: 'Can I see AI telemetry next to the rest of my system?',
+    a: 'Yes, and that is a real advantage of it living in a full platform. Your agent spans sit on the same timeline as your application logs, metrics, and traces, so when an agent slows down you can see whether the cause is the model or the database it called, without leaving for another tool. AI is part of your system; its telemetry belongs beside the rest of it. See <a href="/product/tracing">tracing</a>.',
+  },
+  {
+    q: 'Is observability a separate paid tier?',
+    a: 'No. Cost, performance, and behaviour visibility are part of the platform, on the same volume allowance as your other telemetry. Charging a premium to understand the agents you are already sending us would defeat the purpose of consolidating them here.',
+  },
+];
+---
+<Base
+  title="AI-agent observability — cost and latency | 24Observe"
+  description="Point OpenTelemetry at one endpoint and see what your AI agents cost and how they behave — token spend by model and agent, latency and errors, one timeline."
+  activeNav="ai-agents"
+>
+  <PageSchema type="SoftwareApplication" name="24Observe AI-Agent Observability" path="/llm-observability"
+    description="Send OpenTelemetry GenAI spans and see token cost, latency, and error rate per agent and model — on the same timeline as the rest of your system."
+    features={["Token cost per agent + model", "p95 latency + error rate", "OpenTelemetry GenAI-native", "Same pipeline as logs + detections"]}
+  />
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> AI-agent observability</div>
+          <h1 class="h1">You put an agent in production. <em>Do you know what it’s doing?</em></h1>
+          <p class="lede">
+            An LLM agent is the strangest thing you have ever run in production: it costs a different amount every time,
+            it can change its own behaviour based on what it reads, and a single bad loop can quietly burn a budget
+            overnight. 24Observe gives you the vital signs — token spend by model and by agent, latency, errors, and call
+            volume — from the OpenTelemetry you already emit, on the same timeline as the rest of your system. The
+            observability your agents need, with the security they were missing one click away.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="#setup" class="btn btn-ghost btn-lg">The 5-minute setup</a>
+          </div>
+          <div class="hero-meta">
+            <span><b>5 min</b> to first trace</span>
+            <span>Cost by <b>model &amp; agent</b></span>
+            <span>Latency &amp; <b>errors</b></span>
+            <span>Security <b>one click away</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/ai-agents</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Agents · last 24h</div>
+              <div class="con-meta">cost · latency · volume</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">support-agent · $312 today</div>
+                <div class="con-sub"><span>↑ 4× vs yesterday</span><span class="tech">runaway?</span></div>
+              </div>
+              <span class="sev sev-high">SPEND</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">research-agent · p95 8.4s</div>
+                <div class="con-sub"><span>err rate 6%</span><span class="tech">tool timeouts</span></div>
+              </div>
+              <span class="sev sev-med">SLOW</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">unpriced calls · flagged</div>
+                <div class="con-sub"><span>not counted as $0</span><span class="tech">honest totals</span></div>
+              </div>
+              <span class="sev sev-med">COST</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Spend, speed, and behaviour by agent — security on the same spans</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The new operational problem</div>
+        <h2 class="h2">Agents broke the assumptions your monitoring was built on.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Traditional software is predictable in the ways that matter for operating it: the same input costs the same,
+          does the same, and takes about the same time. Agents are none of those things, and that breaks the instincts a
+          decade of monitoring taught you.
+        </p>
+        <p>
+          Start with cost. A conventional service has a roughly fixed unit economics; an agent's cost per request is a
+          variable that depends on how much it read, how many times it looped, which model it chose, and how long its
+          reasoning ran. That means your spend can multiply without a single deploy, without a traffic spike, without
+          anything your existing monitoring would flag — just an agent that started taking a longer path through its work.
+          The first time most teams learn this is the invoice, which is the single worst place to learn it.
+        </p>
+        <p>
+          Then there is behaviour. Normal software does what its code says; an agent does what it is persuaded to do by
+          the content it encounters, and it can decide to call a tool more times, reach for a different capability, or
+          enter a loop it does not exit. These are not bugs in the traditional sense — there is no stack trace — and they
+          are invisible to a monitoring stack that counts requests and statuses without understanding that a "request"
+          here is a model deciding what to do next. The agent that quietly tripled its call volume overnight is a
+          first-order operational event, and most tooling sails right past it.
+        </p>
+        <p>
+          And the telemetry itself is unfamiliar. The interesting facts about an agent live in attributes a generic logs
+          or metrics tool does not know to surface — which model, how many tokens, what the prompt and completion were,
+          which tool was called and what it returned. Pointed at agent traffic, conventional tooling shows you a stream of
+          opaque calls and leaves the GenAI-specific meaning on the floor.
+        </p>
+        <p>
+          24Observe is built to treat agents as the genuinely new kind of workload they are. It reads the standard GenAI
+          telemetry your stack already emits, surfaces the attributes that matter, and turns them into the three answers
+          every team running agents actually needs: what is this costing, how is it performing, and — one click away on
+          the same spans — is any of it an attack. You stop flying blind on the most unpredictable thing in your
+          production estate.
+        </p>
+      </div>
+      <blockquote class="quote">
+        An agent can multiply your spend and change its own behaviour without a single deploy. Monitoring that counts
+        requests and statuses was never going to catch that.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section" id="setup">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Live in five minutes</div>
+        <h2 class="h2">One endpoint. Any OpenTelemetry GenAI exporter.</h2>
+        <p class="lede">
+          If your stack already emits OpenTelemetry — OpenLLMetry, OpenInference, the Vercel AI SDK, or your own spans —
+          you are two environment variables away from a full agent dashboard. No new SDK, no schema to define, no agent to
+          install.
+        </p>
+      </div>
+      <div class="prose">
+        <pre class="code-block"><code>{SETUP}</code></pre>
+        <p>
+          Any span carrying standard GenAI attributes appears instantly, attributed and costed. Because it keys off the
+          open telemetry standard rather than a single provider's API, agents calling different models and providers all
+          land in the same coherent view — so swapping a model or running several at once does not fragment your picture
+          into a dashboard per provider. The fastest integration is the one where you send what you already have, and that
+          is exactly what this is.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Three answers on the first trace</div>
+        <h2 class="h2">Cost, performance, and behaviour — by model and by agent.</h2>
+        <p class="lede">
+          The point is not a wall of charts; it is the three questions that actually decide whether your agents are
+          healthy, answered the moment telemetry lands.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Cost, attributed</div><p>Token spend broken down by model and by agent — exact when your SDK reports it, your negotiated rates when you set them, list pricing otherwise. Find the budget-burner before the invoice does.</p></div>
+        <div class="why-card"><div class="why-num">Honest totals</div><p>Calls that cannot be priced are flagged as unpriced, never silently counted as zero — because a cost view that quietly undercounts is worse than none at all.</p></div>
+        <div class="why-card"><div class="why-num">Latency &amp; errors</div><p>p95 latency, error rate, and call volume by agent and operation — the retry storm and the slow tool surfaced, not buried in raw spans.</p></div>
+        <div class="why-card"><div class="why-num">Behaviour over time</div><p>The agent that tripled its calls overnight or started taking a longer path through its work shows up as the operational event it is.</p></div>
+        <div class="why-card"><div class="why-num">Searchable content</div><p>Prompts, completions, and tool calls are searchable, so you can go from "this agent is expensive" to "here is exactly what it was doing" in one step.</p></div>
+        <div class="why-card"><div class="why-num">Security, one click away</div><p>The same spans power threat detection — prompt injection, runaway loops, sensitive tool use. <a href="/product/ai-agent-security">AI-agent security →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> One pipeline, two jobs</div>
+        <h2 class="h2">Most tools watch your agents’ quality. We also watch their behaviour.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Engineering and security, from the same spans</h3>
+          <p>
+            Evaluation and tracing platforms tell you whether your agent gave a good answer; traditional security tools
+            never see your agent traffic at all. 24Observe does both from one stream — the cost-and-performance view your
+            engineers want and the threat view your security team needs — because the telemetry that explains an agent is
+            the same telemetry that defends it. You instrument once and you are not running, paying for, and reconciling
+            two separate tools that happen to look at the same data.
+          </p>
+          <h3>On the same timeline as everything else</h3>
+          <p>
+            Your agent spans do not live in an AI-only silo. They sit beside your application logs, metrics, and traces,
+            so when an agent slows down you can see in one place whether the model is the bottleneck or the database it
+            called is — without exporting from an AI tool and grepping in a logging tool. AI is part of your system now,
+            and its telemetry belongs next to the rest of it, not quarantined. See <a href="/product/tracing">tracing</a>.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Open source, self-host anytime</h3>
+          <p>
+            Agent traffic is some of the most sensitive data you hold — prompts and completions can contain anything your
+            users typed and anything your systems returned. 24Observe is open source and self-hostable with an identical
+            contract, so you can run the whole thing on your own infrastructure and keep every prompt inside your network.
+            Redaction strips secrets before storage regardless. You are never forced to ship your most sensitive AI data
+            to a third party just to understand it.
+          </p>
+          <h3>Grows into the rest of the platform</h3>
+          <p>
+            Start with agent observability, and when you need uptime, logs, metrics, on-call, and incident response, they
+            are already here — not a migration away. The agent that misbehaves can open an incident the
+            <a href="/product/ai-analyst">analyst</a> investigates, routed to whoever is on call, exactly like any other
+            signal. You are not buying a point tool you will outgrow; you are starting at the edge of a platform.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The agent that quadrupled the bill overnight.</h2>
+        <p class="lede">
+          The exact failure mode that does not exist in traditional software — and how agent-aware observability turns it
+          from an invoice shock into a same-day catch.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A support agent has been running happily for weeks. No deploy goes out, no traffic spike hits, nothing in a
+          conventional dashboard so much as twitches. But overnight its token spend quadruples. In a stack with no
+          agent-aware view, this is completely invisible until the end of the billing period, when someone notices the
+          number is four times what it should be and begins the miserable archaeology of working out which of a dozen
+          agents, over thirty days, did it.
+        </p>
+        <p>
+          With cost attributed by agent, the story is visible the next morning. The agents view shows the support agent's
+          spend has spiked sharply against its own recent baseline, and the totals are honest — calls that could not be
+          priced are flagged rather than hidden, so the spike is real and not an artefact. You do not have to suspect the
+          spend exists; you can see exactly which agent, and by how much.
+        </p>
+        <p>
+          The performance signals point at the cause. The same agent's call volume has jumped without a matching rise in
+          the work it is supposed to be doing — a strong fingerprint of a loop that is not converging. Because prompts,
+          completions, and tool calls are searchable, you go from "this agent is suddenly expensive" to "here is the exact
+          sequence it keeps repeating" in a single step, and you can see the input that started sending it round in
+          circles.
+        </p>
+        <p>
+          This is also where observability hands off to security without a context switch. A runaway tool loop is not only
+          a cost problem; it can be the symptom of an attack — adversarial input deliberately driving the agent in
+          circles — and the <a href="/product/ai-agent-security">AI-agent detections</a> watch for exactly that signature
+          on the very same spans. So the same event that showed up as a spend spike in the engineering view can open a
+          security incident the <a href="/product/ai-analyst">analyst</a> investigates, and you find out not just that the
+          agent looped but whether it was made to.
+        </p>
+        <p>
+          You cap the loop, fix the input handling, and the spend drops back to baseline by the afternoon — a same-day
+          catch of a problem that, untracked, would have run for a month and arrived as a bill. Nothing in traditional
+          monitoring would have surfaced it, because nothing in traditional monitoring understands that an agent's cost
+          and behaviour are variables it controls itself. Watching agents as the new kind of workload they are is the
+          whole difference.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">Generic monitoring vs agent-aware observability.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Generic monitoring / eval tools</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Cost</div><div>Counts requests; blind to token spend.</div><div class="cmp-us">Spend by model and agent, honestly totalled.</div></div>
+        <div class="cmp-row"><div class="cmp-k">A runaway loop</div><div>Invisible until the invoice.</div><div class="cmp-us">A volume spike you catch same-day.</div></div>
+        <div class="cmp-row"><div class="cmp-k">GenAI attributes</div><div>Left on the floor.</div><div class="cmp-us">Surfaced — model, tokens, prompt, tool.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Security</div><div>Never sees agent traffic.</div><div class="cmp-us">Detections on the same spans.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Where it lives</div><div>An AI-only silo.</div><div class="cmp-us">Beside your logs, metrics, and traces.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Your prompts</div><div>Sent to a third party.</div><div class="cmp-us">Self-hostable; redacted before storage.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">AI-agent observability — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stop flying blind on the agents you shipped.</h2>
+      <p class="final-cta-sub">
+        Point OpenTelemetry at one endpoint and see cost, latency, and behaviour by model and agent in five minutes — on
+        the same timeline as the rest of your system, with security on the very same spans.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-agent-security" class="btn btn-ghost btn-lg">See agent security</a>
+      </div>
+    </div>
+  </section>
+</Base>

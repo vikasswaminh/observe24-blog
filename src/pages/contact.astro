@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+
+const ROUTES = [
+  { addr: 'support@24observe.com',  desc: 'General questions, account issues, "how do I" — fastest reply.' },
+  { addr: 'security@24observe.com', desc: 'Vulnerability disclosures (preferred). See /.well-known/security.txt for the full policy.' },
+  { addr: 'privacy@24observe.com',  desc: 'GDPR access / deletion / portability requests, data inquiries.' },
+  { addr: 'legal@24observe.com',    desc: 'DPAs, MSAs, contract questions, NDAs.' },
+  { addr: 'abuse@24observe.com',    desc: 'Report someone using 24observe to attack you or your service.' },
+];
+---
+<Base
+  title="Contact — 24Observe"
+  description="Email, GitHub, and the github.com/vikasswaminh/observe24 issue tracker. No support contracts to enforce, just one team replying."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Contact</div>
+      <h1 class="h1">Get in touch</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Email is the main channel. Public bug reports + feature requests go in the GitHub repo. There's
+        no live chat or 24×7 phone — being a small team, we keep replies tight rather than diluted.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">Email routing</h2>
+      <div class="specs" style="margin-top: 24px;">
+        {ROUTES.map((r) => (
+          <div class="spec-row">
+            <div class="spec-key"><a href={`mailto:${r.addr}`}><code>{r.addr}</code></a></div>
+            <div class="spec-val">{r.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <h2 class="h2" style="margin-top: 56px;">Bugs &amp; feature requests</h2>
+      <p>
+        Email them to the address above — they go straight to the engineers, and we triage daily.
+        If something in the docs is wrong or an API behaves unexpectedly, a copy-pasted request +
+        response is the fastest route to a fix.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">Service status</h2>
+      <p>
+        Live status of our hosted SaaS:
+        <a href="https://status.24observe.com">status.24observe.com</a>
+        (powered by 24observe itself — yes, we dog-food).
+      </p>
+    </div>
+  </section>
+</Base>

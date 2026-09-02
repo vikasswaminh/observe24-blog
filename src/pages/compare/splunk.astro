@@ -1,0 +1,324 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is 24Observe trying to replace Splunk Enterprise Security?',
+    a: 'For many teams it covers the job they bought a SIEM to do — detect threats across their logs and events, and act on them — with a crucial addition: every detection is investigated by an AI analyst that returns a verdict. We are honest that Splunk is an immensely powerful, mature platform with a deep ecosystem and a very large installed base. The difference is not raw search power; it is that 24Observe does the investigation for you and prices and operates very differently.',
+  },
+  {
+    q: 'What is the core difference?',
+    a: 'Splunk gives you an extraordinarily powerful search-and-detection engine and, through its query language and apps, the ability to build almost anything — but the analysis and the response are largely yours to construct and perform. 24Observe is built around the part that consumes security teams: when a detection fires, the analyst gathers the evidence, traces the blast radius, corroborates against threat intelligence, and hands you a decision. You triage conclusions rather than constructing investigations.',
+  },
+  {
+    q: 'Do I have to learn SPL?',
+    a: 'Not here. Splunk\'s search language is powerful but has a real learning curve, and proficiency is a specialist skill teams hire for. 24Observe uses a readable query language for both everyday search and detection authoring — a practitioner picks it up in an afternoon, and the same query backs your search, your charts, your alerts, and your detections. Less power-user ceiling, far lower floor.',
+  },
+  {
+    q: 'How does pricing compare?',
+    a: 'Splunk has historically been priced in a way that makes high-volume ingestion expensive, which leads many teams to ration what they send — the opposite of what good security wants. 24Observe uses a flat, consolidated model with one shared volume allowance across logs, metrics, and traces. We will not quote competitor prices because they change and vary by deal; the structural point is that our model is designed so you do not have to drop data to control the bill.',
+  },
+  {
+    q: 'Does 24Observe cover AI-agent threats?',
+    a: 'Yes, as a first-class capability — prompt injection, runaway tool loops, cost abuse, sensitive tool use, and tool-protocol manipulation, on telemetry that understands agents, each investigated by the analyst. As organisations ship AI features, this is a category of risk traditional SIEM content was not written for. See <a href="/product/ai-agent-security">AI-agent security</a>.',
+  },
+  {
+    q: 'Can I keep my existing tooling and feed it?',
+    a: 'Yes. Every detection can fire a signed webhook to your own systems, and a gap-free export streams your data to any downstream SIEM, lake, or SOAR. 24Observe is happy to be the detection-and-investigation layer in front of tools you keep, rather than demanding a rip-and-replace. Many teams adopt it incrementally for exactly this reason.',
+  },
+  {
+    q: 'When is Splunk the better choice?',
+    a: 'When you need its deep, customisable search at very large scale, rely on its broad app ecosystem and mature enterprise-security content, and have the team and budget to operate it well. Splunk at full strength, run by people who know it, is formidable, and we will say so plainly. If that describes you, it is a defensible choice.',
+  },
+  {
+    q: 'When is 24Observe the better choice?',
+    a: 'When the bottleneck you feel is analyst time, not search power — when alerts pile up faster than people can investigate them. Choose it for built-in investigation, a readable query language with a low learning curve, consolidated pricing that does not punish ingestion, first-class AI-agent coverage, and the option to self-host. Teams without a large specialist SIEM practice tend to feel the difference most.',
+  },
+];
+---
+<Base
+  title="24Observe vs Splunk — a SIEM that investigates"
+  description="Splunk is a powerful, mature search-and-SIEM platform. 24Observe adds an AI analyst that investigates every detection, plus a readable query language."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare · 24Observe vs Splunk</div>
+          <h1 class="h1">Splunk can search anything. <em>24Observe investigates it for you.</em></h1>
+          <p class="lede">
+            Splunk is one of the most powerful search-and-SIEM platforms ever built, with a deep ecosystem and a vast
+            installed base — and this is an honest comparison, not a takedown. The difference is what happens after a
+            detection fires. Splunk gives you an extraordinary engine to construct and run the investigation yourself;
+            24Observe does the investigation, with an AI analyst that returns a verdict and evidence — plus a readable
+            query language, consolidated pricing, and the option to self-host.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare" class="btn btn-ghost btn-lg">All comparisons</a>
+          </div>
+          <div class="hero-meta">
+            <span>Auto-<b>investigated</b></span>
+            <span>Readable <b>query language</b></span>
+            <span>Ingestion <b>without rationing</b></span>
+            <span>Self-<b>hostable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe vs splunk</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Where they differ</div>
+              <div class="con-meta">honest take</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">After a detection fires</div>
+                <div class="con-sub"><span>Splunk: you build the hunt</span><span class="tech">24o: analyst returns a verdict</span></div>
+              </div>
+              <span class="sev sev-high">KEY</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Query language</div>
+                <div class="con-sub"><span>SPL learning curve</span><span class="tech">readable, low floor</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Ingestion cost</div>
+                <div class="con-sub"><span>often rationed</span><span class="tech">one allowance</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Search power vs investigation done for you</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest take</div>
+        <h2 class="h2">Splunk’s power is real. So is the work it leaves you.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Splunk deserves its reputation. As a search engine over machine data it is exceptionally powerful, its query
+          language can express almost any question you can imagine, and its enterprise-security content and app ecosystem
+          are deep and mature. Teams that have mastered it can do remarkable things. None of that is in dispute.
+        </p>
+        <p>
+          The honest critique is not about power; it is about who does the work, and what it costs. Splunk hands you a
+          superb engine and, largely, leaves the analysis to you. When a detection fires, an analyst still has to write or
+          run the searches that gather the related events, line up the timeline, check the indicators, and decide whether
+          this is real — using a query language whose power comes with a genuine learning curve. The platform makes expert
+          investigation possible; it does not make it automatic, and it presumes you have the experts and the hours.
+        </p>
+        <p>
+          Then there is ingestion economics. Splunk's traditional pricing makes high-volume data expensive, and the
+          predictable consequence is rationing: teams drop sources, shorten retention, and sample away data to control the
+          bill — which is precisely backwards for security, where the log you did not keep is the one the investigation
+          needed. The cost model quietly shapes the coverage, and not in the direction safety wants.
+        </p>
+        <p>
+          24Observe is built around removing the work, not just enabling it. Every detection opens an incident the
+          <a href="/product/ai-analyst">AI analyst</a> immediately investigates — gathering the evidence, tracing the
+          blast radius, corroborating against threat intelligence, and returning a verdict your team can act on or audit.
+          Search and detection authoring use a readable query language a practitioner learns in an afternoon, not a
+          specialist dialect. And the consolidated pricing model, with one shared volume allowance, is designed so you do
+          not have to drop data to afford coverage.
+        </p>
+        <p>
+          This does not make Splunk a bad choice — at very large scale, in the hands of a team that knows it, with the
+          budget to feed it, Splunk is formidable, and we will say so without hedging. It makes 24Observe a different
+          choice, for teams whose binding constraint is analyst time and predictable cost rather than raw search
+          ceiling. The rest of this page lays out exactly where each fits.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Splunk makes expert investigation possible. 24Observe makes investigation automatic. If your constraint is
+        analyst-hours, not search power, that is the whole difference.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where 24Observe differs</div>
+        <h2 class="h2">The differences a security team feels daily.</h2>
+        <p class="lede">
+          Less about what can be searched, more about how much of the work the platform does before a human is involved.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Investigation built in</div><p>Every detection arrives investigated, with a verdict and cited evidence — not a starting point for a hunt you construct. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">A readable query language</div><p>Search and detection authoring a practitioner learns in an afternoon — the same query backs search, charts, alerts, and rules.</p></div>
+        <div class="why-card"><div class="why-num">Ingestion without rationing</div><p>One shared volume allowance designed so you keep the data security needs, instead of dropping sources to control a bill.</p></div>
+        <div class="why-card"><div class="why-num">One intrusion, one case</div><p>Related detections sharing a root collapse into a single investigated case, so a team works the intrusion, not fifty alerts.</p></div>
+        <div class="why-card"><div class="why-num">AI-agent threats</div><p>Prompt injection, tool-loop abuse, and tool-protocol attacks covered as first-class detections. <a href="/product/ai-agent-security">Agent security →</a></p></div>
+        <div class="why-card"><div class="why-num">Open and self-hostable</div><p>Open source with an identical-contract self-host, analyst included — run the whole SIEM inside your perimeter. <a href="/solutions/self-host">Self-host →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where Splunk leads</div>
+        <h2 class="h2">The honest other side of the ledger.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Depth, ecosystem, and scale</h3>
+          <p>
+            Splunk's search depth is genuinely hard to match, its app and content ecosystem is vast, and it has been run
+            at enormous scale by sophisticated teams for many years. If you need to express highly bespoke analytics, rely
+            on a long tail of Splunk apps and integrations, or have an established practice built around its
+            enterprise-security content, those are real advantages that come from real investment. 24Observe is younger
+            and more focused, and we describe what it does rather than implying a comparable ecosystem or reference base.
+          </p>
+          <h3>Power in expert hands</h3>
+          <p>
+            In the hands of a skilled team, Splunk's flexibility is a feature, not a burden — the learning curve buys a
+            ceiling that few tools reach. If you have that expertise and the bespoke needs to justify it, the very thing we
+            frame as a cost (the power-user dialect, the build-it-yourself analysis) is for you a capability. An honest
+            comparison admits that the trade we are recommending is not the right trade for everyone.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Why the trade favours many teams</h3>
+          <p>
+            Most security teams, though, are not short on search power — they are short on the hours to use it. The alerts
+            outnumber the analysts, the noisy rules get muted, and coverage quietly shrinks. For those teams, automatic
+            investigation, a query language with a low floor, and pricing that does not force them to drop data are worth
+            more than a higher search ceiling they rarely reach. The 24Observe trade — give up some raw ceiling and
+            ecosystem, gain conclusions, affordability, and a gentler learning curve — is favourable for a large part of
+            the market.
+          </p>
+          <h3>Adopt it without a rip-and-replace</h3>
+          <p>
+            You do not have to bet the SOC to find out. 24Observe ingests open standards and webhook sources and exports
+            cleanly, so you can run it in front of or alongside what you have, point a few sources at it, and judge the
+            investigation and the cost from your own alerts. Keep feeding your existing tools via signed webhooks and a
+            gap-free export while you evaluate — an honest comparison should come with an honest way to test it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Side by side</div>
+        <h2 class="h2">The comparison, laid out plainly.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>Dimension</div><div>Splunk</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">After a detection fires</div><div>You construct and run the hunt.</div><div class="cmp-us">The analyst investigates, returns a verdict.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Query language</div><div>Powerful, with a learning curve.</div><div class="cmp-us">Readable; low floor, learned in an afternoon.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Ingestion cost</div><div>High-volume is expensive; teams ration.</div><div class="cmp-us">One allowance; keep the data you need.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Ecosystem / apps</div><div>Vast and mature (a strength).</div><div class="cmp-us">Open standards; focused, younger.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent threats</div><div>Not a focus.</div><div class="cmp-us">First-class detections, investigated.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Deployment</div><div>Self-managed or cloud.</div><div class="cmp-us">Hosted or self-hosted, identical contract.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Choosing honestly</div>
+        <h2 class="h2">Which one is right for you.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Choose Splunk if</strong> you need its deep, customisable search at very large scale, depend on its
+          mature enterprise-security content and broad app ecosystem, and have a skilled team and the budget to run it
+          well. At full strength, operated by people who know it, Splunk is formidable, and the learning curve buys a
+          ceiling few tools reach. If that is your situation, it is a defensible, even excellent, choice.
+        </p>
+        <p>
+          <strong>Choose 24Observe if</strong> your binding constraint is analyst time rather than search power — if
+          alerts pile up faster than people can work them, if a specialist query language is a hiring problem rather than
+          an advantage, if ingestion pricing has you dropping data you wish you kept, or if you want AI-agent threats
+          covered and the freedom to self-host. For teams without a large, dedicated SIEM practice, automatic
+          investigation changes the job more than additional search power would.
+        </p>
+        <p>
+          The reassuring part is that you can test the claim cheaply. Point some sources at 24Observe, keep your existing
+          tools fed by webhook and export, and see whether arriving-at-a-verdict beats arriving-at-a-search-bar for your
+          team — on your own alerts, not on ours.
+        </p>
+        <h3>What moving off, or in front of, Splunk takes</h3>
+        <p>
+          Migrating a SIEM is daunting because so much accrues around it — sources, parsers, detection content, dashboards,
+          and years of institutional muscle memory. The honest path is not a big-bang cutover but a front-of-Splunk
+          deployment: point your sources, or a copy of them, at 24Observe over open standards and webhook ingest while
+          Splunk keeps running. Common formats are normalised on the way in, so your events land in a consistent shape
+          without you rebuilding ingestion from scratch, and you can evaluate the investigation experience on real traffic
+          immediately.
+        </p>
+        <p>
+          Detection logic ports more easily than people expect, because the concepts are the same — a query, a window, a
+          threshold, an attack-technique tag — even though the dialect is friendlier. You can recreate your most important
+          rules in the readable query language in an afternoon and watch them open investigated incidents, then compare
+          that directly against the same alerts arriving in Splunk as starting points for a manual hunt. Keep Splunk fed
+          by signed webhook and a gap-free export throughout, so nothing downstream loses data while you decide.
+        </p>
+        <p>
+          And the honest caveat: Splunk at full strength, in expert hands, can do bespoke analytical things a younger,
+          more opinionated platform will not match, and its ecosystem is deep. We are not claiming otherwise. We are
+          claiming that most teams' actual constraint is analyst-hours and ingestion cost, not analytical ceiling — and
+          that for those teams, a SIEM that investigates and does not force them to ration data is the better trade. Test
+          it where it counts: on the alerts your team is currently failing to keep up with.
+        </p>
+        <p>
+          There is one more dimension worth weighing that rarely makes it onto a comparison table: who can operate the
+          tool. A platform that depends on a specialist query language and a team fluent in it concentrates capability in a
+          few people, and when they are busy or leave, the SOC's effectiveness goes with them. A readable query language
+          and automatic investigation spread capability across the team — a newer analyst can write a useful detection and
+          act on an investigated verdict without years of platform-specific training. For a growing security function,
+          that resilience to key-person risk is worth as much as raw power, and it is a quiet but real reason teams move
+          toward a platform that lowers the floor rather than only raising the ceiling.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe vs Splunk — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">A SIEM that does the investigation.</h2>
+      <p class="final-cta-sub">
+        Point a few sources at 24Observe, keep your existing tools fed, and judge for yourself whether arriving at a
+        verdict beats arriving at a search bar.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/siem" class="btn btn-ghost btn-lg">See the SIEM</a>
+      </div>
+    </div>
+  </section>
+</Base>

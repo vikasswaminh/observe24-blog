@@ -1,0 +1,305 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const faqs = [
+  {
+    q: 'Why build an agent on 24Observe specifically?',
+    a: 'Because the platform was designed from the start to be driven by software, not just by people. Everything is a plain REST API, every mutating call is safe to retry, every token is scoped and capped, and there are pre-built tool definitions so your agent framework can call it without you writing an integration. Most observability tools bolt an API onto a product built for humans; here the API and the human UI are the same surface, and the safety rails an autonomous caller needs are built in.',
+  },
+  {
+    q: 'What can my agent actually do through the API?',
+    a: 'Read and act across the platform: list and create monitors, search logs, read metrics, walk the context graph, read and acknowledge and resolve incidents, post incident updates, manage detections, IOCs, assets, and on-call — scoped to whatever you grant. It cannot do the few things that would be dangerous to automate: disable detections, delete data, or read stored secrets are blocked regardless of scope.',
+  },
+  {
+    q: 'How do I keep an autonomous agent from doing damage?',
+    a: 'Three layers. Scope the token to only the actions the agent needs. Attach daily mutation and data caps so a runaway loop is bounded to limited, recoverable activity. And rely on the built-in guardrails that block the genuinely dangerous actions for any token. On top of that, every call the agent makes is attributed to its token in the audit log, so you can always reconstruct exactly what it did.',
+  },
+  {
+    q: 'Do I need an SDK or client library?',
+    a: 'No. It is plain HTTPS with bearer-token auth and JSON in and out, so any language that can make an HTTP request can drive it. If your agent framework consumes tool definitions, fetch the pre-converted ones and hand them straight to the model — no wrapper to maintain and keep in sync with the API.',
+  },
+  {
+    q: 'What is the Idempotency-Key for?',
+    a: 'Safe retries. Agents retry — on a timeout, a dropped connection, a transient error. Send an Idempotency-Key with any mutating request and a retry with the same key will not create a duplicate; if you retry with the same key but a different body, you get a clear conflict error so a buggy loop surfaces fast instead of silently doubling up. It is the difference between a retry loop that is safe and one that quietly creates ten incidents.',
+  },
+  {
+    q: 'How does my agent know its rate budget?',
+    a: 'Every authenticated response carries headers telling the agent how much of its daily mutation budget remains and when it resets, so a well-behaved agent can pace itself without burning a request just to check. Read the budget off any response you were already making.',
+  },
+  {
+    q: 'Can I connect this to Claude, Cursor, or an IDE directly?',
+    a: 'Yes — a curated tool server is available so an assistant in your editor or chat can use a vetted, fail-closed set of the platform’s capabilities without you wiring anything. It is the fastest path to "let my assistant read my incidents and logs" and is covered in the connect-an-agent and tool-server docs.',
+  },
+  {
+    q: 'Should the agent take actions, or just investigate?',
+    a: 'That is your call, and the platform supports both. Many teams start read-only — let the agent investigate, summarise, and recommend — and add write actions narrowly as trust grows. When you do grant writes, keep them scoped and capped, and remember that the most sensitive responses (blocking, disabling) are designed to be proposed for human approval rather than executed outright.',
+  },
+  {
+    q: 'How is this different from the built-in AI analyst?',
+    a: 'The built-in <a href="/product/ai-analyst">analyst</a> investigates incidents for you out of the box — you do not have to build anything. This cookbook is for when you want to build your own agent or workflow on top of the platform: a custom triage bot, a remediation assistant, a chatops integration. The analyst is the product; the API is the toolkit for building your own.',
+  },
+  {
+    q: 'Where do I find every endpoint?',
+    a: 'An always-current, interactive API reference is published from the live specification, so it never drifts from what is actually deployed. Browse it, try calls in the browser, and copy working examples. This cookbook covers the patterns; the reference covers every route.',
+  },
+];
+---
+<Base
+  title="Build an AI agent on the 24Observe API — a cookbook | 24Observe"
+  description="A practical guide to building your own AI agent or automation on 24Observe: mint a scoped token, use the pre-built tool definitions, run the observe-reason-act loop safely, and recipes for triage, log search, incident actions, and the context graph."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-text">
+        <div class="eyebrow"><span class="bar"></span> Cookbook</div>
+        <h1 class="h1">Build your own agent on a platform <em>made to be driven by one.</em></h1>
+        <p class="lede">
+          24Observe ships with an analyst that investigates incidents for you — but it is also a toolkit for building your
+          own. Because every capability is a plain, safe, scoped REST API, you can stand up a custom triage bot, a
+          remediation assistant, or a chatops integration in an afternoon. This cookbook shows you the patterns: how to
+          give an agent least-privilege access, how to let it call the platform without an SDK, how to run a safe
+          observe-reason-act loop, and recipes for the things agents actually do.
+        </p>
+        <div class="hero-ctas">
+          <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Get a token <span class="arr">→</span></a>
+          <a href="/docs/api" class="btn btn-ghost btn-lg">API reference</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Why this is easy here</div>
+        <h2 class="h2">An API built for software, not retrofitted for it.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Most monitoring tools were built for a human clicking a dashboard, and an API was added later — which is why
+          driving them with code so often feels like fighting the product.
+        </p>
+        <p>
+          24Observe is the other way around. The human dashboard and the programmatic interface are the same surface, so
+          anything a person can do, an agent can do too — and the things an autonomous caller needs to be safe are built
+          in rather than bolted on. Authentication is a bearer token. Requests and responses are JSON. Every mutating call
+          is safe to retry. Every token is scoped and capped. And there are pre-built tool definitions so a model can call
+          the platform directly without you writing and maintaining a wrapper. You are not bending a human tool into an
+          automation; you are using an interface designed for exactly this.
+        </p>
+        <p>
+          That design choice is what makes building an agent here a short project instead of a long one. The rest of this
+          page is the practical path: mint the token, wire the tools, run the loop, and the recipes for the common jobs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Mint a least-privilege token.</h2>
+        <p class="lede">
+          Never hand an agent broad access. Create a token scoped to exactly the actions it needs, with a daily cap so a
+          mistake is bounded. The token is shown once — store it in your secret manager, not your code.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          From the dashboard, create a personal access token, choose the narrow set of scopes the agent requires — for a
+          read-only triage bot, that might be just reading incidents, logs, and the context graph — and attach a daily
+          mutation and data limit. For a bot that will also acknowledge incidents, add that one write scope and nothing
+          else. The guiding rule: grant the smallest set that lets the agent do its job, because that set is the worst case
+          if the token ever leaks.
+        </p>
+        <pre class="code-block">{`# Every call is bearer-authenticated against the public API.
+export OBSERVE_TOKEN="obs_…"            # from your secret manager, never source
+export OBSERVE_API="https://api.24observe.com"
+
+curl -s "$OBSERVE_API/api/v1/incidents?status=open" \\
+  -H "authorization: Bearer $OBSERVE_TOKEN"`}</pre>
+        <p>
+          Two things to notice. The response includes headers telling you how much of the token’s daily budget remains and
+          when it resets, so your agent can pace itself without spending a request to check. And the token can only ever do
+          what its scopes allow — the dangerous actions (disabling detections, deleting data, reading stored secrets) are
+          off-limits to any token, so least-privilege is a floor the platform enforces, not just a habit you maintain.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Hand the tools to your model — no SDK.</h2>
+        <p class="lede">
+          If your agent framework speaks tool definitions, you do not write an integration at all. Fetch the pre-converted
+          definitions and pass them straight to the model.
+        </p>
+      </div>
+      <div class="prose">
+        <pre class="code-block">{`# Pre-converted tool definitions, ready to drop into your agent framework.
+curl -s "$OBSERVE_API/openapi/openai-tools.json"      # OpenAI-style
+curl -s "$OBSERVE_API/openapi/anthropic-tools.json"   # Anthropic-style
+curl -s "$OBSERVE_API/openapi/langchain-tools.json"   # LangChain-style`}</pre>
+        <p>
+          The model now knows every endpoint it is allowed to call, with the right shapes, and you have nothing to keep in
+          sync — when the API changes, the definitions change with it. If you would rather connect a ready-made assistant
+          in your editor or chat tool than build your own loop, a curated, fail-closed tool server exposes a vetted subset
+          of the platform’s capabilities for exactly that; see the connect-an-agent docs. For a custom agent, read on.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3</div>
+        <h2 class="h2">Run a safe observe-reason-act loop.</h2>
+        <p class="lede">
+          The shape of almost every ops agent: observe the current state, reason about it with your model and the tools,
+          and act — carefully, idempotently, within budget.
+        </p>
+      </div>
+      <div class="prose">
+        <pre class="code-block">{`import os, uuid, requests
+
+API = os.environ["OBSERVE_API"]; TOK = os.environ["OBSERVE_TOKEN"]
+H = {"authorization": f"Bearer {TOK}"}
+
+# OBSERVE — pull what needs attention
+incidents = requests.get(f"{API}/api/v1/incidents?status=open", headers=H).json()
+
+for inc in incidents:
+    # REASON — gather evidence with read-only tools, let your model decide
+    logs = requests.get(f"{API}/api/v1/logs/search",
+                        params={"q": inc["title"], "hours": 1}, headers=H).json()
+    decision = my_model.decide(inc, logs)   # your reasoning step
+
+    # ACT — idempotent + scoped; a retry with the same key never double-acts
+    if decision.acknowledge:
+        requests.post(f"{API}/api/v1/incidents/{inc['id']}/ack",
+                      headers={**H, "Idempotency-Key": f"ack-{inc['id']}"})`}</pre>
+        <p>
+          The two habits that make this production-grade are visible in those few lines. <strong>Idempotency:</strong>
+          every mutating call carries an <span class="inline-code">Idempotency-Key</span>, so when the agent retries after
+          a timeout — and it will — it cannot create duplicates; retrying the same key is a no-op, and reusing a key with a
+          different body returns a clear conflict so a buggy loop surfaces immediately. <strong>Budget awareness:</strong>
+          the agent reads its remaining daily allowance off the response headers and slows down as it approaches the cap,
+          rather than slamming into it. Together with a scoped token, that is the whole safety story: bounded permissions,
+          bounded volume, safe retries, full attribution.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Recipes</div>
+        <h2 class="h2">The jobs agents actually do.</h2>
+        <p class="lede">Common patterns, each a few calls. Mix them into whatever workflow you are automating.</p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Triage an incident</div><p>Read the incident, search the related logs and read the relevant metrics, walk the context graph for what it touches, and post a summary back as an incident update — a custom first-responder in your own chatops voice.</p></div>
+        <div class="why-card"><div class="why-num">Search and summarise logs</div><p>Run a query over a window, pull the matching events, and let your model summarise what changed — a natural-language layer over your logs for a chat command or a daily digest.</p></div>
+        <div class="why-card"><div class="why-num">Acknowledge &amp; resolve</div><p>With a narrow write scope, let the agent acknowledge incidents it has triaged to stop the paging, post updates as it learns more, and resolve them when a downstream signal confirms recovery — always idempotently.</p></div>
+        <div class="why-card"><div class="why-num">Manage monitors</div><p>Create, update, and bulk-adjust monitors from code — provision checks for a new service as part of your deploy pipeline, or sweep settings across many monitors at once.</p></div>
+        <div class="why-card"><div class="why-num">Walk the context graph</div><p>Resolve an entity, read its neighbourhood, and pull an incident’s blast radius — the same topology the built-in analyst reasons over, available to your agent to narrow a search before it starts digging.</p></div>
+        <div class="why-card"><div class="why-num">React to events</div><p>Instead of polling, subscribe to signed event webhooks and have your agent wake only when something happens — an incident opens, a detection fires — then run its loop. Less noise, faster reaction.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Safety, in one place</div>
+        <h2 class="h2">Everything that keeps an autonomous agent honest.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Scoped tokens</div><div class="spec-val"><b>Grant only what the job needs.</b> A narrow scope list means a leaked token can do only a narrow set of things.</div></div>
+        <div class="spec-row"><div class="spec-key">Daily caps</div><div class="spec-val"><b>Bound the volume.</b> A mutation and data limit per token turns a runaway loop into a bounded, recoverable event.</div></div>
+        <div class="spec-row"><div class="spec-key">Hard guardrails</div><div class="spec-val"><b>Some actions are never allowed.</b> No token can disable detections, delete data, or read secrets — regardless of scope.</div></div>
+        <div class="spec-row"><div class="spec-key">Idempotency</div><div class="spec-val"><b>Retries are safe.</b> A key on every mutation means a retry never doubles up; a conflicting reuse fails loudly.</div></div>
+        <div class="spec-row"><div class="spec-key">Budget headers</div><div class="spec-val"><b>Self-pacing.</b> Every response tells the agent how much budget remains, so it can slow down on its own.</div></div>
+        <div class="spec-row"><div class="spec-key">Full attribution</div><div class="spec-val"><b>A complete record.</b> Every call is logged to its token, so "what did the agent do?" is always one query away.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A rollout you can trust</div>
+        <h2 class="h2">From read-only to trusted, one step at a time.</h2>
+        <p class="lede">
+          The fastest way to lose faith in an ops agent is to give it write access on day one and watch it do something
+          surprising. The fastest way to build trust is to earn it in stages. Here is the path most teams take.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Start read-only.</strong> Give your first agent a token that can only read — incidents, logs, metrics,
+          the context graph — and let it do nothing but observe and explain. Have it summarise new incidents into your
+          chat, post a digest of overnight activity, or answer questions about what happened. There is no blast radius to
+          worry about because it cannot change anything, so you can let it run wide and watch how it reasons. This stage
+          alone is genuinely useful, and it tells you whether the agent’s judgement is sound before that judgement can
+          touch anything.
+        </p>
+        <p>
+          <strong>Add the safe writes.</strong> Once you trust its reading, grant the low-risk actions: acknowledging an
+          incident it has triaged, posting an update, adding a note to a case. These are reversible, low-stakes, and
+          high-value — they take the busywork off your humans without putting anything at risk. Keep the scope to exactly
+          these actions and the daily cap conservative; you can always widen it. Watch the audit log for a week and you
+          will quickly see whether the agent acts the way you would.
+        </p>
+        <p>
+          <strong>Approach the consequential actions carefully — or not at all.</strong> Provisioning monitors from a
+          deploy pipeline is a natural next grant because it is bounded and predictable. The genuinely consequential moves
+          — anything that changes production behaviour — are deliberately kept as human-approved proposals rather than
+          autonomous actions, and most teams are happy to leave them there. The lesson from everyone who has built ops
+          automation is the same: the value is overwhelmingly in the investigation and the safe, reversible actions, and
+          the risk is overwhelmingly in the irreversible ones. You can capture almost all of the value while taking almost
+          none of the risk, simply by being deliberate about where on that line each token sits.
+        </p>
+        <p>
+          Throughout, the platform is on your side. Scopes cap what each agent can reach, daily limits cap how much it can
+          do, the hard guardrails make the truly dangerous actions impossible for any token, idempotency keeps retries
+          safe, and the audit log records every move for review. You are never trusting the agent blindly — you are
+          trusting it within a box whose walls you set and the platform enforces. That is what makes building on 24Observe
+          feel less like handing over the keys and more like hiring a junior who can only reach what you have shown them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Agent cookbook — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Give your agent a real operations platform to work.</h2>
+      <p class="final-cta-sub">Mint a scoped token, grab the tool definitions, and your agent can investigate, summarise, and act — safely, idempotently, and fully audited.</p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Get a token <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Or use the built-in analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Data Processing Addendum — 24Observe"
+  description="GDPR-compliant DPA available on request. Self-host if you need data residency you control."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · DPA</div>
+      <h1 class="h1">Data Processing Addendum</h1>
+      <p class="lede" style="margin-top: 24px;">
+        We can sign a Data Processing Addendum compliant with GDPR Article 28 / UK GDPR / Swiss FADP.
+        Email <a href="mailto:legal@24observe.com">legal@24observe.com</a> with your company details and
+        we'll send a counter-signed copy within 5 business days.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">What's in the standard DPA</h2>
+      <ul style="line-height: 1.8;">
+        <li>Roles: you are the Controller, we are the Processor</li>
+        <li>Purpose limitation: we process data only to provide the Service</li>
+        <li>Security: per <a href="/security">/security</a> — AES-256-GCM at rest, TLS in transit, audit logs</li>
+        <li>Subprocessor list: see <a href="/legal/subprocessors">/legal/subprocessors</a> — currently just Cloudflare</li>
+        <li>SCCs (Standard Contractual Clauses): we use the EU 2021/914 SCCs for any international transfers</li>
+        <li>Breach notification: within 72 hours of discovery, per GDPR Article 33</li>
+        <li>Audit rights: annual third-party security audit (when SOC2 ships) or your own audit on request</li>
+        <li>Data return / deletion on termination: 30-day window for export, then full purge</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Need data residency we don't offer?</h2>
+      <p>
+        We currently host in a single region (configurable when you reach us). If you need EU-only,
+        India-only, or air-gapped processing, the OSS self-host path gives you full control —
+        you become the Controller AND the Processor, and no telemetry leaves your environment.
+        See <a href="/self-host">/self-host</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Contact</h2>
+      <p>
+        DPA requests: <a href="mailto:legal@24observe.com">legal@24observe.com</a>
+      </p>
+    </div>
+  </section>
+</Base>

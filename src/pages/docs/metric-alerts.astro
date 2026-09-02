@@ -1,0 +1,333 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const ALERT = `Series:     host.disk.free_percent
+Filter:     host = db-primary
+Condition:  < 10
+For:        5m
+Severity:   critical
+Channels:   voice + pagerduty (on-call)`;
+
+const WEBHOOK = `// You receive a signed metric_alert.fired event:
+{
+  "event": "metric_alert.fired",
+  "series": "host.disk.free_percent",
+  "host": "db-primary",
+  "value": 8.2,
+  "threshold": 10,
+  "incident_id": 5102,
+  "severity": "critical"
+}`;
+
+const faqs = [
+  {
+    q: 'What is a metric alert?',
+    a: 'A watch on a metric series that fires when it crosses a threshold you define and holds for a duration — CPU above 90% for five minutes, free disk under 10%, request latency over a budget. When the condition holds, it opens a first-class incident through the same pipeline as a failed check or a fired detection, routes to on-call, and emits a metric_alert.fired event your own systems can subscribe to.',
+  },
+  {
+    q: 'Why a duration, not just a threshold?',
+    a: 'Because a single noisy sample should not page anyone. Requiring the condition to hold for a window is the difference between catching a disk that is genuinely filling and being woken by a momentary blip that healed itself. Set the duration to the timescale of the problem you actually care about, and transient spikes stop generating false pages.',
+  },
+  {
+    q: 'How do I get metrics in to alert on?',
+    a: 'Over OpenTelemetry from your applications and runtimes, via the one-line Linux Sensor for host metrics like CPU, memory, disk, and network, or from network devices that the collector polls over SNMP for interface, throughput, and error counters. All three land as queryable series you can put a threshold on, in the same place. See the network onboarding guide for the device side.',
+  },
+  {
+    q: 'Can I alert on SNMP / network-device metrics?',
+    a: 'Yes. Once a device is being polled, its readings — interface status, throughput, errors, saturation — flow in as metric series exactly like host and application metrics, so you set thresholds on them the same way. A switch interface nearing saturation or a rising error counter becomes a threshold alert that opens an incident, just like a full disk would.',
+  },
+  {
+    q: 'What happens when a metric alert fires?',
+    a: 'It opens an incident — not just an email. The incident routes through your escalation policy and on-call schedule, lands on the topology map against the host or device it concerns, groups with related incidents that share a root cause, and can be investigated by the AI analyst, which correlates it with the surrounding logs and events to return a root cause rather than just a symptom.',
+  },
+  {
+    q: 'How does the metric_alert.fired event work?',
+    a: 'Every metric alert emits a structured, signed webhook event when it fires, carrying the series, the value, the threshold, the affected host or device, the severity, and the incident id. Your own systems and agents can subscribe to it to trigger a runbook, feed a dashboard, or take the first remediation step automatically. The alert is a programmable building block, not just a notification.',
+  },
+  {
+    q: 'Will the analyst explain the breach?',
+    a: 'Where you let it, yes. Because the incident lives beside your logs and events, the analyst can investigate a breach and return a cause — "disk filled because this service started writing a runaway log," not just "disk is full." That turns a 2 a.m. threshold crossing into a decision instead of an investigation. See the AI analyst for how that works.',
+  },
+  {
+    q: 'Can I manage metric alerts as code?',
+    a: 'Yes. Creating, updating, and testing metric alerts is part of the agent-programmable API, so you can provision thresholds in a pipeline alongside the services they watch, or let an agent tune them based on what it learns. A new service can ship with its alerts defined in the same change that deploys it.',
+  },
+];
+---
+<Base
+  title="Metric & SNMP alerting setup — thresholds that open incidents | 24Observe"
+  description="Set metric-threshold alerts on host, application, and SNMP-polled network metrics — with a sustain duration, severity routing, an AI-investigated incident, and a metric_alert.fired event for automation."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Metric &amp; SNMP alerting</div>
+          <h1 class="h1">Turn a number crossing a line <em>into an investigated incident.</em></h1>
+          <p class="lede">
+            This guide sets up metric-threshold alerting end to end: getting host, application, and SNMP-polled network
+            metrics in, defining a threshold that fires only when it means it, routing the resulting incident to on-call,
+            and wiring the metric_alert.fired event into your own automation. The result is that a saturated disk, a
+            latency budget blown, or a switch interface in trouble opens a real incident the analyst can explain — not a
+            lonely email.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/metrics" class="btn btn-ghost btn-lg">About metrics</a>
+          </div>
+          <div class="hero-meta">
+            <span>Host · app · <b>SNMP</b></span>
+            <span>Sustain <b>duration</b></span>
+            <span>Opens an <b>incident</b></span>
+            <span><b>metric_alert.fired</b> event</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/metric-alerts/new</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> New threshold alert</div>
+              <div class="con-meta">series · condition · for</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">disk.free_percent &lt; 10 · db-primary</div>
+                <div class="con-sub"><span>for 5m</span><span class="tech">→ incident #5102</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">if.errors rising · core-switch-2 eth1</div>
+                <div class="con-sub"><span>SNMP-polled</span><span class="tech">same setup</span></div>
+              </div>
+              <span class="sev sev-med">MED</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">on fire → on-call + webhook event</div>
+                <div class="con-sub"><span>analyst can explain</span><span class="tech">automatable</span></div>
+              </div>
+              <span class="sev sev-med">ROUTE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> One threshold, one incident, routed and explained</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Get the metrics flowing.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          You can only alert on a series that exists, so the first step is making sure the metric you care about is
+          arriving. There are three sources, and they all land in the same place.
+        </p>
+        <p>
+          <strong>Application metrics</strong> arrive over OpenTelemetry. If your services already export metrics via
+          OTLP, point the exporter at the endpoint and your request rates, latencies, and business counters land as
+          queryable series. <strong>Host metrics</strong> — CPU, memory, disk, and network for a server — come from the
+          one-line Linux Sensor, which ships them automatically once installed. And <strong>network-device metrics</strong>
+          — interface status, throughput, errors, and saturation — flow in when the collector polls a device over SNMP;
+          the <a href="/docs/network">network onboarding guide</a> walks through configuring that.
+        </p>
+        <p>
+          The important point is that, however a metric arrives, it becomes the same kind of object: a named series you can
+          query and put a threshold on. A disk-full on a server, a latency budget on a service, and a saturating interface
+          on a switch are all just series crossing lines, set up identically. Confirm the series you want to alert on is
+          visible under Metrics before you build the alert — if it is not there, the alert has nothing to watch, and the
+          fix is on the ingestion side, not the alerting side.
+        </p>
+        <h3>The thresholds worth setting first</h3>
+        <p>
+          If you are not sure where to begin, a handful of metric alerts cover the failures that most reliably hurt, and
+          they are worth setting on day one. <strong>Free disk under a floor</strong> on any host that stores data is the
+          classic silent killer — a disk fills gradually, nothing alarms, and then everything that writes to it falls over
+          at once; a threshold with a sensible sustain window turns that from a 2 a.m. outage into a daytime warning with
+          hours of runway. <strong>Latency over a budget</strong> on the endpoints your users actually touch catches the
+          slow degradations that status checks miss entirely. And <strong>error rate above a baseline</strong> on a
+          critical service surfaces a bad deploy or a failing dependency before the support tickets do.
+        </p>
+        <p>
+          For hosts, a small set of saturation alerts — sustained high CPU, memory pressure, and a disk floor — covers the
+          ways a server most commonly gets into trouble. For network devices, the equivalents are interface saturation and
+          a rising error counter. None of these need to be elaborate; the value is in covering the obvious failure modes
+          well, with honest severities and sensible durations, rather than in building a sprawling threshold for every
+          conceivable metric. Start with the handful that map to real user or operational impact, and add more only when a
+          specific incident teaches you that you needed one.
+        </p>
+        <h3>The anti-patterns to avoid</h3>
+        <p>
+          Two mistakes turn metric alerting from an asset into noise, and both are easy to make. The first is alerting on
+          causes instead of symptoms. It is tempting to add a threshold for every internal counter, but most of them do
+          not map to anything a human should act on, and each one is a future false page. Prefer to alert on the symptoms
+          your users or your operations actually feel — slowness, errors, saturation, things running out — and let the
+          analyst trace the cause when one of those fires. You do not need a threshold for the runaway log; you need one
+          for the disk it is filling, and the investigation will find the log.
+        </p>
+        <p>
+          The second is dishonest severity. If everything is critical, nothing is, and the loud channels that should mean
+          "wake a human now" become background noise people learn to swipe away. Reserve critical for genuine, act-now
+          emergencies; route the merely-important to a channel that does not ring a phone; and send the routine to
+          automation. The discipline of matching the loudness of the alert to the real stakes of the breach is what keeps
+          the whole system trustworthy over time — and a trustworthy alert is the only kind that does its job when it
+          finally matters.
+        </p>
+        <p>
+          A final practice worth adopting is to review your metric alerts periodically against reality. Thresholds set
+          months ago drift out of relevance as your systems grow — a disk floor that was generous becomes tight, a latency
+          budget that was strict becomes loose, a host that mattered gets decommissioned. A light quarterly pass to retire
+          alerts that no longer fire usefully and adjust the ones that fire too often or too late keeps the set honest and
+          the noise low. Use the analyst's dispositions as your guide: if a threshold keeps opening incidents that get
+          closed as nothing, it is telling you to move the line. A small, current set of well-tuned alerts you trust beats
+          a large, stale set you have learned to ignore, every time.
+        </p>
+        <p>
+          Taken together, these practices add up to a simple philosophy: a metric alert is a promise that crossing this
+          line genuinely warrants attention, and every false page erodes that promise. Set durations so blips do not fire,
+          severities so the loudness matches the stakes, thresholds on symptoms users feel, and review the set as your
+          systems change — and the promise holds. When it holds, your team trusts the alerts, acts on them quickly, and is
+          not slowly trained to swipe them away. That trust is the entire point of metric alerting, and it is worth a
+          little ongoing care to protect.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Define a threshold that means it.</h2>
+        <p class="lede">
+          A good metric alert is a series, a condition, and a duration — plus the severity and routing that decide how
+          loudly it speaks.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Create a metric alert and give it five things: the series to watch, an optional filter to scope it to one host
+          or device, the comparison that defines a breach, the duration the condition must hold, and a severity. A typical
+          critical alert on a database host's free disk looks like this:
+        </p>
+        <pre class="code-block">{ALERT}</pre>
+        <p>
+          The duration is the part teams most often get wrong by omitting. Without it, a single sample dipping below the
+          line pages someone, and after a few false wake-ups the alert gets muted — the classic path to a useless alert.
+          Requiring the condition to hold for a window (five minutes here) means you are alerted to a disk that is
+          genuinely and persistently filling, not to a transient blip that healed itself. Set the duration to the
+          timescale of the real problem: short for things that matter immediately, longer for slow trends where a brief
+          excursion is harmless.
+        </p>
+        <p>
+          Severity is not cosmetic — it drives routing. A critical alert can ring a phone and hit your on-call tool; a
+          warning can post quietly to a chat channel. Setting severity honestly, so that only genuine emergencies are
+          critical, is what keeps the loud channels meaningful. The same threshold setup works identically for an SNMP-
+          polled interface metric as for a host disk, so once you have built one, you have built them all.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3</div>
+        <h2 class="h2">Route it, investigate it, automate it.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>It opens an incident and routes to on-call</h3>
+          <p>
+            When the condition holds, the alert opens a first-class incident — the same kind a failed check or a fired
+            detection opens — which means everything the platform does with incidents applies. It routes through your
+            escalation policy and on-call schedule to whoever is genuinely on call, climbs the chain if they do not
+            acknowledge, lands on the topology map against the affected host or device, and groups with related incidents
+            that share a root cause so one failure does not page you many times. You configure on-call once, and every
+            metric alert obeys it.
+          </p>
+          <h3>The analyst explains the breach</h3>
+          <p>
+            A threshold crossing is a symptom; the cause is usually one timeline away. Because the incident lives beside
+            your logs and events, the <a href="/product/ai-analyst">analyst</a> can investigate it and return a root cause
+            — why the disk filled, not merely that it did. That turns a 2 a.m. page into a decision rather than the start
+            of an investigation, which is the whole point of metrics living in the same platform as everything else.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>The metric_alert.fired event</h3>
+          <p>
+            Every metric alert emits a structured, signed webhook event when it fires, so your own systems can react
+            without a human in the loop:
+          </p>
+          <pre class="code-block">{WEBHOOK}</pre>
+          <p>
+            Subscribe to it to trigger a runbook, feed a dashboard you own, or hand the incident to an agent that takes
+            the first remediation step. The alert becomes a programmable building block, not a terminus — which is what
+            lets you automate the routine breaches and reserve human attention for the judgement calls.
+          </p>
+          <h3>Manage it as code</h3>
+          <p>
+            Because creating and testing metric alerts is part of the API, a new service can ship with its thresholds
+            defined in the same change that deploys it, and an agent can tune them over time. Your alerting lives in
+            version control alongside the things it watches.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Good practice</div>
+        <h2 class="h2">Thresholds that stay useful.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Always set a duration</div><div class="spec-val">Require the condition to hold for a window so a <b>single noisy sample</b> never pages anyone.</div></div>
+        <div class="spec-row"><div class="spec-key">Be honest about severity</div><div class="spec-val">Reserve critical for genuine emergencies, so the <b>loud channels stay meaningful</b> and people keep trusting them.</div></div>
+        <div class="spec-row"><div class="spec-key">Alert on symptoms users feel</div><div class="spec-val">Prefer thresholds on things that map to <b>user impact</b> — latency, errors, saturation — over internal counters nobody acts on.</div></div>
+        <div class="spec-row"><div class="spec-key">Let the analyst find the cause</div><div class="spec-val">Don't over-instrument cause-detection by hand; alert on the symptom and let <b>investigation</b> trace the cause.</div></div>
+        <div class="spec-row"><div class="spec-key">Automate the routine</div><div class="spec-val">Wire <b>metric_alert.fired</b> to a runbook for breaches a machine should handle, so humans get the judgement calls.</div></div>
+        <div class="spec-row"><div class="spec-key">Ship alerts with services</div><div class="spec-val">Define thresholds <b>as code</b> in the same change that deploys a service, so coverage never lags the system.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Metric &amp; SNMP alerting — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Make every threshold open a real incident.</h2>
+      <p class="final-cta-sub">
+        Get host, app, and SNMP metrics flowing, set thresholds that fire only when they mean it, route them to on-call,
+        and let the analyst explain the breach — with an event for whatever you want to automate.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/network" class="btn btn-ghost btn-lg">Network onboarding</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,151 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+
+const PLANS = [
+  { name: 'Free',     sub: '25 monitors · 5 endpoints · 1 GB logs · 10 investigations',        us: 'Free',  usSub: '',     them: '$15/mo',     vs: 'Pingdom',               save: '$180/yr' },
+  { name: 'Team',     sub: '100 monitors · 50 endpoints · 25 GB logs · 250 investigations',    us: '$29',   usSub: '/mo',  them: '$120/mo',    vs: 'uptime + logs SaaS',    save: '$1,092/yr' },
+  { name: 'Business', sub: '500 monitors · 300 endpoints · 150 GB logs · 1,500 investigations',us: '$99',   usSub: '/mo',  them: '$1,000+/mo', vs: 'SIEM + SOAR + analyst', save: '$10,800+/yr', featured: true },
+  { name: 'Scale',    sub: '1,000+ monitors · unmetered endpoints & investigations',            us: '$299',  usSub: '/mo',  them: '—',          vs: 'enterprise SIEM',       save: 'Fleet-scale' },
+];
+
+const INCLUDED = [
+  'All 7 check types (HTTP/S, TCP, SSL, ping, port, keyword, heartbeat)',
+  '1-minute minimum interval on paid plans, 30s on Pro',
+  'Email, webhook, Slack, Discord, Telegram, Microsoft Teams, PagerDuty, Opsgenie alerts (unlimited)',
+  'Event webhook subscriptions (incident.opened / acknowledged / resolved / monitor.status_changed / log_alert.fired) — unlimited on every plan',
+  'Pre-converted LLM tool definitions: /openapi/openai-tools.json, /openapi/anthropic-tools.json, /openapi/langchain-tools.json',
+  'Personal access tokens with 24 narrow scopes + per-token daily mutation and log-byte caps',
+  'Idempotency-Key on every mutating endpoint (same key + different body returns 409)',
+  'X-PAT-Mut-Limit / Remaining / Reset headers on every authenticated response',
+  'Public status pages with custom branding + custom domain',
+  'Incident timeline with public updates ("we have identified the cause")',
+  'Maintenance windows that pause alerts but keep checking',
+  'SLO targets (set 99.9%/30d, get green/red badges and breach alerts)',
+  'Audit log for every mutation, PAT-attributed, exportable as CSV',
+  'AI SOC Analyst: autonomous incident triage — multi-step investigation with evidence-cited verdicts, disposition + confidence + recommended actions (10/mo Free → 250 Team → 1,500 Business; upgrade for more)',
+  'Logs: ingest + search + live-tail + pattern grouping + error tracking + anomaly alerts (1 GB/mo Free → 25 GB Team → 150 GB Business → 1 TB Scale)',
+  'Connected endpoints — one combined count for Linux Sensor hosts, monitored AI agents, and universal-ingest sources (5 Free → 50 Team → 300 Business). A ceiling, never a per-host meter: send all the telemetry you want, we never charge per host or per agent',
+  'SIEM: 87 detections across 14 packs + multi-event correlation — on every plan, no security tier',
+  'Threat-intel matching + GeoIP / identity / asset enrichment, inline at ingest',
+  'Security cases + forward-cursor NDJSON SIEM export + signed detection webhooks',
+  'OpenAPI spec for typed clients in any language',
+  'Continuous point-in-time backups of your data',
+  'Public uptime badge (live SVG you can drop in a README)',
+];
+
+const FAQ = [
+  {
+    q: 'Is the pricing this flat, really?',
+    a: 'Yes. No "Contact Sales" tier. No per-seat multipliers. No hidden data-transfer line item. The table above is the full menu. On the inbound side the ingest endpoint accepts compressed bodies natively, so a busy log pipeline travels at a fraction of its raw size — the bandwidth bill that shrinks is yours, and we never add one of our own.',
+  },
+  {
+    q: 'What\'s the catch?',
+    a: 'There isn\'t one, but the tradeoffs are real: we don\'t yet offer APM, distributed tracing, or RUM — that\'s the Datadog lane. If you need those now, we\'re not the fit yet. If you need uptime/ping/cert/keyword at 1/10 the price, we are.',
+  },
+  {
+    q: 'Is the security / SIEM included, or an add-on?',
+    a: 'The SIEM is included on every plan — 87 detections across 14 packs (most ATT&CK-tagged), multi-event correlation, threat-intel + GeoIP / identity / asset enrichment at ingest, security cases, and forward-cursor SIEM export. No "security tier", no per-GB intelligence meter. The one metered piece is the <b>AI SOC Analyst</b> — the autonomous triage that actually investigates each incident — because every investigation runs a real model. You get a monthly allotment per plan; need more, move up a tier. <a href="/#security">See what it does →</a>',
+  },
+  {
+    q: 'What counts as an "AI investigation"?',
+    a: 'One autonomous triage of one incident: the analyst pulls the incident\'s blast-radius from the context graph, searches your logs, and returns an evidence-cited verdict (disposition + confidence + recommended actions). Re-opening the same incident later can re-investigate. Your monthly allotment covers normal incident volume; if you consistently need more, the next tier raises it.',
+  },
+  {
+    q: 'Why is self-host free forever?',
+    a: 'Paid plans cover fully managed hosting, operations, and support. If you would rather run the platform on your own infrastructure, a fully self-hostable distribution is available — the capabilities are identical either way. You choose managed convenience or full control — the capabilities are identical either way.',
+  },
+  {
+    q: 'Can I upgrade or downgrade anytime?',
+    a: 'Yes. Changes prorate to the hour. No annual commits unless you want one (10% off if you do).',
+  },
+  {
+    q: 'Do you offer volume discounts above Scale?',
+    a: 'Yes — past 1,000 monitors we\'ll price based on your actual tick rate. Email <a href="mailto:billing@24observe.com">billing@24observe.com</a>.',
+  },
+];
+---
+<Base
+  title="Pricing — one predictable bill, no seat tax | 24Observe"
+  activeNav="pricing"
+  description="Flat pricing for an AI SOC analyst, logs, and uptime in one platform. Free · Team $29/mo · Business $99/mo · Scale usage-based. No per-host metering."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Pricing</div>
+      <h1 class="h1">An AI SOC analyst, logs, and uptime.<br/>One predictable bill.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        You pay for what costs us money and earns its keep — <b style="color: var(--ink);">log volume and AI investigations</b> —
+        at a fraction of a stitched-together SIEM, SOAR, and analyst seat. No per-host metering, no per-seat tax,
+        no "contact sales."
+      </p>
+
+      <div class="price-table">
+        <div class="price-head">
+          <div>Plan</div>
+          <div>24Observe</div>
+          <div>Legacy equivalent</div>
+          <div>You save</div>
+          <div></div>
+        </div>
+        {PLANS.map((p) => (
+          <div class={`price-row${p.featured ? ' featured' : ''}`}>
+            <div class="price-plan">
+              <b>
+                {p.name}
+                {p.featured && <span class="price-pop mono">POPULAR</span>}
+              </b>
+              <span>{p.sub}</span>
+            </div>
+            <div class="price-us">{p.us}<small> {p.usSub}</small></div>
+            <div>
+              <div class="price-them">{p.them}</div>
+              <div class="price-vs mono">{p.vs}</div>
+            </div>
+            <div class="price-save">{p.save}</div>
+            <div class="price-cta">
+              <a href="https://login.24observe.com/register" class="btn btn-ghost">Start →</a>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="price-footnote">// competitor prices sampled 2026-04 · sources linked in /docs/pricing-comparison</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Every plan includes</div>
+      <h2 class="h2">No "enterprise tier" to unlock encryption.</h2>
+      <p class="lede">Features gated by price are 2015 thinking. Everyone gets the same feature set — uptime, logs, the full SIEM, and the AI SOC analyst. You pay for what you actually consume — log volume and AI investigations — not for unlocking what should be default.</p>
+      <div class="specs" style="margin-top: 40px;">
+        {INCLUDED.map((item) => (
+          <div class="spec-row" style="grid-template-columns: 24px 1fr;">
+            <div class="spec-key" style="color: var(--accent);">✓</div>
+            <div class="spec-val">{item}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Questions</div>
+      <h2 class="h2">What people actually ask on the first call.</h2>
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Pick a plan. Or run it yourself.</h2>
+      <p class="final-cta-sub">Either way, <code class="inline-code">docker compose up</code> gets you to first tick in 60 seconds.</p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/self-host" class="btn btn-ghost btn-lg">Self-host guide</a>
+      </div>
+    </div>
+  </section>
+</Base>

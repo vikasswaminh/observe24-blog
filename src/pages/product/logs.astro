@@ -1,0 +1,383 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import PageSchema from '../../components/PageSchema.astro';
+
+const faqs = [
+  {
+    q: 'What can I send, and how?',
+    a: 'Anything that produces logs. Applications send over OpenTelemetry; servers send with a one-line Linux Sensor that ships journald and host metrics; firewalls, cloud platforms, and edge networks send over plain HTTP and webhook endpoints. Common formats — authentication logs, web-server access logs, firewall and cloud-security events — are normalised on the way in, so what you search looks consistent no matter how the upstream tool formatted it. Compressed bodies are accepted natively, so a busy pipeline travels at a fraction of its raw size.',
+  },
+  {
+    q: 'Do I have to learn a proprietary query language?',
+    a: 'No. Search uses a readable query language a practitioner can pick up in an afternoon — filter by field, match text, group, and aggregate — not a bespoke scripting dialect you have to certify in. The same query you type into search is the same query that backs a saved chart, an alert, and a detection. Learn it once and it works everywhere.',
+  },
+  {
+    q: 'Can I watch logs live?',
+    a: 'Yes. Live tail follows a filtered stream in real time, so you can ship a deploy and watch the service you are touching, or sit on a single request id and see it move through your system. It is the same filter syntax as search, so you can widen a live view into a historical query without retyping anything.',
+  },
+  {
+    q: 'How does error tracking work?',
+    a: 'Stack traces are fingerprinted and grouped, so ten thousand copies of the same exception collapse into one error you can read, count, and trend — instead of ten thousand lines you scroll past. Each group can be resolved or ignored, so a fixed error stops nagging you and a known-noisy one stops cluttering the view. It turns a wall of repetition into a short, honest list of what is actually breaking.',
+  },
+  {
+    q: 'Can a log query become a metric or a chart?',
+    a: 'Yes. Any saved search can be exposed as a chartable time-series — error rate for one service, checkout failures per minute, requests from a particular region — so the question you asked once becomes a number you can watch and alert on. Logs and metrics stop being two separate worlds you correlate by hand.',
+  },
+  {
+    q: 'What happens to secrets in my logs?',
+    a: 'They are stripped before storage. A redaction engine runs both at the edge, on the host before anything leaves it, and again at ingest, matching default patterns for bearer tokens, web tokens, cloud and provider keys, private keys, credentials embedded in URLs, and key=value secrets — plus any patterns you add for your own organisation. The goal is that a secret accidentally written to a log never becomes a secret sitting in your log store.',
+  },
+  {
+    q: 'How long is data kept, and what does it cost to keep?',
+    a: 'Recent data stays hot and instantly searchable; older data ages into a cold archive that is still searchable when a window needs it. Your plan carries a monthly log-volume allowance shared across logs, metrics, and traces, so you are reasoning about one number rather than a matrix of per-signal meters. There is no separate "data egress" surprise — the bill that shrinks from compression is yours, not a line item we invent.',
+  },
+  {
+    q: 'Are my logs just a store, or do they do something?',
+    a: 'They do something. The same logs you search are the substrate the security engine runs on: eighty-seven detections across fourteen packs evaluate them continuously, and any match opens an incident the <a href="/product/ai-analyst">AI analyst</a> investigates. A log store that only stores is half a product — yours is also detecting threats and operational failures the moment they appear.',
+  },
+  {
+    q: 'Can I get my data back out, into my own tools?',
+    a: 'Always. Log-alert fires can push a signed webhook to your own systems, and a gap-free, cursor-paginated export streams your data to any downstream lake, SIEM, or warehouse you run. 24Observe is happy to be the search-and-detection brain that also feeds everything else you own. Nothing is locked in.',
+  },
+  {
+    q: 'Is search going to get slow or expensive as I grow?',
+    a: 'Queries are scoped by time window and field filters, and the platform guides you toward narrow, fast searches rather than full-table scans across months. Add a service or level filter and tighten the range and a query that would have crawled returns quickly. You are never punished with a per-query intelligence meter for asking a sharper question.',
+  },
+];
+---
+<Base
+  title="Log management — search, live tail, detect | 24Observe"
+  description="Ingest any log over open standards, search it in a readable query language, watch it live, and have it detect threats automatically. Logs that work, not store."
+  activeNav="logs"
+>
+  <PageSchema type="SoftwareApplication" name="24Observe Log Management" path="/product/logs"
+    description="Ingest any log over open standards, search it in a readable query language, watch it live, and have it detect threats automatically."
+    features={["Ship from anywhere (OpenTelemetry, journald, Heroku, Vercel, curl)", "Plain-word search + auto facets", "Pattern grouping", "Error tracking", "Anomaly + threshold alerts"]}
+  />
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Log management</div>
+          <h1 class="h1">Logs that don’t just sit there. <em>They get searched, watched, and defended.</em></h1>
+          <p class="lede">
+            Most log products are expensive filing cabinets. You pour everything in, pay by the gigabyte, and the data
+            mostly waits — until an incident sends you digging through it by hand. 24Observe treats your logs as a live
+            substrate: searchable in a readable query language, followable in real time, and continuously watched by a
+            detection engine that opens incidents the moment something matters. Storage is the floor, not the product.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/docs/logs" class="btn btn-ghost btn-lg">Read the docs</a>
+          </div>
+          <div class="hero-meta">
+            <span>Open-standards <b>ingest</b></span>
+            <span>Readable <b>query language</b></span>
+            <span>Live <b>tail</b></span>
+            <span>Detections <b>built in</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/logs</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Live tail · checkout-api</div>
+              <div class="con-meta">level:error · following</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">PaymentDeclinedError: gateway timeout</div>
+                <div class="con-sub"><span>×1,284 grouped</span><span class="tech">→ error #318</span></div>
+              </div>
+              <span class="sev sev-high">ERROR</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">order.placed status=200 region=eu-west</div>
+                <div class="con-sub"><span>trace 9f2c…</span><span class="tech">142ms</span></div>
+              </div>
+              <span class="sev sev-med">INFO</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Bearer token in request URL — redacted</div>
+                <div class="con-sub"><span>secret stripped at edge</span></div>
+              </div>
+              <span class="sev sev-crit">REDACTED</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> The same query backs your search, your chart, your alert, and your detections</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The log problem</div>
+        <h2 class="h2">The industry sold you storage and called it observability.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Ask most teams what their logging tool does and the honest answer is: it holds the logs until something goes
+          wrong, and then it charges us to look at them.
+        </p>
+        <p>
+          That is a strange product when you say it out loud. The whole reason you keep logs is to answer questions —
+          what happened, when, to whom, and why — yet the dominant pricing model bills you most aggressively at exactly
+          the moment you need to ask. So teams ration. They drop "noisy" sources, shorten retention until the window is
+          too short to investigate the slow-burning problems, and sample away the very lines that would have explained
+          the outage. The tool technically works; it has just trained you to send it less of the truth.
+        </p>
+        <p>
+          The second failure is subtler. Even when the data is there, getting an answer is manual. You open a search,
+          guess at a filter, scroll, refine, copy a timestamp, jump to another tool to see what the host was doing, copy
+          it back. The log is a passive record and you are the query engine. Multiply that by every incident and the real
+          cost of logging is not the storage bill — it is the hours of skilled people doing by hand what the system
+          should have done for them.
+        </p>
+        <p>
+          24Observe starts from a different premise: a log is only valuable if it is cheap to ask questions of, fast to
+          read live, and actively working for you even when nobody is looking. So search is a readable query language
+          rather than a dialect to certify in; live tail lets you watch a filtered stream as it happens; and the same
+          logs are continuously evaluated by the <a href="/product/siem">detection engine</a>, so a threat or an
+          operational failure opens an <a href="/product/ai-analyst">investigated incident</a> instead of waiting in the
+          pile for you to notice. You are not paying to store data and then paying again to use it. Using it is the point.
+        </p>
+        <p>
+          And because the cost of looking is low, you stop rationing the truth. You can keep the noisy source, hold a
+          sensible window, and send the lines that actually explain your failures — which is the only way logging ever
+          pays back the bill it generates.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A log store that only stores has relocated your work, not removed it. Yours searches, watches, charts, and
+        defends — out of the box.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Getting data in</div>
+        <h2 class="h2">Send everything, the way you already send it.</h2>
+        <p class="lede">
+          The fastest observability project is the one with no custom agents to maintain. 24Observe accepts logs over
+          open standards and the protocols your sources already speak, normalises the common ones on the way in, and asks
+          nothing proprietary of the systems producing the data.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">OpenTelemetry</div><p>Applications and services send logs over OTLP — the open standard, no vendor SDK lock-in. Point your existing pipeline at the endpoint and they land. <a href="/docs/collector">Collector setup →</a></p></div>
+        <div class="why-card"><div class="why-num">One-line Linux Sensor</div><p>Get a whole server reporting with a single command. It ships system logs and host metrics, installs from a signed package, and self-enrolls with a scoped token. <a href="/product/sensor">The Sensor →</a></p></div>
+        <div class="why-card"><div class="why-num">Firewalls &amp; security sources</div><p>FortiGate, Palo Alto, Cisco, and endpoint telemetry arrive over HTTP and are normalised to a shared security schema, so detections behave the same across vendors.</p></div>
+        <div class="why-card"><div class="why-num">Cloud &amp; edge</div><p>Push platform, function, and edge-network logs straight in without standing up a collector — the events flow in over plain HTTP endpoints.</p></div>
+        <div class="why-card"><div class="why-num">Compressed by default</div><p>The ingest endpoint decompresses natively, so a busy log pipeline travels at a fraction of its raw size — a smaller bandwidth bill on your side, and batches that arrive faster.</p></div>
+        <div class="why-card"><div class="why-num">Normalised on arrival</div><p>Common formats map to a shared schema as they land, so a search behaves consistently whether the line came from an app, a firewall, or a cloud platform.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Asking questions</div>
+        <h2 class="h2">Search that reads like a sentence. Tail that reads like a stream.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>One readable query language, everywhere</h3>
+          <p>
+            Search filters by field, matches text, groups, and aggregates in a syntax a practitioner reads at a glance —
+            <em>level:error service:checkout status:&gt;=500</em> rather than a paragraph of proprietary scripting. The
+            point is not minimalism for its own sake; it is that the same query you type into the search bar is the same
+            query that backs a saved chart, drives an alert, and defines a detection. You learn it once, and the skill
+            compounds across the whole platform instead of being trapped in a query console.
+          </p>
+          <h3>Live tail for the moments that matter</h3>
+          <p>
+            When you ship a change or chase a live problem, history is too slow. Live tail follows a filtered stream as
+            it happens — pin it to one service while you deploy, or to a single request id and watch it travel through
+            your system. Because it uses the same filter syntax as search, widening a live view into a historical
+            investigation is a matter of changing the time range, not relearning a tool.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Error tracking, not error scrolling</h3>
+          <p>
+            Stack traces are fingerprinted and grouped, so the same exception thrown ten thousand times becomes one error
+            you can read, count, and trend — with a resolve-or-ignore workflow so a fixed bug stops nagging and a known
+            noise stops cluttering. The wall of repetition that hides the one new failure becomes a short, honest list of
+            what is actually breaking right now.
+          </p>
+          <h3>Turn a question into a number you watch</h3>
+          <p>
+            Any saved search can be promoted to a chartable time-series. The question you asked once during an incident —
+            checkout failures per minute, errors from one region, auth rejections by service — becomes a line you can put
+            on a board and alert on. Logs and metrics stop being two separate worlds you stitch together by hand; a log
+            query is just a metric you have not charted yet.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Privacy by default</div>
+        <h2 class="h2">Secrets get stripped before they ever land.</h2>
+        <p class="lede">
+          The most dangerous log line is the one that accidentally contains a credential. Redaction is not an add-on you
+          remember to configure — it runs by default, in two places, before anything is stored.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">At the edge</div><div class="spec-val">On hosts running the Sensor, secrets are matched and stripped <b>before the data leaves the machine</b> — so a leaked token never crosses the wire.</div></div>
+        <div class="spec-row"><div class="spec-key">At ingest</div><div class="spec-val">Everything arriving by any path is scanned again on the way in, so sources that do not run the Sensor are covered too.</div></div>
+        <div class="spec-row"><div class="spec-key">Default patterns</div><div class="spec-val">Bearer tokens, web tokens, cloud and provider keys, private keys, URL-embedded credentials, and <b>key=value secrets</b> are caught out of the box.</div></div>
+        <div class="spec-row"><div class="spec-key">Your own rules</div><div class="spec-val">Add organisation-specific patterns for internal token shapes and identifiers — your redaction policy, enforced consistently.</div></div>
+        <div class="spec-row"><div class="spec-key">The principle</div><div class="spec-val">A secret accidentally written to a log <b>never becomes a secret sitting in your log store</b>. Prevention, not after-the-fact discovery.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Logs that defend</div>
+        <h2 class="h2">The same logs you search are the ones detecting threats.</h2>
+        <p class="lede">
+          This is the difference between a log store and a security substrate. You are not running a separate tool over a
+          copy of your data — the live log stream is what the detections evaluate, the moment events arrive.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Pouring your logs into 24Observe quietly turns on something most logging products never attempt: continuous
+          detection. Eighty-seven prebuilt detections across fourteen packs run against your incoming events — authentication
+          abuse, data exfiltration, secret exposure, web attacks, threat-intel matches, AI-agent threats, cloud
+          control-plane tampering, Linux host security, and infrastructure and reliability signals. Most carry a recognised
+          attack-technique mapping, and you enable a pack with one action and tune it to your environment.
+        </p>
+        <p>
+          When a detection matches, it does not produce a muted alert in a side panel — it opens a first-class incident,
+          and the <a href="/product/ai-analyst">AI analyst</a> immediately investigates it: gathering the related events,
+          tracing what the signal touches, corroborating against threat intelligence, and returning a verdict with the
+          evidence cited. The log line that would have sat unread until your next post-mortem instead becomes an
+          investigated conclusion while it still matters.
+        </p>
+        <p>
+          You can write your own detections too, in the same readable query language you already use for search. A
+          detection is simply a saved query with a window, a threshold, a severity, and an attack-technique tag — and the
+          instant it matches, it flows through the exact same incident pipeline, routing, and investigation as everything
+          else. There is no separate detection console to learn and no proprietary rule format to certify in. The query
+          you can write, you can detect on.
+        </p>
+        <p>
+          The result is a feedback loop logging products rarely close: the data you collect to understand your system is
+          the same data actively protecting it, and the cost of broad coverage is low because investigation is automatic.
+          You are not choosing between a cheap log archive and an expensive security tool. You are running one substrate
+          that does both.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">From a 500 spike to a closed root cause.</h2>
+        <p class="lede">
+          Here is the concrete path a real problem travels — the kind of half-hour scavenger hunt a passive log store
+          leaves you to run by hand, collapsed into a few minutes.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Checkout starts throwing errors. In a passive logging tool, the first you hear of it is a customer complaint or
+          a dashboard you happen to glance at; then begins the dig — open search, filter to the service, scroll for the
+          first occurrence, copy the timestamp, jump to host metrics, jump back. In 24Observe the story is already
+          assembling itself. A reliability detection watching error-rate has crossed its threshold and opened an incident,
+          so instead of discovering the problem you are notified of it, with a starting point attached.
+        </p>
+        <p>
+          You open live tail filtered to the service and watch the errors arrive in real time. Error tracking has already
+          fingerprinted them: rather than ten thousand identical stack traces, you see one group — <em>PaymentDeclinedError:
+          gateway timeout</em>, counted and trending — so the signal is obvious instead of buried. One glance tells you it
+          is a single failure mode, not a dozen unrelated ones, and roughly when it began.
+        </p>
+        <p>
+          Now you ask the obvious question in one readable line: is this every region, or one? You add a filter, and the
+          errors collapse to a single region — the dependency in that zone is timing out. Because you previously promoted
+          "checkout failures per minute" to a chart, you can see exactly when the line bent and overlay it against your
+          last deploy. The correlation that would have taken three tools and twenty minutes is a glance.
+        </p>
+        <p>
+          Meanwhile, nothing sensitive has leaked into any of this. The request bodies in those error logs would normally
+          be a goldmine of tokens and credentials; redaction stripped them at the edge and again at ingest, so you are
+          reading the shape of the failure without handling anyone's secrets. You resolve the incident, mark the error
+          group resolved so it stops nagging once the fix ships, and the whole episode is recorded — what fired, what you
+          saw, what you concluded — for the look-back.
+        </p>
+        <p>
+          And if that same spike had been something darker — a flood of auth failures, a credential surfacing in a URL, a
+          known-bad address hammering the endpoint — the security packs would have opened a security incident in parallel
+          and the analyst would already be investigating it. The logs did not just help you understand the outage. They
+          were watching for the attack the whole time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A passive log store vs a working one.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A passive log store</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">When something breaks</div><div>You notice, then start digging.</div><div class="cmp-us">A detection notices and opens an investigated incident.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Query language</div><div>A proprietary dialect to certify in.</div><div class="cmp-us">One readable language across search, charts, alerts, detections.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Repeated errors</div><div>Ten thousand identical lines to scroll.</div><div class="cmp-us">One fingerprinted group, counted and resolvable.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Secrets in logs</div><div>Stored, then discovered in an audit.</div><div class="cmp-us">Stripped at the edge and at ingest, before storage.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Cost of looking</div><div>A per-query or per-gigabyte meter that punishes investigation.</div><div class="cmp-us">One shared volume allowance; ask sharper questions freely.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Getting data out</div><div>Lock-in, or an export project.</div><div class="cmp-us">Signed webhooks and a gap-free export, any time.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Log management — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stop paying to store logs you can’t afford to read.</h2>
+      <p class="final-cta-sub">
+        Point your sources at the platform and get search, live tail, error tracking, charts, redaction, and continuous
+        detection — on the same data, in one place, without a per-query toll.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/siem" class="btn btn-ghost btn-lg">See the detections</a>
+      </div>
+    </div>
+  </section>
+</Base>

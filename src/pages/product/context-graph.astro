@@ -1,0 +1,339 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What is the context graph, in one sentence?',
+    a: 'It is a live model of your environment — the services, hosts, devices, identities, and incidents, and the relationships between them — built continuously from the telemetry you are already sending, so the platform always knows what depends on what.',
+  },
+  {
+    q: 'Do I have to draw or maintain it?',
+    a: 'No, and that is the point. The graph is assembled automatically from your real signals: service-to-service calls in your traces, hosts reporting through the Sensor, devices being polled, incidents as they open, identities and assets you register, and ownership you define. It updates as your environment changes, so it never drifts into the stale architecture diagram that every team has and nobody trusts.',
+  },
+  {
+    q: 'What is the topology health map?',
+    a: 'A live map of your whole environment — entities and the edges between them — with a health overlay painted on top. A node turns critical when the host behind it has gone offline or when it is implicated in an open incident, so during an outage the map is the fastest way to see what is broken and everything sitting downstream of it. It renders as a clean map in the dashboard, no diagramming required.',
+  },
+  {
+    q: 'How does this help during an incident?',
+    a: 'It answers the question every incident turns on: what else does this affect? When a component fails, the graph shows everything downstream of it, so you size the blast radius by reading rather than guessing. The map highlights the failing node and the things connected to it, which turns "the database is slow" into "the database is slow and here are the six customer-facing services that depend on it."',
+  },
+  {
+    q: 'How does it relate to alert-storm correlation?',
+    a: 'Directly. When one root failure trips many incidents — a switch dies and fifty hosts go unreachable — the platform uses the graph to recognise that those incidents share a common impacted entity and collapses them into a single case with one notification. It is precise grouping by shared root in the graph, not a crude "many alerts at once" heuristic, so you are paged about the switch once, not about fifty symptoms.',
+  },
+  {
+    q: 'Does the AI analyst use the graph?',
+    a: 'Yes. When the <a href="/product/ai-analyst">analyst</a> investigates an incident, the graph is how it reasons about blast radius and connects a symptom to the things around it — which identities, hosts, and assets an incident implicates, and what is downstream. The graph is a large part of what lets the analyst return "what this touches," not just "what fired."',
+  },
+  {
+    q: 'What kinds of entities and relationships does it track?',
+    a: 'A broad set on both sides — services, hosts, network devices, identities, assets, incidents and cases, threat indicators, and more, connected by relationships like "runs on," "calls," "owns," "implicated in," and "matched." The breadth is what lets a single map span operational and security context at once, instead of one tool for service maps and another for asset inventories.',
+  },
+  {
+    q: 'Can I query the graph from my own tools?',
+    a: 'Yes. The topology is available through the API, so a least-privilege token can read the entity-and-edge graph and the health overlay for your own dashboards, runbooks, or agents. Your automation can reason about your environment the same way the platform does. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'Is this a CMDB?',
+    a: 'It plays the role a CMDB was supposed to play — knowing what you run and how it connects — without the part that always fails, which is keeping it accurate by hand. Because it is derived from live telemetry rather than maintained as a manual record, it reflects what is actually running right now, not what someone documented two reorganisations ago.',
+  },
+];
+---
+<Base
+  title="Context graph — know what depends on what | 24Observe"
+  description="A live model of your services, hosts, devices, identities, and incidents, built from your own telemetry — with a map that shows blast radius as it breaks."
+  activeNav="security"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Context graph &amp; topology</div>
+          <h1 class="h1">During an incident, the only question is: <em>what else does this touch?</em></h1>
+          <p class="lede">
+            Every outage becomes a scramble to remember how the system fits together — which service calls which, what
+            runs on the dead host, who owns the failing thing. 24Observe keeps that picture for you, live. The context
+            graph models your environment from the telemetry you are already sending, and the topology health map paints
+            failure onto it — so the instant something breaks, you can see everything downstream of it instead of
+            reconstructing the architecture from memory.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">How the analyst uses it</a>
+          </div>
+          <div class="hero-meta">
+            <span>Built <b>automatically</b></span>
+            <span>Live <b>health overlay</b></span>
+            <span>Blast <b>radius</b></span>
+            <span>Storm <b>grouping</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/topology</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Topology health</div>
+              <div class="con-meta">1 critical · blast radius</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">core-switch-2 — offline</div>
+                <div class="con-sub"><span>root</span><span class="tech">→ case #5210 (storm)</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">↳ 14 hosts unreachable</div>
+                <div class="con-sub"><span>downstream</span><span class="tech">grouped, 1 page</span></div>
+              </div>
+              <span class="sev sev-high">IMPACT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">↳ checkout-api · payments-svc</div>
+                <div class="con-sub"><span>customer-facing</span><span class="tech">depends on host</span></div>
+              </div>
+              <span class="sev sev-med">AT RISK</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> One root failure, the whole blast radius, one case</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The context problem</div>
+        <h2 class="h2">Your architecture diagram is wrong, and you find out during the outage.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Every team has a diagram of how their system fits together. Every team also knows, quietly, that the diagram is
+          out of date — and the moment they need it most is the moment they discover by how much.
+        </p>
+        <p>
+          The trouble with understanding your environment is that the understanding decays. Someone draws the architecture
+          on a good day, and then services get added, dependencies shift, a host is repurposed, a team reorganises, and
+          nobody updates the picture because keeping it current is a chore with no immediate payoff. So the map drifts into
+          fiction. It is comforting to have until an incident, at which point it actively misleads you — you reason about a
+          system that no longer exists, chase the wrong dependency, and miss the customer-facing service that was quietly
+          downstream of the thing that just died.
+        </p>
+        <p>
+          This is why incidents so often open with ten minutes of archaeology before anyone touches the actual problem.
+          What runs on this host? What calls this service? If this database is slow, who feels it? Those questions have
+          answers — they are sitting in your telemetry, in the traffic between your services and the reports from your
+          hosts — but in most stacks nobody has assembled them into a picture you can read under pressure. The knowledge
+          exists and is simply not in a usable shape at 3 a.m.
+        </p>
+        <p>
+          24Observe builds and maintains that picture for you, automatically, from the signals you are already sending. The
+          context graph is a living model of your environment — services, hosts, devices, identities, incidents, and the
+          relationships between them — and because it is derived from real telemetry rather than maintained by hand, it
+          reflects what is actually running, not what someone documented two reorganisations ago. When an incident hits,
+          the map is already correct, already current, and already painted with where the failure is and what sits
+          downstream of it.
+        </p>
+        <p>
+          That turns the opening minutes of an incident inside out. Instead of reconstructing the system from memory before
+          you can act, you read the blast radius off a live map and spend those minutes deciding what to do.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A diagram you maintain by hand is a diagram you cannot trust in an incident. One built from live telemetry is the
+        one picture that is right when you need it.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Built from what you send</div>
+        <h2 class="h2">No diagramming. The graph assembles itself.</h2>
+        <p class="lede">
+          The graph is the sum of the signals you already produce, continuously stitched into a model. Each source
+          contributes a different kind of edge, and together they span both operational and security context.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Service relationships</div><p>Caller-and-callee links from your traces become service-to-service dependency edges — discovered from real traffic, not declared. <a href="/product/tracing">Tracing →</a></p></div>
+        <div class="why-card"><div class="why-num">Hosts &amp; devices</div><p>Servers reporting through the Sensor and network devices being polled become nodes with a live health state. <a href="/product/sensor">The Sensor →</a></p></div>
+        <div class="why-card"><div class="why-num">Incidents &amp; cases</div><p>Every incident as it opens is wired to the identities, hosts, and assets it implicates, so impact is part of the graph from the first second.</p></div>
+        <div class="why-card"><div class="why-num">Identities &amp; assets</div><p>The directory of who and what you care about — with risk and criticality — stamps meaning onto the entities the telemetry surfaces.</p></div>
+        <div class="why-card"><div class="why-num">Threat indicators</div><p>Matched indicators of compromise attach to the entities they touch, so security context lives on the same map as operational context.</p></div>
+        <div class="why-card"><div class="why-num">Ownership</div><p>Who owns what becomes an edge too, so the map can answer "whose is this?" — the question that decides who you wake.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The map in anger</div>
+        <h2 class="h2">A health overlay that turns the graph into a triage tool.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Failure, painted onto the picture</h3>
+          <p>
+            A model of your environment is useful; a model with health painted onto it is a triage tool. A node turns
+            critical when the host behind it has gone offline or when it is implicated in an open incident, so the map is
+            not a static reference you consult — it is a live status board where the broken things light up and the
+            things connected to them are right there beside them. During an outage it is the fastest way to see what is
+            wrong and what is about to be wrong.
+          </p>
+          <h3>Blast radius you read, not guess</h3>
+          <p>
+            The whole value of relationships is in the second hop. When a component fails, the edges show you everything
+            downstream of it — the services that call it, the customer-facing flows that depend on those services — so you
+            size the impact by tracing the map rather than polling your memory. "The database is slow" becomes "the
+            database is slow and here are the six things your customers will feel it through," instantly.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>One root, one page</h3>
+          <p>
+            The graph is also what makes alert-storm correlation precise. When a single root failure cascades — a switch
+            dies and a rack of hosts goes unreachable — the platform sees that the resulting incidents share a common
+            impacted entity in the graph and collapses them into a single case with one notification. This is grouping by
+            shared root, not a blunt "lots of alerts arrived together" guess, so you are paged about the switch, once,
+            with the cascade attached as context rather than as fifty separate alarms.
+          </p>
+          <h3>The analyst’s mental model</h3>
+          <p>
+            When the <a href="/product/ai-analyst">AI analyst</a> investigates, the graph is how it reasons about reach —
+            which identities and hosts an incident implicates and what depends on them. A verdict that says "what this
+            touches," not merely "what fired," is a verdict built on this map. The same picture that helps your humans
+            triage is the picture that lets the analyst do it for them.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A switch dies. Fifty things go red. You get one page.</h2>
+        <p class="lede">
+          The cascade that turns a single failure into an alert storm — and how a graph-aware platform turns it back into
+          a single, legible incident.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A core network switch fails. Physically it is one event, but its consequences are not: every host behind it
+          instantly stops reporting, every service on those hosts starts failing its checks, every metric on those
+          services breaches, and every downstream call begins timing out. In a tool without a model of your environment,
+          this is the dreaded 3 a.m. storm — dozens of independent alerts firing at once, each technically true, none of
+          them telling you the one thing that matters: it is the switch.
+        </p>
+        <p>
+          The context graph knows the shape of this. It already holds the edges — these hosts run behind that switch,
+          these services run on those hosts, these customer flows depend on those services — because it built them from
+          your telemetry over time. So as the incidents open, the platform sees that they all trace back to a common
+          impacted entity in the graph, and instead of paging you fifty times it collapses them into a single case rooted
+          at the switch, with the cascade attached as context. One notification. One thing to look at.
+        </p>
+        <p>
+          You open the case and the topology map tells the whole story at a glance. The switch node is critical and at the
+          root; fanning out from it, the fourteen hosts are unreachable, and beyond them the checkout and payments
+          services are flagged at risk because the map knows they depend on those hosts. You are not assembling this from
+          fifty alerts — you are reading it from one picture, and the blast radius is the picture.
+        </p>
+        <p>
+          That changes the response entirely. You are not triaging symptoms, deciding which of fifty alerts is the real
+          one; you already know the real one, and you can see exactly who is going to be affected while you deal with it.
+          You dispatch someone to the switch, you proactively post the affected customer-facing components to your status
+          page because the map told you which ones they are, and you handle a major outage as a single coherent incident
+          instead of a panic.
+        </p>
+        <p>
+          When the switch comes back, the hosts report, their nodes return to healthy, the dependent services clear, and
+          the case resolves — and the map, which was correct throughout because it is built from live telemetry, simply
+          goes green again. No diagram to update, no inventory to reconcile. The picture was right the whole time.
+        </p>
+        <p>
+          Contrast that with the same night without a graph. Fifty alerts arrive in a burst, each one true and none of
+          them ranked. The on-call engineer triages them in the dark, trying to spot the pattern by hand — are these
+          fifty separate problems or one? — and burns the first, most valuable minutes of the incident just establishing
+          that it is the switch. Then comes the second guessing game: which of the affected things are customer-facing and
+          which are internal, a question they answer from memory and a stale wiki, and get partly wrong. By the time they
+          have a clear picture, the outage has been running long enough that customers have noticed and the status page
+          is still silent because nobody was sure what to post.
+        </p>
+        <p>
+          The graph compresses all of that into a glance. The grouping tells you it is one incident, not fifty; the
+          health overlay tells you which node is the root; the downstream edges tell you exactly who is affected and
+          which of them your customers touch. The minutes you would have spent on archaeology and guesswork are handed
+          back to you, to spend on the actual fix and on getting ahead of the communication. That is the quiet, compounding
+          value of a model that maintains itself: not that it is clever, but that it is correct and current at the precise
+          moment every other source of truth about your system has gone stale.
+        </p>
+        <p>
+          There is a reason this matters more every year, not less. Systems are getting more distributed, not less — more
+          services, more dependencies, more moving parts owned by more teams — and the human ability to hold the whole
+          picture in one head is not scaling with them. The architecture that one engineer could once sketch on a
+          whiteboard is now a web no single person fully knows, which means the manual diagram is not just prone to drift,
+          it is increasingly impossible to draw correctly in the first place. A model assembled from the live telemetry is
+          not a nicer version of the whiteboard; past a certain size it is the only version of the truth that can exist at
+          all, because no human is holding the rest of it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A hand-drawn diagram vs a live context graph.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A diagram / manual CMDB</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">How it’s built</div><div>By hand, on a good day.</div><div class="cmp-us">Automatically, from live telemetry.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Accuracy in an incident</div><div>Drifted; misleads you.</div><div class="cmp-us">Reflects what’s actually running now.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Failure state</div><div>Not on the diagram at all.</div><div class="cmp-us">Painted on as a live health overlay.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Blast radius</div><div>Reconstructed from memory.</div><div class="cmp-us">Read off the downstream edges.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Alert storms</div><div>Fifty alerts, no grouping.</div><div class="cmp-us">One case, rooted at the shared cause.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Used by automation</div><div>A static file.</div><div class="cmp-us">Queryable by the analyst and your agents.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Context graph &amp; topology — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stop reconstructing your architecture during the outage.</h2>
+      <p class="final-cta-sub">
+        Let the platform build a live model of your environment from the telemetry you already send, and read blast radius
+        off a health map the moment something breaks — with alert storms grouped to their shared root.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/solutions/noc" class="btn btn-ghost btn-lg">For NOC teams</a>
+      </div>
+    </div>
+  </section>
+</Base>

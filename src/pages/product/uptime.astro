@@ -1,0 +1,332 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What kinds of checks can I run?',
+    a: 'The full synthetic range: HTTP and HTTPS endpoints, raw TCP ports, TLS certificate expiry, ICMP ping for reachability, keyword and content assertions that confirm the page actually says what it should, and cron-style heartbeat monitors that alert when a scheduled job goes quiet. One platform covers websites, APIs, ports, certificates, and background jobs — you are not buying a separate tool for each.',
+  },
+  {
+    q: 'How is a content check different from a status check?',
+    a: 'A status check confirms the server answered; a content check confirms it answered correctly. A 200 response from a generic landing page or a "we will be right back" placeholder is a silent outage a status-code monitor sails right past. Keyword and content assertions verify the response still contains what it should — "Order placed," a product name, a JSON field — so you catch the failures that hide behind a healthy status code.',
+  },
+  {
+    q: 'What is heartbeat (cron) monitoring?',
+    a: 'It catches the failure of something that was supposed to happen and did not. A scheduled job — a backup, a billing run, a sync — pings a heartbeat URL each time it completes; if the expected ping does not arrive in its window, an incident opens. It is the inverse of a normal check: instead of watching for a bad response, it watches for the absence of a good one, which is the only way to catch a job that died silently.',
+  },
+  {
+    q: 'What happens when a check fails?',
+    a: 'It opens a first-class incident — not just a red dot on a status grid. That incident routes through your <a href="/product/incidents">escalation policy and on-call schedule</a>, reaches you on any of ten channels, can post automatically to a public <a href="/product/status-pages">status page</a>, and is investigated like any other incident. A failed check is treated as seriously as a fired detection or a metric breach, because to your customers it is exactly as serious.',
+  },
+  {
+    q: 'How fast can checks run, and from where?',
+    a: 'Checks run on the interval your plan supports, down to high-frequency for the endpoints that matter most, from more than one vantage point so a single network blip does not page you for an outage that never happened. Confirmation across vantage points is what separates a real outage from a transient hiccup on one path.',
+  },
+  {
+    q: 'Does it watch TLS certificates before they expire?',
+    a: 'Yes. Certificate expiry is one of the most common, most preventable, and most embarrassing outages, and it is entirely predictable. A TLS check tracks the certificate on your endpoints and opens an incident with enough lead time to renew calmly, rather than discovering the problem from customers the morning it lapses.',
+  },
+  {
+    q: 'How is this different from a standalone uptime tool?',
+    a: 'A standalone uptime tool tells you the front door is down and stops there. Here, the failed check lands in the same place as your logs, metrics, traces, and security detections — so the moment the front door goes red, the logs that explain why are one click away and the <a href="/product/ai-analyst">analyst</a> can investigate the cause. You are not bouncing between an uptime product and an observability product during the one moment you cannot afford the context switch.',
+  },
+  {
+    q: 'Will one outage page me a hundred times?',
+    a: 'No. When one root cause takes down many endpoints at once, the platform recognises that the resulting incidents share a root and collapses them into a single case with one notification. A failed upstream that breaks fifty checks pages you about the upstream, once — not fifty times about fifty symptoms.',
+  },
+  {
+    q: 'Can I publish status to my customers?',
+    a: 'Yes. Group your monitors into components on a public <a href="/product/status-pages">status page</a>, let customers subscribe for updates, and have incident updates post automatically — so during an outage the operator is fixing the problem, not also hand-writing status updates. The same checks that page your team keep your customers informed.',
+  },
+  {
+    q: 'Can I manage monitors programmatically?',
+    a: 'Yes. Creating, updating, bulk-editing, and testing monitors is all part of the agent-programmable REST API, so you can manage uptime as code in your pipeline or let an automated agent provision checks for new services as they ship. See the <a href="/agents">API for agents</a>.',
+  },
+];
+---
+<Base
+  title="Uptime and synthetic monitoring | 24Observe"
+  description="HTTP, TCP, TLS, ping, keyword, and cron-heartbeat checks from multiple vantage points — where a failure opens a real incident, not just a red dot on a chart."
+  activeNav="monitors"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Uptime &amp; synthetic monitoring</div>
+          <h1 class="h1">Know it’s down before your customers do — <em>and why, in the same breath.</em></h1>
+          <p class="lede">
+            A standalone uptime tool tells you the front door is shut and leaves you to go find out why in a different
+            product. 24Observe runs the full range of synthetic checks — websites, APIs, ports, certificates, and
+            scheduled jobs — from more than one vantage point, and when one fails it opens a real incident right next to
+            the logs, metrics, and traces that explain it. Detection and explanation, finally in the same place.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/status-pages" class="btn btn-ghost btn-lg">Status pages</a>
+          </div>
+          <div class="hero-meta">
+            <span>HTTP · TCP · <b>TLS</b></span>
+            <span>Ping · <b>keyword</b></span>
+            <span>Cron <b>heartbeats</b></span>
+            <span>Multi-<b>vantage</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/monitors</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Synthetic checks</div>
+              <div class="con-meta">12 monitors · 2 regions</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">https://shop.example.com — content check</div>
+                <div class="con-sub"><span>“Order placed” missing</span><span class="tech">→ incident #884</span></div>
+              </div>
+              <span class="sev sev-crit">DOWN</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">TLS cert · api.example.com</div>
+                <div class="con-sub"><span>expires in 6 days</span><span class="tech">renew soon</span></div>
+              </div>
+              <span class="sev sev-med">WARN</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">heartbeat · nightly-backup</div>
+                <div class="con-sub"><span>no ping in 90m</span><span class="tech">job silent</span></div>
+              </div>
+              <span class="sev sev-high">LATE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> A failure opens an incident next to the logs that explain it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The uptime problem</div>
+        <h2 class="h2">“It’s down” is the easy half. “Why” is the half that costs you.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Uptime monitoring is a solved problem right up until the moment a check goes red — and then the tool that was so
+          good at telling you something is wrong has nothing to say about what.
+        </p>
+        <p>
+          That is the structural flaw in buying uptime as a standalone product. The check fires, you get the page, and now
+          you are in a race against your customers' patience — except your monitoring tool's job is over. It knows the
+          endpoint returned a 500 or stopped answering; it does not know what your application logged, which dependency
+          fell over, or which deploy went out four minutes earlier. So you leave it and go to your logging tool, your
+          metrics tool, your tracing tool, and you start the investigation from cold, during the worst possible minutes to
+          be context-switching between products.
+        </p>
+        <p>
+          There is a second, sneakier failure: the outage that is not even red. A status-code monitor that only checks for
+          a 200 will happily report a perfectly healthy site that is, in fact, serving an error page, a maintenance
+          placeholder, or a blank shell where the checkout used to be. The server answered, so the monitor is satisfied,
+          and the silent outage runs until a customer complains. The tool was watching the wrong thing — the response
+          existed, but it was wrong.
+        </p>
+        <p>
+          24Observe fixes both. The checks are thorough — they confirm the response is not just present but correct, and
+          they watch the things people forget until they break, like certificates and silent cron jobs. And the failure
+          does not dead-end in a status grid: it opens a first-class incident in the same platform that holds your logs,
+          metrics, traces, and security detections, so the explanation is one click from the alarm and the
+          <a href="/product/ai-analyst">analyst</a> can begin investigating the cause before you have finished reading the
+          page. Knowing it is down and knowing why stop being two products.
+        </p>
+        <p>
+          And because a failed check is treated as a real incident, it inherits everything the platform already does well —
+          on-call routing, escalation, root-cause grouping, status-page updates — instead of being a second-class
+          notification bolted onto the side.
+        </p>
+      </div>
+      <blockquote class="quote">
+        An uptime tool that only says “down” has started your incident and abandoned you in it. The point is to land the
+        alarm next to the answer.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The full range</div>
+        <h2 class="h2">Every kind of check, on one platform.</h2>
+        <p class="lede">
+          Websites, APIs, ports, certificates, and the scheduled jobs nobody else watches — covered by one monitoring
+          surface, not a drawer full of single-purpose tools.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">HTTP / HTTPS</div><p>Status codes, response time, redirects, and headers for your websites and APIs — the everyday backbone of availability monitoring.</p></div>
+        <div class="why-card"><div class="why-num">Content &amp; keyword</div><p>Confirm the response actually contains what it should — "Order placed," a product name, a field — so a 200 serving the wrong page is caught, not missed.</p></div>
+        <div class="why-card"><div class="why-num">TCP &amp; ping</div><p>Raw port reachability and ICMP checks for the services and hosts that do not speak HTTP — databases, mail, internal endpoints, network gear.</p></div>
+        <div class="why-card"><div class="why-num">TLS certificate expiry</div><p>Track certificates and open an incident with days of lead time, so the most preventable outage on the internet never happens to you.</p></div>
+        <div class="why-card"><div class="why-num">Cron heartbeats</div><p>Scheduled jobs ping when they finish; if the ping does not arrive in its window, an incident opens. Catch the backup that died silently.</p></div>
+        <div class="why-card"><div class="why-num">Multiple vantage points</div><p>Checks run from more than one location and confirm across them, so a single network blip on one path does not page you for a phantom outage.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> When it fails</div>
+        <h2 class="h2">A red check becomes an incident, not a dead end.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>It opens a real incident</h3>
+          <p>
+            A failed check does not just flip a tile to red on a dashboard nobody is staring at. It opens a first-class
+            incident — the same kind a fired detection or a metric breach opens — which means everything the platform does
+            with incidents applies automatically. It carries a severity, it lands on the topology map against the affected
+            service, and it begins its life as something the team is actually told about, through the channels they
+            actually watch.
+          </p>
+          <h3>It routes to whoever is on call</h3>
+          <p>
+            The incident flows through your <a href="/product/incidents">escalation policy and on-call schedule</a> and
+            reaches the right person on any of ten channels — chat, SMS, voice, a page in your incident tool of choice. If
+            they do not acknowledge, it steps up the chain. You define who hears about what, once, and every failed check
+            obeys it.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>It groups, so one outage pages once</h3>
+          <p>
+            When a single upstream failure breaks a dozen checks, the platform recognises that the incidents share a root
+            and collapses them into one case with a single notification. You are paged about the cause — the failed
+            dependency — not bombarded with a dozen pages about its symptoms. The 2 a.m. storm becomes a single, legible
+            alert.
+          </p>
+          <h3>It explains itself, and tells your customers</h3>
+          <p>
+            Because the incident lives beside your logs, metrics, and traces, the explanation is one click away and the
+            <a href="/product/ai-analyst">analyst</a> can investigate the cause. And the same incident can post
+            automatically to a public <a href="/product/status-pages">status page</a> your customers subscribe to — so the
+            operator fixes the outage while the platform handles the announcements.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The checkout that returned 200 — and lost every sale.</h2>
+        <p class="lede">
+          The exact outage a status-only monitor misses, and how a thorough check plus a connected platform turns it from
+          a lost afternoon into a five-minute incident.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A deploy goes out at lunchtime. It does not crash anything — the site loads, the server returns a healthy 200 on
+          every page, and a status-code uptime monitor stays a calm, satisfied green. But a front-end change quietly broke
+          the checkout, and the confirmation page no longer renders "Order placed." Customers are clicking buy and getting
+          a blank shell. Revenue is bleeding, and nothing is red.
+        </p>
+        <p>
+          Except here, the checkout monitor is a content check, not a status check. It does not merely confirm the page
+          answered; it confirms the page still contains "Order placed." The moment that string disappears, the check
+          fails, and an incident opens — at lunchtime, minutes after the deploy, not at five o'clock when someone notices
+          the sales chart is flat.
+        </p>
+        <p>
+          The incident routes to whoever is on call and reaches them on chat and SMS. They open it and, because this is not
+          a standalone uptime tool, the context is already there: the incident sits on the timeline beside the application
+          logs, and a few seconds of reading shows the front-end error that started exactly when the deploy landed. There
+          is no switch to a separate logging product, no copying timestamps; the alarm and the evidence are in the same
+          place.
+        </p>
+        <p>
+          They roll back the deploy. The content check goes green again, the incident resolves, and the public status page —
+          where the checkout component had automatically flipped to a degraded state and notified subscribers — updates
+          itself to resolved. The customers who hit the broken window were informed; the team was paged the instant it
+          broke, not hours later; and the entire episode, from silent failure to fix, took minutes because the monitor was
+          watching the right thing and the platform had the answer next to the alarm.
+        </p>
+        <p>
+          A status-only monitor in a standalone tool would have stayed green through all of it, and the first alert would
+          have been an angry customer. The difference is not a cleverer outage detector. It is checking for correctness
+          instead of mere response, and landing the failure where the explanation already lives.
+        </p>
+        <p>
+          It is worth dwelling on how ordinary this failure mode is, because it is the one teams underestimate most. The
+          deploys that take a site fully offline are, perversely, the safe ones — they are loud, they trip every monitor,
+          someone notices in seconds. The expensive failures are the quiet ones: the checkout that still loads but no
+          longer completes, the form that submits to nowhere, the API that returns a cheerful 200 wrapped around an error
+          payload. These do not announce themselves, they are invisible to status-code monitoring, and they run for hours
+          while a status grid glows reassuringly green. The revenue lost to a silent failure that ran all afternoon dwarfs
+          the cost of a loud outage that was caught in a minute.
+        </p>
+        <p>
+          That is the real argument for content checks and for keeping uptime inside the platform that holds your logs.
+          Checking that the response is correct, not merely present, is what surfaces the quiet failures at all; and
+          landing each one as an incident next to the evidence is what lets you resolve it before the afternoon is gone.
+          A monitor that watches the right thing and an investigation that starts with the answer attached are not two
+          nice-to-haves — together they are the difference between catching the outage that actually costs you money and
+          hearing about it from a customer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A standalone uptime tool vs uptime in a platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A standalone uptime tool</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">When a check fails</div><div>A red dot; investigate elsewhere.</div><div class="cmp-us">An incident next to the logs that explain it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Wrong page, 200 status</div><div>Stays green; silent outage.</div><div class="cmp-us">Content check fails; incident opens.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Scheduled jobs</div><div>Usually not covered.</div><div class="cmp-us">Heartbeat catches the silent job.</div></div>
+        <div class="cmp-row"><div class="cmp-k">One outage, many checks</div><div>Many separate alerts.</div><div class="cmp-us">One case, root grouped, one page.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Finding the cause</div><div>A separate observability product.</div><div class="cmp-us">Same platform; the analyst investigates.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Telling customers</div><div>A second status-page product.</div><div class="cmp-us">Built-in status pages, auto-updated.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Uptime &amp; synthetic monitoring — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Catch the outage early — and the silent one too.</h2>
+      <p class="final-cta-sub">
+        Run HTTP, TCP, TLS, ping, content, and cron-heartbeat checks from multiple vantage points, and land every failure
+        as a real incident next to the logs that explain it — with on-call routing and status pages built in.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; incidents</a>
+      </div>
+    </div>
+  </section>
+</Base>

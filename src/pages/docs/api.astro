@@ -1,0 +1,544 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="API reference for agents and scripts — 24Observe"
+  description="Bearer-auth REST API. Mint a personal access token (optionally scoped + capped). Idempotency-Key supported. Machine-readable validation errors. OpenAPI spec with typed responses."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · API</div>
+      <h1 class="h1">The spec is the SDK.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Pure HTTPS. Bearer token. JSON in, JSON out. No client library to keep
+        in step with our release cadence, no version skew, no four-step OAuth dance
+        to copy off Stack Overflow at 2&nbsp;a.m.
+      </p>
+      <p style="margin-top: 16px; color: var(--ink-1); font-size: 15px;">
+        Everything in the dashboard maps to one HTTP call you can make from <code>curl</code>,
+        an LLM tool call, a shell script, or a cron job. PAT scopes for least-privilege,
+        daily caps for agent blast-radius, <code>Idempotency-Key</code> for safe retries,
+        and per-PAT attribution in the audit log so a human can always answer "what did the
+        agent actually do?"
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Base URL</h2>
+      <pre class="code-block">https://api.24observe.com</pre>
+      <p>
+        All endpoints are under <code>/api/v1/</code>. Self-hosters substitute their own host.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Machine-readable spec</h2>
+      <p>
+        <b><a href="/docs/openapi">Interactive reference at /docs/openapi</a></b> —
+        every endpoint with schemas + try-it-now, rendered live from the same
+        OpenAPI spec the API publishes. Always in sync with what's deployed.
+      </p>
+      <p>
+        <a href="https://api.24observe.com/openapi.json">openapi.json</a>
+        — raw spec for generating a typed client in any language. Response shapes are declared
+        for the core agent-facing endpoints (PAT mint, monitor CRUD, monitor
+        secrets) so generators like <code>openapi-typescript</code> produce
+        real types, not <code>any</code>. Browsable Swagger UI at
+        <a href="https://api.24observe.com/docs">api.24observe.com/docs</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Authentication</h2>
+      <p>
+        Every request carries a bearer token in the <code>Authorization</code> header:
+      </p>
+      <pre class="code-block">Authorization: Bearer obs_AbCdEf...</pre>
+      <p>
+        Tokens are <b>personal access tokens (PATs)</b>: prefix <code>obs_</code>
+        followed by 43 url-safe base64 chars (256 bits of entropy). Stored as
+        SHA-256 hash; the plaintext is returned only once at creation.
+      </p>
+
+      <h3 class="h3" style="margin-top: 32px;">Mint a PAT (with optional scopes + daily caps)</h3>
+      <pre class="code-block">{`# Minimal — wildcard scope, no caps (backward-compat default).
+curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_existing...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{"name":"aeoniti-bot","expiresAt":"2027-01-01T00:00:00Z"}'
+
+# Narrowly scoped + capped — recommended for agents.
+curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_existing...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "aeoniti-bot",
+    "scopes": ["monitors:write", "logs:write"],
+    "dailyMutationLimit": 500,
+    "dailyLogBytesLimit": 104857600
+  }'
+
+# Response (201)
+{
+  "id": 42,
+  "name": "aeoniti-bot",
+  "prefix": "obs_AbCdEfGh",
+  "token": "obs_AbCdEfGh...<43 chars total>",
+  "expiresAt": "2027-01-01T00:00:00Z",
+  "createdAt": "2026-05-13T18:00:00Z"
+}
+
+# List your tokens (no plaintext returned; includes scopes + caps)
+curl https://api.24observe.com/api/v1/me/tokens -H 'Authorization: Bearer obs_...'
+
+# Revoke (soft-delete; auth fails immediately for that token)
+curl -X DELETE https://api.24observe.com/api/v1/me/tokens/42 \\
+  -H 'Authorization: Bearer obs_...'`}</pre>
+
+      <h3 class="h3" style="margin-top: 32px;">PAT scopes</h3>
+      <p>
+        Scopes are an additional narrowing on top of the role check — the
+        request must pass <b>both</b> (role allows it AND scope allows it).
+        Default <code>scopes: ["*"]</code> = wildcard, inherits the role fully
+        (backward-compat). Resource wildcards work too: <code>monitors:*</code>
+        grants <code>monitors:read</code> + <code>monitors:write</code>.
+      </p>
+      <p>The 24 valid narrow scopes (plus the wildcard):</p>
+      <ul style="line-height: 1.9;">
+        <li><code>*</code> — wildcard (full role inheritance)</li>
+        <li><code>monitors:read</code> — list / read monitors (public projection)</li>
+        <li><code>monitors:write</code> — create / update / delete monitors, test alerts</li>
+        <li><code>secrets:read</code> — gates <code>/monitors/:id/secrets</code> (alert URLs, heartbeat token)</li>
+        <li><code>incidents:read</code> — list / read incidents</li>
+        <li><code>incidents:write</code> — acknowledge / resolve / post updates / write postmortems</li>
+        <li><code>status-pages:read</code> — list / read status pages + components</li>
+        <li><code>status-pages:write</code> — create / update / delete status pages, components, subscribers</li>
+        <li><code>logs:read</code> — search + live-tail log events</li>
+        <li><code>logs:write</code> — ingest log events (HTTP + OTLP)</li>
+        <li><code>metrics:read</code> — query OTLP metric names + bucketed time series</li>
+        <li><code>metrics:write</code> — ingest OTLP metrics</li>
+        <li><code>audit:read</code> — read the org audit log</li>
+        <li><code>tokens:write</code> — mint additional PATs (for agent-bootstraps-agent flows)</li>
+        <li><code>maintenance:read</code> — list maintenance windows</li>
+        <li><code>maintenance:write</code> — schedule / cancel maintenance windows</li>
+        <li><code>webhooks:read</code> — list event-webhook subscriptions + their delivery history</li>
+        <li><code>webhooks:write</code> — create / update / delete event-webhook subscriptions</li>
+        <li><code>saved-searches:read</code> — list saved log searches</li>
+        <li><code>saved-searches:write</code> — create / update / delete saved searches</li>
+        <li><code>on-call:read</code> — read on-call schedules + rotations</li>
+        <li><code>on-call:write</code> — manage on-call schedules + rotations</li>
+        <li><code>escalations:read</code> — read escalation policies</li>
+        <li><code>escalations:write</code> — manage escalation policies</li>
+        <li><code>context:read</code> — read the operational context graph (entities, neighborhoods, incident blast-radius)</li>
+      </ul>
+      <p>
+        A request that hits a route requiring a scope the PAT doesn't have
+        returns <code>403</code> with <code>code: PAT_SCOPE_INSUFFICIENT</code>.
+      </p>
+
+      <h3 class="h3" style="margin-top: 32px;">Stable error codes (the contract)</h3>
+      <p>
+        Every 4xx response carries a stable <code>code</code> string your agent can
+        branch on. The message is for humans; the code is the API surface.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>PAT_SCOPE_INSUFFICIENT</code> — token doesn't have the required scope. Don't retry; mint a new one with the right scope.</li>
+        <li><code>PAT_DAILY_LIMIT_EXCEEDED</code> — per-token daily cap exhausted. Wait until <code>X-PAT-Mut-Reset</code> (unix seconds) or page a human. Response carries <code>Retry-After</code>.</li>
+        <li><code>PLAN_LIMIT_LOGS_VOLUME</code> — org's plan-level monthly log byte cap exhausted. Upgrade or stop ingesting until next billing period.</li>
+        <li><code>CH_QUOTA_EXCEEDED</code> — search or pattern query exceeded your plan's per-query CH memory or execution-time cap. Plan-tier guardrail; narrow the window, add filters, or upgrade.</li>
+        <li><code>PLAN_LIMIT_MONITORS</code> / <code>PLAN_INTERVAL_TOO_LOW</code> — plan-tier guardrails on monitor count / minimum interval.</li>
+        <li><code>IDEMPOTENCY_KEY_REPLAY_CONFLICT</code> — same key + different body. Your retry loop has a bug.</li>
+        <li><code>IDEMPOTENCY_IN_PROGRESS</code> — a request with this key is still running; back off and try again in a few seconds.</li>
+        <li><code>WEBHOOK_URL_UNSAFE</code> — the URL you tried to register resolves to a private / loopback / link-local / metadata address.</li>
+        <li><code>WEBHOOK_URL_UNRESOLVABLE</code> — the URL's hostname doesn't resolve (DNS NXDOMAIN, timeout, etc.). Distinct from SSRF — might come back later.</li>
+        <li><code>MONITOR_TARGET_UNSAFE</code> — same SSRF guard, applied to monitor target URLs at write time.</li>
+        <li><code>REGISTRATION_BLOCKED</code> — account-creation guardrail (rate limit + duplicate-email).</li>
+        <li><code>BAD_JSON</code> — the request body was not valid JSON. Returned in place of the raw parser message so no internal detail leaks.</li>
+      </ul>
+      <p>
+        Codes are stable across deploys: we will never repurpose an existing
+        code, only add new ones. An agent that branches on
+        <code>PAT_DAILY_LIMIT_EXCEEDED</code> today will still match it next year.
+      </p>
+
+      <h3 class="h3" style="margin-top: 32px;">Per-PAT daily caps</h3>
+      <p>
+        Optional fields on PAT creation; <code>null</code> / omitted = no cap.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>dailyMutationLimit</code> (int) — max POST / PATCH / DELETE / PUT calls per UTC day. Counter resets at midnight UTC. Hitting the cap returns <code>429</code> with <code>code: PAT_DAILY_LIMIT_EXCEEDED</code>. The counter only bumps on 2xx responses, so failed validation doesn't burn budget.</li>
+        <li><code>dailyLogBytesLimit</code> (int, bytes) — max log ingest volume per UTC day for this PAT. Same 429 + code. Slight over-shoot tolerated (bumped after a successful ingest; the over-shoot is bounded by one request's worth of bytes ≤ 1 MB).</li>
+      </ul>
+
+      <h3 class="h3" style="margin-top: 32px;">Roles (still apply)</h3>
+      <ul style="line-height: 1.9;">
+        <li><b>owner / admin</b> — every endpoint, including secret-bearing reads</li>
+        <li><b>member</b> — create / edit monitors + status pages, view incidents</li>
+        <li><b>viewer</b> — read-only</li>
+      </ul>
+      <p>
+        A PAT inherits the role its owner has in the org. If the owner is
+        removed from the org, the PAT stops working <b>immediately</b> — no
+        separate revoke needed.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Idempotency-Key (safe retries)</h2>
+      <p>
+        Pass a client-generated UUID via the <code>Idempotency-Key</code> header
+        on any mutating request (POST / PATCH / DELETE / PUT). Server caches the
+        response keyed by <code>(PAT, key)</code> for 24h — retries return the
+        same response without re-executing. Standard Stripe-style semantics.
+      </p>
+      <pre class="code-block">{`KEY=$(uuidgen)
+curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H "Idempotency-Key: $KEY" \\
+  -H 'Content-Type: application/json' \\
+  -d '{...}'
+# On replay, response header: Idempotent-Replayed: true`}</pre>
+      <p>
+        Two concurrent requests with the same key get <code>409</code> with
+        <code>code: IDEMPOTENCY_IN_PROGRESS</code> — back off + retry. Keys
+        capped at 255 chars (<code>IDEMPOTENCY_KEY_TOO_LONG</code> on overflow).
+        5xx responses are NOT cached — retries genuinely re-run.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Rate limits</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>Global</b>: 100 requests / minute / IP across the API.</li>
+        <li><b>Logs ingest</b>: 300 / minute / IP (separate bucket).</li>
+        <li><b>Logs search</b>: 60 / minute / IP.</li>
+        <li><b>Logs tail (SSE)</b>: 30 / minute / IP.</li>
+        <li><b>Heartbeat receive</b> (<code>/heartbeats/:token</code>): 60 / minute / IP.</li>
+        <li><b>Status subscribe</b> (<code>/status-pages/public/:slug/subscribe</code>): 5 / 10 min / IP.</li>
+        <li>Hitting any limit returns <code>429</code> with <code>Retry-After</code>.</li>
+      </ul>
+      <p>
+        Rate-limit counters are shared across API instances (not per-machine).
+        Plus per-org plan caps (monitors, monthly checks, monthly log bytes)
+        and per-PAT daily caps (see above).
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Error envelope</h2>
+      <p>
+        All non-2xx responses follow this shape:
+      </p>
+      <pre class="code-block">{`{
+  "error": "human-readable message",
+  "code": "MACHINE_READABLE_CODE",        // optional but present on most 4xx
+  "fields": [                              // present when code = VALIDATION_FAILED
+    {
+      "path": "intervalSec",
+      "code": "invalid_literal",
+      "message": "Expected one of 30, 60, 300, 900, 1800, 3600"
+    }
+  ]
+}`}</pre>
+      <p>Codes worth handling explicitly:</p>
+      <ul style="line-height: 1.9;">
+        <li><code>VALIDATION_FAILED</code> (400) — request body or query failed schema validation. Inspect <code>fields[]</code> for the specific paths.</li>
+        <li><code>PAT_SCOPE_INSUFFICIENT</code> (403) — your PAT's <code>scopes</code> don't allow this route.</li>
+        <li><code>PAT_DAILY_LIMIT_EXCEEDED</code> (429) — daily mutation or log-bytes cap reached for this PAT. Resets UTC midnight.</li>
+        <li><code>IDEMPOTENCY_IN_PROGRESS</code> (409) — another request with the same key is in flight. Back off + retry.</li>
+        <li><code>IDEMPOTENCY_KEY_TOO_LONG</code> (400) — key > 255 chars.</li>
+        <li><code>PLAN_LIMIT_MONITORS</code> (429) — over your plan's monitor count cap.</li>
+        <li><code>PLAN_INTERVAL_TOO_LOW</code> (400) — interval below your plan's minimum.</li>
+        <li><code>MONITOR_NAME_DUPLICATE</code> (409) — a monitor with that exact name already exists in your org; pick a distinct name.</li>
+        <li><code>PLAN_LIMIT_LOGS_VOLUME</code> (429) — org over monthly log byte cap.</li>
+        <li><code>CH_QUOTA_EXCEEDED</code> (429) — your search or pattern query exceeded the per-plan query memory or execution-time cap. Free: 256 MiB / 3 s. Startup: 1 GiB / 10 s. Pro: 2 GiB / 30 s. Narrow the time range, add a service/level filter, or upgrade the plan.</li>
+        <li><code>LOG_ENTROPY_REJECTED</code> (202 with <code>rejected[]</code>) — single event exceeded the 5.7 bits/char entropy threshold (looks like base64, encrypted, or packed binary). Re-encode as structured JSON or ship to object storage instead.</li>
+        <li><code>QUERY_LOG_READ_FAILED</code> (500) — the <code>/admin/query-stats</code> endpoint couldn't read its telemetry table. Internal; transient.</li>
+        <li><code>DUPLICATE</code> (202 with <code>rejected[]</code>) — same <code>event_id</code> submitted within the 60s idempotency window. Safe to ignore; the original was kept. Response header <code>Logs-Deduped</code> counts how many in the batch were duped.</li>
+        <li><code>ARCHIVE_NOT_CONFIGURED</code> (503) — search window includes archived (>7d) data but the cold-tier object-storage credentials aren't set on the server. Operator action only.</li>
+        <li><code>BAD_COMPRESSED_BODY</code> (400) — request body had a <code>Content-Encoding</code> header (<code>gzip</code> / <code>deflate</code> / <code>br</code>) but the compressed payload was truncated, corrupt, or used the wrong format. Re-encode and retry. The API decompresses gzip/deflate/br request bodies natively for ingest endpoints — log batches arrive at a small fraction of their raw size.</li>
+        <li><code>ALERT_URL_BLOCKED</code> (400) — alert URL resolves to a private / loopback / metadata IP (SSRF defense).</li>
+        <li><code>ALERT_URL_INVALID</code> (400) — alert URL malformed or non-http(s).</li>
+        <li><code>BAD_TIME_RANGE</code> (400) — <code>from &gt; to</code> on search.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Endpoint index</h2>
+      <p>
+        Full reference is in the OpenAPI spec; this is a sufficient map for
+        most agent integrations. Each bullet is one route group.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Monitors</h3>
+      <pre class="code-block">{`GET    /api/v1/monitors                     # public projection (no secrets). ?tag=foo&tag=bar filters by tag (AND)
+POST   /api/v1/monitors                     # scope: monitors:write
+GET    /api/v1/monitors/:id
+PATCH  /api/v1/monitors/:id                 # scope: monitors:write
+DELETE /api/v1/monitors/:id                 # scope: monitors:write
+GET    /api/v1/monitors/:id/secrets         # scope: secrets:read (owner/admin)
+POST   /api/v1/monitors/:id/test-alert      # send a sample alert through every configured channel
+POST   /api/v1/monitors/:id/rotate-heartbeat-token
+
+# Bulk operations (max 100 per request)
+POST   /api/v1/monitors/bulk                # { "monitors": [MonitorCreate, ...] }
+PATCH  /api/v1/monitors/bulk                # { "ids": [1,2,3], "patch": MonitorUpdate }
+DELETE /api/v1/monitors/bulk                # { "ids": [1,2,3] }  (owner/admin only)
+
+# Stats (time-series)
+GET    /api/v1/monitors/:id/checks          # recent check results
+GET    /api/v1/monitors/:id/stats           # uptime % / response-time stats
+GET    /api/v1/monitors/:id/timeline        # bucketed timeline for the dashboard
+
+# Multi-region (D8 MVP): set monitor.regions[] to opt-in
+# Default ['local']; remote regions ['weur','enam','apac','oc','sam','afr']
+# only HTTP/HTTPS today, more check types queued`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Incidents</h3>
+      <pre class="code-block">{`GET   /api/v1/incidents
+GET   /api/v1/incidents/:id
+POST  /api/v1/incidents/:id/updates         # post a public timeline update
+POST  /api/v1/incidents/:id/acknowledge
+POST  /api/v1/incidents/:id/resolve
+PUT   /api/v1/incidents/:id/postmortem      # rich-text markdown`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Status pages</h3>
+      <pre class="code-block">{`# Authed (owner/admin)
+GET    /api/v1/status-pages
+POST   /api/v1/status-pages                 # scope: status-pages:write
+GET    /api/v1/status-pages/:id
+PATCH  /api/v1/status-pages/:id             # scope: status-pages:write
+DELETE /api/v1/status-pages/:id             # scope: status-pages:write
+PUT    /api/v1/status-pages/:id/password    # set / clear password (Argon2id)
+GET    /api/v1/status-pages/:id/subscribers
+DELETE /api/v1/status-pages/:id/subscribers/:sid
+
+# Public (no auth)
+GET   /api/v1/status-pages/public/:slug                  # JSON for the renderer
+GET   /api/v1/status-pages/public/:slug/feed.xml         # Atom feed
+GET   /api/v1/status-pages/public/by-host/:host          # custom-domain lookup
+POST  /api/v1/status-pages/public/:slug/unlock           # password unlock
+POST  /api/v1/status-pages/public/:slug/subscribe        # email subscribe
+GET   /api/v1/status-pages/public/:slug/subscribe/confirm
+GET   /api/v1/status-pages/public/unsubscribe`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Maintenance windows</h3>
+      <pre class="code-block">{`GET    /api/v1/maintenance-windows
+POST   /api/v1/maintenance-windows          # scope: maintenance:write
+GET    /api/v1/maintenance-windows/:id
+DELETE /api/v1/maintenance-windows/:id      # scope: maintenance:write`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Account / org</h3>
+      <pre class="code-block">{`GET    /api/v1/me                           # current user + plan + quota
+GET    /api/v1/me/members
+PATCH  /api/v1/me/members/:userId           # change role (owner only; can't demote sole owner)
+GET    /api/v1/me/webhook-secret            # per-org HMAC secret for outbound webhook signatures
+POST   /api/v1/me/webhook-secret/rotate
+POST   /api/v1/me/change-password
+
+# OAuth linking (Google + GitHub OIDC)
+GET    /api/v1/me/oauth                     # which providers are linked
+GET    /api/v1/me/oauth/google/start
+DELETE /api/v1/me/oauth/google
+GET    /api/v1/me/oauth/github/start
+DELETE /api/v1/me/oauth/github
+
+# Invites
+GET    /api/v1/me/invites
+POST   /api/v1/me/invites                   # email invitee a join link
+DELETE /api/v1/me/invites/:id
+
+# PATs (see above for shape)
+GET    /api/v1/me/tokens
+POST   /api/v1/me/tokens                    # scope: tokens:write
+DELETE /api/v1/me/tokens/:id`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Audit log (scope: audit:read)</h3>
+      <pre class="code-block">{`GET /api/v1/audit-logs
+  ?action=CREATE_MONITOR                  # exact action verb
+  &actor=42                                # user id
+  &pat_id=17                               # which PAT (Tier D fruit 1)
+  &from=2026-05-01T00:00:00Z
+  &to=2026-05-13T23:59:59Z
+  &limit=200
+  &format=csv                              # download as CSV
+
+# Row shape
+{
+  "id": 9123,
+  "createdAt": "2026-05-13T18:00:00Z",
+  "actorUserId": 42,
+  "actorPatId": 17,                        # null = session login; non-null = PAT
+  "actorEmail": "alice@yourco.com",
+  "action": "UPDATE_MONITOR",
+  "resource": "monitor:88",
+  "meta": {
+    "changedFields": ["intervalSec","timeoutMs"],
+    "diff": {
+      "intervalSec": { "from": 60, "to": 300 },
+      "timeoutMs":   { "from": 5000, "to": 10000 }
+    },
+    "ip": "203.0.113.7",                   # captured automatically (Tier E)
+    "ua": "AeonitiBot/1.0"
+  }
+}`}</pre>
+      <p>
+        For sensitive-field PATCHes (alert URLs, telegram tokens, headers) the
+        diff entries are <code>{`{ "redacted": true }`}</code> — values never
+        leak into audit. DELETE actions include a <code>snapshot</code> of key
+        identifying fields before the row was gone.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Logs (separate doc page)</h3>
+      <p>See <a href="/docs/logs">/docs/logs</a> for ingest, search, live tail, log-based alerts, OTLP/HTTP, and Vector config.</p>
+
+      <h3 class="h3" style="margin-top: 24px;">OpenTelemetry (OTLP/HTTP)</h3>
+      <pre class="code-block">{`POST /api/v1/otlp/v1/logs
+# Standard OTLP/HTTP receiver. Set OTEL_EXPORTER_OTLP_ENDPOINT=https://api.24observe.com/api/v1/otlp
+# and any OTel SDK ships logs here. JSON encoding only in v1 (use the 24observe
+# collector image for http/protobuf). See /docs/logs#opentelemetry-otlphttp.`}</pre>
+      <p>
+        For non-OTel sources (Syslog, Fluent Bit), see the
+        <a href="/docs/collector">24observe collector</a>.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">Heartbeats (separate doc page)</h3>
+      <p>See <a href="/docs/heartbeats">/docs/heartbeats</a> for receive URL, two-step token retrieval, and end-to-end examples.</p>
+
+      <h3 class="h3" style="margin-top: 24px;">Public / unauthenticated</h3>
+      <pre class="code-block">{`GET  /api/v1/badge/monitors/:id.svg         # status badge (shields.io-style)
+POST /api/v1/heartbeats/:token              # heartbeat receive
+HEAD /api/v1/heartbeats/:token              # same, no body
+
+# Auth (no bearer required)
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/forgot-password
+POST /api/v1/auth/reset-password
+GET  /api/v1/auth/google/start              # OAuth
+GET  /api/v1/auth/google/callback
+GET  /api/v1/auth/github/start
+GET  /api/v1/auth/github/callback`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Operational</h3>
+      <pre class="code-block">{`GET /health/live                            # cheap liveness (k8s pattern)
+GET /health/ready                           # all dependencies reachable
+GET /metrics                                # Prometheus
+GET /openapi.json                           # OpenAPI 3 spec
+GET /docs                                   # Swagger UI`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Walkthrough: create a monitor</h2>
+      <p>
+        Programmatic equivalent of clicking "New monitor" in the dashboard.
+        60-second HTTPS check on <code>https://example.com</code>; alerts go to
+        Slack via webhook.
+      </p>
+
+      <h3 class="h3" style="margin-top: 24px;">curl</h3>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H "Idempotency-Key: $(uuidgen)" \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "example.com homepage",
+    "url": "https://example.com",
+    "type": "https",
+    "intervalSec": 60,
+    "timeoutMs": 10000,
+    "alertSlackUrl": "https://hooks.slack.com/services/..."
+  }'`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">TypeScript (Node 22 fetch)</h3>
+      <pre class="code-block">{`import { randomUUID } from 'node:crypto';
+
+const PAT = process.env.OBSERVE24_PAT!;
+
+const res = await fetch('https://api.24observe.com/api/v1/monitors', {
+  method: 'POST',
+  headers: {
+    authorization: \`Bearer \${PAT}\`,
+    'idempotency-key': randomUUID(),
+    'content-type': 'application/json',
+  },
+  body: JSON.stringify({
+    name: 'example.com homepage',
+    url: 'https://example.com',
+    type: 'https',
+    intervalSec: 60,
+    timeoutMs: 10000,
+    alertEmail: 'alerts@yourco.com',
+  }),
+});
+
+if (!res.ok) {
+  const err = await res.json();
+  // err.code: VALIDATION_FAILED / PLAN_LIMIT_MONITORS / PAT_SCOPE_INSUFFICIENT / ...
+  // err.fields: [{ path, code, message }] when VALIDATION_FAILED
+  throw new Error(\`\${res.status} \${err.code}: \${err.error}\`);
+}
+const monitor = await res.json();
+console.log('created monitor', monitor.id);`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Python (httpx)</h3>
+      <pre class="code-block">{`import os, uuid, httpx
+
+PAT = os.environ['OBSERVE24_PAT']
+
+r = httpx.post(
+    'https://api.24observe.com/api/v1/monitors',
+    headers={
+        'authorization': f'Bearer {PAT}',
+        'idempotency-key': str(uuid.uuid4()),
+        'content-type': 'application/json',
+    },
+    json={
+        'name': 'example.com homepage',
+        'url': 'https://example.com',
+        'type': 'https',
+        'intervalSec': 60,
+        'timeoutMs': 10000,
+        'alertEmail': 'alerts@yourco.com',
+    },
+)
+r.raise_for_status()
+print('created monitor', r.json()['id'])`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Monitor request body — full shape</h2>
+      <p>
+        Strict-validated; unknown fields are rejected. Full schema lives in
+        the OpenAPI spec; the table below is the practical subset.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>name</code> (string, 1-255) — display name.</li>
+        <li><code>url</code> (string, 1-2048) — what to check.</li>
+        <li><code>type</code> — one of <code>http</code>, <code>https</code>, <code>tcp</code>, <code>ping</code>, <code>port</code>, <code>ssl</code>, <code>keyword</code>, <code>heartbeat</code>, <code>dns</code>, <code>smtp</code>.</li>
+        <li><code>intervalSec</code> — one of <code>30, 60, 300, 900, 1800, 3600</code>. Plan tier sets the floor.</li>
+        <li><code>timeoutMs</code> — 1000-30000.</li>
+        <li><code>headers</code> (optional, ≤ 20 keys, encrypted at rest)</li>
+        <li><code>expectedStatusCode</code>, <code>degradedResponseTimeMs</code>, <code>port</code>, <code>keyword</code>, <code>keywordMatchType</code></li>
+        <li>Alerts: <code>alertEmail</code>, <code>alertWebhookUrl</code>, <code>alertSlackUrl</code>, <code>alertDiscordUrl</code>, <code>alertMsteamsUrl</code>, <code>alertTelegramBotToken</code>, <code>alertTelegramChatId</code>, <code>alertPagerdutyRoutingKey</code>, <code>alertOpsgenieApiKey</code>. URLs are SSRF-validated at write time and all secret-bearing fields are stored encrypted at rest.</li>
+        <li><b>PagerDuty:</b> set <code>alertPagerdutyRoutingKey</code> to your "Integration Routing Key" from a PagerDuty Events API v2 integration. We POST to <code>events.pagerduty.com</code>; the resolve event fires automatically when the monitor goes back up, so PD auto-closes the incident.</li>
+        <li><b>Opsgenie:</b> set <code>alertOpsgenieApiKey</code> to a GenieKey from an Opsgenie API integration. Down → P1 alert with deterministic alias; up → close-by-alias so the original alert resolves cleanly.</li>
+        <li><b>Tags:</b> set <code>tags</code> to an array of lowercase slugs (e.g. <code>["prod","team-payments","critical"]</code>) to group monitors. Max 20 per monitor. Filter by tag with <code>GET /monitors?tag=prod&amp;tag=team-payments</code> (AND across multiple).</li>
+        <li><b>Bulk migrations:</b> <code>POST /monitors/bulk</code> takes up to 100 monitors in a single transaction (all-or-nothing). Bulk PATCH applies the same patch to many ids (useful for "add tag X to these 50 monitors"). Bulk DELETE removes up to 100 at once.</li>
+        <li><code>alertThreshold</code> — consecutive failures before an incident opens (default 1).</li>
+        <li><code>regions</code> (string array, default <code>["local"]</code>) — multi-region opt-in. Local always runs; add any of <code>weur / enam / apac / oc / sam / afr</code> to dispatch additional checks from CF Workers. HTTP/HTTPS only in MVP.</li>
+        <li><code>uptimeTargetBp</code> (int, default 999 = 99.9%) — SLO target in basis points. Breach triggers an auto-incident on the scheduler tick.</li>
+        <li><code>uptimeWindowDays</code> (int, default 30) — SLO evaluation window.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Reading secret-bearing fields</h2>
+      <p>
+        <code>GET /api/v1/monitors</code> and <code>GET /api/v1/monitors/:id</code>
+        return a public projection only — alert URLs, telegram tokens,
+        encrypted headers, and the plaintext heartbeat token are
+        <b>not</b> in the response. Boolean indicators (<code>hasAlertWebhook</code>,
+        <code>hasAlertSlack</code>, etc.) tell you which channels are configured.
+      </p>
+      <p>To read the secrets:</p>
+      <pre class="code-block">{`GET /api/v1/monitors/:id/secrets
+Authorization: Bearer obs_<owner-or-admin PAT with secrets:read scope>`}</pre>
+      <p>
+        Every call is recorded in the audit log
+        (<code>action: READ_MONITOR_SECRETS</code>) with IP + user-agent +
+        actorPatId so the admin can prove which integration fetched what.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Other resources</h2>
+      <ul style="line-height: 1.9;">
+        <li><a href="/docs/heartbeats">Heartbeat / cron-job monitors</a> — the inverted check pattern, including the two-step token retrieval flow.</li>
+        <li><a href="/docs/logs">Logs ingest + search + tail</a> — log management surface with curl + TypeScript + Python + Vector examples.</li>
+        <li><a href="/docs/webhooks">Verifying alert webhooks</a> — HMAC-SHA256 on incoming alerts, Node / Python / Go.</li>
+        <li><a href="/docs/runbook">Incident response runbook</a> — what to check when something breaks.</li>
+        <li><a href="/docs/openapi">Interactive OpenAPI reference</a> — every endpoint, every schema, in one searchable page.</li>
+        <li><a href="https://api.24observe.com/openapi.json">openapi.json</a> — raw spec for generating a typed client in any language.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

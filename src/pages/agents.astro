@@ -1,0 +1,446 @@
+---
+import Base from '../layouts/Base.astro';
+import PageSchema from '../components/PageSchema.astro';
+
+const FLOWS = [
+  {
+    id: 'list-monitors',
+    title: 'Your agent wakes up. What is broken?',
+    why: 'First thing on-call asks. First thing your agent needs to know.',
+    method: 'GET',
+    path: '/api/v1/monitors',
+    samples: {
+      curl: `curl https://api.24observe.com/api/v1/monitors \\
+  -H "Authorization: Bearer obs_<your_token>"`,
+      python: `import requests
+r = requests.get(
+    "https://api.24observe.com/api/v1/monitors",
+    headers={"Authorization": "Bearer obs_<your_token>"},
+)
+monitors = r.json()`,
+      javascript: `const r = await fetch("https://api.24observe.com/api/v1/monitors", {
+  headers: { Authorization: "Bearer obs_<your_token>" },
+});
+const monitors = await r.json();`,
+      go: `req, _ := http.NewRequest("GET", "https://api.24observe.com/api/v1/monitors", nil)
+req.Header.Set("Authorization", "Bearer obs_<your_token>")
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()`,
+    },
+  },
+  {
+    id: 'search-logs',
+    title: 'Dig into logs without a human in the loop',
+    why: 'No SPL to learn. No proprietary query DSL. Just a query string.',
+    method: 'GET',
+    path: '/api/v1/logs/search',
+    samples: {
+      curl: `curl "https://api.24observe.com/api/v1/logs/search?q=ECONNREFUSED&limit=50" \\
+  -H "Authorization: Bearer obs_<your_token>"`,
+      python: `import requests
+r = requests.get(
+    "https://api.24observe.com/api/v1/logs/search",
+    params={"q": "ECONNREFUSED", "limit": 50},
+    headers={"Authorization": "Bearer obs_<your_token>"},
+)
+events = r.json()["events"]`,
+      javascript: `const url = new URL("https://api.24observe.com/api/v1/logs/search");
+url.searchParams.set("q", "ECONNREFUSED");
+url.searchParams.set("limit", "50");
+const r = await fetch(url, {
+  headers: { Authorization: "Bearer obs_<your_token>" },
+});
+const { events } = await r.json();`,
+      go: `u, _ := url.Parse("https://api.24observe.com/api/v1/logs/search")
+q := u.Query(); q.Set("q", "ECONNREFUSED"); q.Set("limit", "50")
+u.RawQuery = q.Encode()
+req, _ := http.NewRequest("GET", u.String(), nil)
+req.Header.Set("Authorization", "Bearer obs_<your_token>")
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()`,
+    },
+  },
+  {
+    id: 'ack-incident',
+    title: 'Take ownership and let the team know',
+    why: 'One POST. Idempotency-Key means retries never double-page on-call.',
+    method: 'POST',
+    path: '/api/v1/incidents/{id}/acknowledge',
+    samples: {
+      curl: `curl -X POST https://api.24observe.com/api/v1/incidents/42/acknowledge \\
+  -H "Authorization: Bearer obs_<your_token>" \\
+  -H "Idempotency-Key: ack-incident-42-agent-run-7"`,
+      python: `import requests
+r = requests.post(
+    "https://api.24observe.com/api/v1/incidents/42/acknowledge",
+    headers={
+        "Authorization": "Bearer obs_<your_token>",
+        "Idempotency-Key": "ack-incident-42-agent-run-7",
+    },
+)
+r.raise_for_status()`,
+      javascript: `await fetch("https://api.24observe.com/api/v1/incidents/42/acknowledge", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer obs_<your_token>",
+    "Idempotency-Key": "ack-incident-42-agent-run-7",
+  },
+});`,
+      go: `req, _ := http.NewRequest("POST",
+  "https://api.24observe.com/api/v1/incidents/42/acknowledge", nil)
+req.Header.Set("Authorization", "Bearer obs_<your_token>")
+req.Header.Set("Idempotency-Key", "ack-incident-42-agent-run-7")
+http.DefaultClient.Do(req)`,
+    },
+  },
+  {
+    id: 'create-heartbeat',
+    title: 'Provision monitoring for a job you just deployed',
+    why: 'Your CI agent ships code. Same agent registers the heartbeat for the new cron — done in the same run.',
+    method: 'POST',
+    path: '/api/v1/monitors',
+    samples: {
+      curl: `curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H "Authorization: Bearer obs_<your_token>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "nightly-etl",
+    "url": "nightly-etl",
+    "type": "heartbeat",
+    "intervalSec": 3600,
+    "timeoutMs": 5000
+  }'`,
+      python: `import requests
+r = requests.post(
+    "https://api.24observe.com/api/v1/monitors",
+    headers={
+        "Authorization": "Bearer obs_<your_token>",
+        "Content-Type": "application/json",
+    },
+    json={
+        "name": "nightly-etl",
+        "url": "nightly-etl",
+        "type": "heartbeat",
+        "intervalSec": 3600,
+        "timeoutMs": 5000,
+    },
+)
+monitor_id = r.json()["id"]`,
+      javascript: `const r = await fetch("https://api.24observe.com/api/v1/monitors", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer obs_<your_token>",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    name: "nightly-etl",
+    url: "nightly-etl",
+    type: "heartbeat",
+    intervalSec: 3600,
+    timeoutMs: 5000,
+  }),
+});
+const { id } = await r.json();`,
+      go: `payload := \`{"name":"nightly-etl","url":"nightly-etl","type":"heartbeat","intervalSec":3600,"timeoutMs":5000}\`
+req, _ := http.NewRequest("POST",
+  "https://api.24observe.com/api/v1/monitors",
+  strings.NewReader(payload))
+req.Header.Set("Authorization", "Bearer obs_<your_token>")
+req.Header.Set("Content-Type", "application/json")
+http.DefaultClient.Do(req)`,
+    },
+  },
+];
+
+const PRINCIPLES = [
+  {
+    n: '01',
+    title: 'The spec is the SDK',
+    body: 'Our OpenAPI document IS the client library — fresh on every release, no versioning drift, no abandoned language. Your agent reads it once, calls anything.',
+  },
+  {
+    n: '02',
+    title: 'Idempotent by default',
+    body: 'Agents retry. Networks flake. Every mutation accepts an Idempotency-Key — your agent can pound the API and we promise it pages on-call exactly once.',
+  },
+  {
+    n: '03',
+    title: 'Tokens you can hand to a robot',
+    body: '24 narrow scopes including context:read, webhooks:read, webhooks:write, logs:write, incidents:write, metrics:read. Daily mutation caps. Per-call audit trail with the token id stamped on it. If your agent goes rogue, you see it in the log within seconds and revoke in one call.',
+  },
+  {
+    n: '04',
+    title: 'Errors a parser can love',
+    body: 'Every 4xx and 5xx ships with a machine-stable code field. Your agent branches on PAT_SCOPE_INSUFFICIENT, not on regex against English prose that we might rewrite next sprint.',
+  },
+  {
+    n: '05',
+    title: 'Ready-made for your framework',
+    body: 'OpenAI function-calling, Anthropic tool-use, LangChain — we serve the same operations in all three formats. Fetch one URL, pass it to your framework, ship.',
+  },
+  {
+    n: '06',
+    title: 'Stop polling. Subscribe to events.',
+    body: 'Register a URL with /api/v1/webhook-subscriptions and receive signed POSTs the moment incident.opened / acknowledged / resolved or monitor.status_changed fires — typically under 500ms from API action to your receiver. HMAC-SHA256 signed with your org\'s shared secret. 5-attempt exponential retry, auto-disable after 10 consecutive failures so a broken receiver never drains our queue. Full delivery log per subscription, including the bytes we sent. Your agent reacts instead of polls.',
+  },
+  {
+    n: '07',
+    title: 'No proprietary client to get wrong',
+    body: 'Everything is a documented REST call — no closed SDK an agent can hallucinate against. The full OpenAPI spec, pre-converted tool definitions, and an MCP server mean your agent works from the same contract we run in production. Self-host it and the contract is identical.',
+  },
+];
+---
+<Base
+  title="Observability API your AI agent can drive | 24Observe"
+  description="No SDK, no proprietary protocol — a pure-REST API and MCP server your agent reads in 30 seconds. Pre-converted tool defs for OpenAI, Anthropic, and LangChain."
+>
+  <PageSchema type="SoftwareApplication" name="24Observe Agent-Native API" path="/agents"
+    description="A pure-REST API and MCP server built for AI agents to drive — pre-converted tool defs for OpenAI, Anthropic, LangChain; signed webhooks; scoped PATs."
+    features={["Pure-REST API (no SDK)", "MCP server", "Pre-converted tool defs: OpenAI / Anthropic / LangChain", "Signed event webhooks", "Idempotency-Key on every mutation", "Scoped PATs with daily caps"]}
+  />
+  <section class="hero">
+    <div class="container">
+      <div class="hero-text">
+        <div class="eyebrow"><span class="bar"></span> Built for agents · Used by humans</div>
+        <h1 class="h1">
+          The first API your AI agent<br/>won't fight you over.
+        </h1>
+        <p class="lede">
+          Every other observability tool was built for engineers staring at dashboards.
+          We built ours for the agent the engineer is about to deploy at 2am — so the agent
+          can read what's broken, fix it, and log what it did, without anybody clicking a button.
+        </p>
+        <div class="hero-ctas">
+          <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">
+            Start free — 25 monitors <span class="arr">→</span>
+          </a>
+          <a href="https://api.24observe.com/openapi.json" class="btn btn-ghost btn-lg">
+            <span class="mono accent">GET</span> /openapi.json
+          </a>
+        </div>
+        <div class="hero-meta">
+          <span><b>0</b> SDKs to install</span>
+          <span><b>130</b> endpoints, all documented</span>
+          <span><b>3</b> tool-call formats out of the box</span>
+          <span><b>1</b> minute to first agent call</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Why we're different</div>
+      <h2 class="h2">
+        Seven principles. None of them<br/>require you to install anything.
+      </h2>
+      <div class="princ-grid">
+        {PRINCIPLES.map((p) => (
+          <div class="princ-card">
+            <div class="princ-num mono">{p.n}</div>
+            <h3 class="h3">{p.title}</h3>
+            <p>{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Real code · live API</div>
+      <h2 class="h2">
+        Four flows your agent already needs.<br/>Copy. Paste. Ship today.
+      </h2>
+      <p class="lede">
+        Real HTTP against the live API. <span class="mono accent">curl</span>,
+        <span class="mono accent">requests</span>,
+        <span class="mono accent">fetch</span>,
+        <span class="mono accent">net/http</span> — whatever your agent runs on
+        already speaks it. Nothing to <span class="mono accent">npm install</span>.
+      </p>
+
+      {FLOWS.map((flow) => (
+        <article class="flow" id={flow.id}>
+          <div class="flow-head">
+            <span class={`pill pill-${flow.method.toLowerCase()} mono`}>{flow.method}</span>
+            <code class="flow-path mono">{flow.path}</code>
+          </div>
+          <h3 class="h3">{flow.title}</h3>
+          <p class="flow-why">{flow.why}</p>
+          <div class="samples">
+            <details open>
+              <summary><span class="mono">curl</span></summary>
+              <pre><code>{flow.samples.curl}</code></pre>
+            </details>
+            <details>
+              <summary><span class="mono">python</span></summary>
+              <pre><code>{flow.samples.python}</code></pre>
+            </details>
+            <details>
+              <summary><span class="mono">javascript</span></summary>
+              <pre><code>{flow.samples.javascript}</code></pre>
+            </details>
+            <details>
+              <summary><span class="mono">go</span></summary>
+              <pre><code>{flow.samples.go}</code></pre>
+            </details>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Drop-in for every framework</div>
+      <h2 class="h2">Your agent's framework already knows our API.</h2>
+      <p class="lede">
+        We do the schema-conversion work so you don't have to.
+        Fetch one URL, hand the array to your framework, and your agent is calling production in under a minute.
+      </p>
+      <div class="fmt-grid">
+        <a class="fmt-card" href="https://api.24observe.com/openapi/openai-tools.json">
+          <div class="fmt-card-tag mono">OPENAI</div>
+          <h3 class="h3">Function calling</h3>
+          <p>Drop straight into <span class="mono">tools=[…]</span>. Works with the OpenAI SDK in any language, Cursor, Claude desktop via the OpenAI bridge.</p>
+          <code class="mono">/openapi/openai-tools.json</code>
+        </a>
+        <a class="fmt-card" href="https://api.24observe.com/openapi/anthropic-tools.json">
+          <div class="fmt-card-tag mono">ANTHROPIC</div>
+          <h3 class="h3">Tool use</h3>
+          <p>Pass to <span class="mono">messages.create({`{ tools }`})</span>. Anthropic SDK in any language, plus anything else that speaks the Anthropic tool schema.</p>
+          <code class="mono">/openapi/anthropic-tools.json</code>
+        </a>
+        <a class="fmt-card" href="https://api.24observe.com/openapi/langchain-tools.json">
+          <div class="fmt-card-tag mono">LANGCHAIN +</div>
+          <h3 class="h3">Generic structured tools</h3>
+          <p>Includes the explicit method + path per tool. Wire into LangChain <span class="mono">StructuredTool</span>, AutoGen, CrewAI, or your own.</p>
+          <code class="mono">/openapi/langchain-tools.json</code>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> What we don't pretend to be</div>
+      <h2 class="h2">
+        We'd rather lose your business than waste your weekend.
+      </h2>
+      <p class="lede">
+        Here's exactly what we don't ship. Read it before you sign up — we built the list so you don't have to find out the hard way three weeks in.
+      </p>
+      <div class="dont-grid">
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">APM, distributed tracing, flame graphs</h3>
+          <p>If you need to chase a request across 14 microservices, keep Datadog APM. We're for the logs, uptime, and alerts layer underneath.</p>
+        </div>
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">Real User Monitoring or session replay</h3>
+          <p>We don't watch your end-users' browsers. Sentry, LogRocket, and FullStory all do this well. Use them.</p>
+        </div>
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">Multi-step browser scripts</h3>
+          <p>We run HTTP, TCP, SSL, keyword, DNS, ping, port, SMTP, and heartbeat checks. We do not run Playwright login flows. If you need that, Checkly does it well.</p>
+        </div>
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">Full SIEM, UBA, MITRE correlation</h3>
+          <p>If you need to satisfy your SOC's compliance checklist, keep Splunk Enterprise Security. We replace the log search and alerts beneath it, not the SIEM itself.</p>
+        </div>
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">Infrastructure agent collecting CPU + memory</h3>
+          <p>We accept OTLP — bring whatever agent or collector you already have. We won't ship you another daemon to run on every host.</p>
+        </div>
+        <div class="dont-card">
+          <div class="dont-no mono">— no</div>
+          <h3 class="h3">Machine-learning anomaly detection</h3>
+          <p>Threshold alerts only. We don't pretend the math is smarter than your engineers — and we don't bill you for the pretense.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-cta">
+    <div class="container">
+      <h2 class="h2">Mint a token. Drop in our spec.<br/>Your agent ships tonight.</h2>
+      <p class="lede">Free plan covers 25 monitors. No credit card. The OpenAPI spec is public, and the whole platform is self-hostable.</p>
+      <div class="hero-ctas">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">
+          Start free <span class="arr">→</span>
+        </a>
+        <a href="https://api.24observe.com/openapi.json" class="btn btn-ghost btn-lg">
+          OpenAPI spec ↗
+        </a>
+        <a href="https://github.com/vikasswaminh/observe24" class="btn btn-ghost btn-lg">
+          Source on GitHub ↗
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* Use the site's existing tokens.css palette. --bg-* = surfaces, --ink-* = text. */
+    .hero { padding: 80px 0 56px; border-bottom: 1px solid var(--line); }
+    /* .hero-inner / .lede max-widths now come from base.css (.hero-text /
+       .lede defaults). Removed the per-page overrides so this page's
+       widths line up with index.astro instead of drifting on its own. */
+    .h1 { font-size: clamp(40px, 6.5vw, 72px); line-height: 1.04; letter-spacing: -0.02em; margin: 24px 0; color: var(--ink); }
+    .lede { font-size: 19px; line-height: 1.55; color: var(--ink-1); }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+    .hero-meta { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 36px; font-size: 13px; color: var(--ink-2); font-family: var(--mono); }
+    .hero-meta b { color: var(--accent); font-weight: 600; }
+    .accent { color: var(--accent); }
+
+    .section { padding: 88px 0; }
+    .section-alt { background: var(--bg-1); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .section-cta { text-align: center; }
+    .section-cta .lede { margin-left: auto; margin-right: auto; }
+    .section-cta .hero-ctas { justify-content: center; margin-top: 36px; }
+
+    .princ-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 48px; }
+    .princ-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad-lg); padding: 28px; }
+    .princ-card .princ-num { color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .princ-card h3 { color: var(--ink); margin: 0 0 10px; font-size: 18px; line-height: 1.3; }
+    .princ-card p { color: var(--ink-1); margin: 0; font-size: 14.5px; line-height: 1.6; }
+
+    .flow { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad-lg); padding: 28px; margin-top: 24px; }
+    .flow:first-of-type { margin-top: 48px; }
+    .flow-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .flow h3 { color: var(--ink); margin: 0 0 6px; font-size: 22px; line-height: 1.25; }
+    .flow-why { color: var(--ink-1); margin: 0 0 20px; font-size: 14.5px; line-height: 1.55; }
+    .flow-path { color: var(--ink); font-size: 14px; }
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; }
+    .pill-get { background: rgba(106, 169, 255, 0.16); color: var(--blue); }
+    .pill-post { background: var(--accent-dim); color: var(--accent); }
+    .samples details { margin-bottom: 8px; border: 1px solid var(--line); border-radius: var(--rad); overflow: hidden; }
+    .samples details[open] { border-color: var(--accent-line); }
+    .samples summary { cursor: pointer; padding: 10px 14px; background: var(--bg-2); color: var(--ink); font-size: 13px; user-select: none; list-style: none; }
+    .samples summary::-webkit-details-marker { display: none; }
+    .samples pre { background: var(--bg); padding: 18px; margin: 0; overflow-x: auto; border-top: 1px solid var(--line); }
+    .samples code { color: var(--ink); font-family: var(--mono); font-size: 13px; line-height: 1.55; }
+
+    .fmt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 48px; }
+    .fmt-card { display: block; background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad-lg); padding: 28px; text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
+    .fmt-card:hover { border-color: var(--accent-line); transform: translateY(-2px); }
+    .fmt-card-tag { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 14px; }
+    .fmt-card h3 { color: var(--ink); margin: 0 0 12px; font-size: 19px; }
+    .fmt-card p { color: var(--ink-1); margin: 0 0 16px; font-size: 14.5px; line-height: 1.55; }
+    .fmt-card code { display: inline-block; color: var(--accent); font-size: 12.5px; padding-top: 6px; border-top: 1px solid var(--line); width: 100%; }
+    .fmt-card span.mono { color: var(--ink); }
+
+    .dont-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 48px; }
+    .dont-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad-lg); padding: 24px; }
+    .dont-no { color: var(--red); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 10px; }
+    .dont-card h3 { color: var(--ink); margin: 0 0 10px; font-size: 17px; line-height: 1.3; }
+    .dont-card p { color: var(--ink-1); margin: 0; font-size: 14px; line-height: 1.55; }
+
+    .mono { font-family: var(--mono); }
+    code.mono, span.mono, .pill { font-family: var(--mono); }
+  </style>
+</Base>

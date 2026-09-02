@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Concise, machine-readable capability index for LLMs / agents.
+# https://llmstxt.org
+LLM: https://24observe.com/llms.txt
+
+Sitemap: https://24observe.com/sitemap-index.xml

@@ -1,0 +1,455 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const ARTICLE_META = {
+  title: "AI Agent Observability: How to Monitor AI Agents in Production",
+  author: "The 24Observe Engineering Team",
+  date: "2026-09-01",
+  readTime: "21 min read",
+  category: "AI Agent Observability & Security",
+  description: "AI agents fail differently than traditional software. Learn what to monitor, how OpenTelemetry GenAI spans work, and how to catch cost spikes, loops, and prompt injection early.",
+  slug: "ai-agent-observability-how-to-monitor",
+};
+
+const FEATURED_GUIDES = [
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+  { title: "Observability vs Monitoring: Key Differences", link: "/blog/observability-vs-monitoring-key-differences" },
+  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
+  { title: "Best Uptime Monitoring Tools in 2026", link: "/blog/best-uptime-monitoring-tools-2026" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+const FAQS = [
+  {
+    "q": "What is AI agent observability?",
+    "a": "The practice of tracking cost, latency, errors, and behavior from LLM-powered agents using the telemetry they already produce, so you know what an agent did and what it cost without guessing after the fact."
+  },
+  {
+    "q": "How is monitoring AI agents different from traditional monitoring?",
+    "a": "Traditional monitoring assumes fixed costs and errors that announce themselves. Agents break both: cost varies per call, and failures often look like a successful response, so you need cost and behavior tracking, not just uptime and error rate."
+  },
+  {
+    "q": "Do I need OpenTelemetry to monitor my AI agents?",
+    "a": "Not strictly, but it's the open standard most agent frameworks already emit spans in, so you avoid re-instrumenting everything later if you switch backends or add new models."
+  },
+  {
+    "q": "How do you catch a runaway AI agent loop before it gets expensive?",
+    "a": "Watch call volume against the agent's own recent baseline. A sharp jump with no matching increase in completed work is the classic sign of a loop that isn't converging."
+  },
+  {
+    "q": "Is AI agent security the same as AI agent observability?",
+    "a": "No, but they share the same telemetry. Observability asks what an agent did and what it cost; security asks whether any of it was an attack, like a prompt injection or a hijacked loop."
+  },
+  {
+    "q": "What is prompt injection and why is it hard to detect?",
+    "a": "Content the agent reads, a document, a ticket, a tool result, contains hidden instructions that hijack its behavior. It's hard to catch because every resulting action can look legitimate on its own; only the untrusted input plus the behavior shift gives it away."
+  },
+  {
+    "q": "Can I monitor agents across multiple LLM providers in one view?",
+    "a": "Yes, if your pipeline reads standard GenAI attributes rather than one vendor's API format, swapping or mixing models doesn't fragment your dashboard."
+  },
+  {
+    "q": "Should agent telemetry live in a separate tool from the rest of my monitoring?",
+    "a": "No. Keeping it siloed means manually jumping between tools to tell whether a slowdown is the model or a downstream dependency. One timeline removes that step."
+  }
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    
+    {/* DESKTOP 3-COLUMN LAYOUT MATCHING BLOG.ASTRO EXACTLY */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES (EXACT MATCH FOR BLOG.ASTRO) */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            <span>{ARTICLE_META.category}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.date}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.readTime}</span>
+          </div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+            {ARTICLE_META.title}
+          </h1>
+          <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
+            {ARTICLE_META.description}
+          </p>
+        </header>
+
+        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+            An AI agent doesn't fail the way normal software fails. It doesn't throw a clean error when something goes wrong; it just quietly gets more expensive, drifts into a loop, or gets talked into doing something it shouldn't by text it wasn't supposed to trust. <a href="/llm-observability" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI agent observability</a> is the practice of watching four things continuously: cost by model and by agent, performance (latency, errors, call volume), behavioral drift against an agent's own baseline, and security signals like prompt injection and runaway tool loops, all from the same <a href="/docs/collector" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">OpenTelemetry</a> telemetry your agent already produces. Get this right and a problem that would otherwise show up as a surprise invoice or a customer complaint shows up as a fixed day instead.
+          </p>
+        </section>
+
+        <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">
+            Key Takeaways
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+            
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Cost must be attributed per agent:</strong> not tracked as one combined AI spend number. A shared cost pool across multiple agents turns a five-minute investigation into a monthlong archaeology project the first time spend spikes unexpectedly.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Behavioral drift, not error rate, catches most agent-specific failures:</strong> Agents frequently fail while returning a technically successful response, so a monitoring setup tuned only for exceptions and status codes will structurally miss the failures unique to agentic workloads, like a tool-calling loop that never converges.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Unpriced calls should be flagged honestly, never counted as zero:</strong> A cost dashboard that silently undercounts calls it can't precisely price will consistently understate spending in exactly the unusual situations most worth catching.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Security and observability for:</strong> agents run on the same telemetry and should share one pipeline. Prompt injection, runaway loops, and sensitive tool use are all detectable from the same spans that already capture cost and performance, so duplicating instrumentation for a separate security tool is wasted effort.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">OpenTelemetry's GenAI conventions mean:</strong> most of the instrumentation work is already done. Modern agent frameworks increasingly emit standard GenAI spans by default, so getting agent telemetry flowing is often closer to pointing an existing exporter at a new endpoint than building an instrumentation layer from scratch.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          
+          <section id="ai-agent-observability-how-to-monitor-ai-agents-in-production" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              AI Agent Observability: How to Monitor AI Agents in Production
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Here's a scenario that's becoming almost as common as the classic 2 AM pager alert.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A finance manager pings your team on Slack with a screenshot of last month's OpenAI invoice. It's roughly four times higher than the month before. No new feature shipped. No marketing campaign drove a traffic spike. The support agent your team built six months ago has been running quietly in the background, doing its job, and nobody thought of checking it because nothing about it ever seemed to break in the way a normal service break. There are no 500 errors. No crash log. No CPU graph creeping toward the red. Just a bill that doesn't add up, and thirty days of history to comb through to figure out which of a dozen agents did it, and why.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">If you've shipped an AI agent into production this year, some versions of this story probably feel familiar, whether it already happened to you or you've simply had the nagging suspicion it eventually will. That nagging suspicion is correct, and it's also exactly the gap that AI agent observability exists to close.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Traditional monitoring was built around a set of assumptions that have quietly stopped being true. A conventional service costs roughly the same to run each time it's called, behaves the same way given the same input, and fails in a small, well-understood set of ways: it throws an exception, it times out, it returns a bad status code. An LLM-powered agent breaks every one of those assumptions at once. It costs a different amount on every single call, depending on how much context it reads and how many reasoning steps it took. It can change its own behavior mid-task based on what it happens to encounter, including text that was never meant to instruct it. And when it fails, it usually doesn't make an error at all. It just quietly does something unproductive, expensive, or occasionally dangerous, and keeps going.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">This piece is a practical, no-nonsense look at what AI agent observability means, why the tools and habits that worked for microservices don't transfer cleanly to agents, and how to build a monitoring setup that catches the expensive surprises before your finance team does. We'll get into the specific signals worth tracking, how OpenTelemetry's GenAI instrumentation fits into the picture, where security and observability start to overlap for agents in a way they never quite did for traditional apps, and the mistakes that show up again and again on teams that shipped an agent first and thought about monitoring it second.</p>
+          </section>
+
+          <section id="what-is-ai-agent-observability" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What Is AI Agent Observability?
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">AI agent observability is the practice of collecting and correlating telemetry, specifically token usage, cost, latency, error rates, and behavioral patterns, from LLM-powered agents so that engineering teams can understand what an agent is doing, what it costs, and whether its behavior is changing, using the same rigor applied to traditional application monitoring.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">That definition is close to how you'd define observability for any other system, and that's intentional. The underlying goal hasn't changed: you want to be able to answer questions about what your system is doing without having to guess. What's changed is the shape of the questions and the shape of the data you need to answer them. Asking "is the database slow" is a different kind of question than asking "did this agent get talked into reading a customer's private data because a support ticket contained hidden instructions." The second question doesn't show up in a CPU graph. It shows up in the content of a prompt and the sequence of tool calls that followed it, which is exactly the kind of detail conventional monitoring was never built to capture.</p>
+          </section>
+
+          <section id="why-agents-break-the-assumptions-your-monitoring-was-built-on" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why Agents Break the Assumptions Your Monitoring Was Built On
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Let's look at why this needs its own category in the first place, rather than just being "monitoring, but for a new kind of service." A handful of properties make agents genuinely different from everything that came before them in a production stack.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Cost is a variable, not a constant: A typical API endpoint has a roughly fixed unit cost. It runs on the same infrastructure, does roughly the same amount of work, and the bill scales predictably with traffic. An agent's cost per invocation is a function of how much it read, how many tools it called, which model handled the request, and how many reasoning steps it took before it decided it was done. None of those variables need to change for the cost to multiply. Nothing needs to be deployed. Traffic doesn't need to spike. An agent can simply start taking a longer path through the same task, and the bill quietly grows in a way that no threshold-based CPU or request-count alert would ever catch, because none of those numbers moved.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Behavior is persuadable, not fixed: Traditional software does exactly what its code tells it to do, every single time, given the same input. An agent does what it's persuaded to do by the content it reads, which is a genuinely different failure model. A web page it browses, a document it summarizes, or a customer support ticket it processes can all contain text that changes how the agent behaves, sometimes in ways its designers never intended and never tested for. There's no stack trace for "the agent believed a sentence it shouldn't have." That's not a bug in the conventional sense. It's a new category of failure that requires new categories of telemetry to catch.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Failure doesn't look like failure: When a traditional service fails, it usually announces itself: an exception gets thrown, a health check fails, an error rate climbs on a dashboard someone is already watching. When an agent fails, the HTTP status code is frequently still 200. The model returned a response. The system, from the outside, looks fine. It just did the wrong thing, or the expensive thing, or the unsafe thing, while returning a technically successful result. That's a much harder failure mode to catch with alerting built around status codes and latency thresholds alone.</p>
+          </section>
+
+          <section id="the-interesting-data-lives-in-fields-nobodys-watching" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The interesting data lives in fields nobody's watching
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">The facts that actually explain an agent's behavior, which model answered, how many tokens it used, what the prompt and completion actually said, which tool it reached for and what came back, live in attributes that a generic logging or metrics tool has no concept of. Point a conventional observability stack at agent traffic and you'll see a stream of opaque HTTP calls to an inference endpoint. The GenAI-specific meaning, the part that would tell you what happened, gets left on the floor because nothing downstream knows to look for it.</p>
+          </section>
+
+          <section id="the-four-signals-every-ai-agent-observability-setup-needs" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Four Signals Every AI Agent Observability Setup Needs
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Once you accept that agents fail differently, the natural next question is what to watch. In practice, teams running agents in production need visibility into four distinct categories of signal, and most of the tooling gaps show up when one of these four gets ignored in favor of the other three.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Cost attributed correctly: Cost is usually the first thing that gets a team's attention, because it's the one that shows up on an invoice whether anyone was watching for it. The goal isn't just a single number for "how much did AI cost us this month." Its cost broken down by model and by individual agent, so that when spend moves, you know immediately which agent moved it rather than starting a monthlong archaeology project across a dozen candidates.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">There's a subtlety here that's easy to get wrong: not every call is cleanly priceable. Some providers report exact cost per call. Others require you to apply your own negotiated rate or fall back to public list pricing. And some calls, particularly through gateways or less common providers, can't be priced with confidence at all. The honest way to handle that last category is to flag those calls as unpriced rather than silently counting them as zero, because a cost dashboard that quietly undercounts a chunk of your actual spend is more dangerous than having no cost dashboard at all. A team that trusts a number that's secretly wrong makes worse decisions than a team that knows it's missing information.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Performance: latency, errors, and call volume: Latency and error rate are familiar concepts from traditional monitoring, but they mean something slightly different for agents. A single user-facing request to an agent might involve several sequential model calls and tool invocations chained together, so the latency that matters isn't just "how long did the model take to respond" but "how long did the entire chain of reasoning and tool use take before the agent produced a final answer." Error rate needs the same broadening: a tool call that times out, a model call that gets rate-limited, or a malformed response that breaks a parsing step downstream are all failure modes specific to agent workflows that a plain HTTP error-rate metric won't surface on its own.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Call volume deserves its own attention here too, because it's often the earliest signal of something going wrong. An agent that triples its call count overnight, with no corresponding increase in the actual work getting done, is a strong fingerprint of a loop that isn't converging, well before that loop shows up as a cost spike or a support ticket.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Behavior over time: This is the category that has no clean equivalent in traditional monitoring, and it's the one most teams skip entirely when they are first stand-up agent telemetry. Behavioral observability means tracking how an agent's patterns change relative to its own baseline: is it calling tools more often than it used to for a similar task? Is its average number of reasoning steps drifting upward? Is it reaching for a capability it rarely used before? None of these things are errors in the traditional sense. They're drift, and drift is frequently the earliest warning sign of either a bug in how the agent was prompted, a change in the data it's being fed, or an adversarial input trying to manipulate it.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Prompts, completions, and tool calls being searchable matter enormously here, because behavioral drift on its own only tells you something changed. Being able to go from "this agent is doing something different" to "here's the exact sequence of tool calls it kept repeating and the input that triggered it" is what turns a vague suspicion into an actionable fix.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Security signals on the same data: The fourth category is the one that's genuinely new to 2026-era production stacks: security signals that live on the same telemetry as your cost and performance data. Prompt injection, where content an agent reads contains instructions that hijack its behavior, runaway tool loops that could be adversarially triggered rather than accidental, and sensitive tool use where an agent reaches for a high-consequence capability outside its normal context, are all detectable from the same spans that already tell you what an agent cost and how fast it ran. We'll go deeper on this later, but it's worth flagging now: treating agent security as a separate system from agent observability means duplicating instrumentation for no good reason, since the underlying data is identical.</p>
+          </section>
+
+          <section id="how-opentelemetry-fits-into-ai-agent-observability" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              How OpenTelemetry Fits into AI Agent Observability
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">If there's one piece of infrastructure worth understanding before you build or buy anything, it's OpenTelemetry's GenAI semantic conventions. OpenTelemetry is the open, vendor-neutral standard the industry has converged on for emitting logs, metrics, and traces, and its GenAI extension defines a consistent set of span attributes specifically for model calls and agent behavior: which model answered, how many input and output tokens were used, what operation was performed, and increasingly, agent-specific concepts like tool execution, multi-agent handoffs, and session-level context.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">The reason this matters practically is that most modern agent frameworks and SDKs, whether you're using LangChain, LangGraph, the OpenAI Agents SDK, CrewAI, or a hand-rolled agent loop instrumented through libraries like OpenLLMetry, OpenInference, or the Vercel AI SDK, already emit or can be configured to emit these standard spans. That means the actual work of getting agent telemetry flowing usually isn't "build a new instrumentation layer from scratch." It's "point the OpenTelemetry exporter you already have at an endpoint that understands GenAI attributes." A platform that reads the standard conventions rather than requiring a proprietary SDK also means you're not locked into a single provider's format: if your agents call multiple models across multiple providers, they can all land in the same coherent view instead of fragmenting into a separate dashboard per vendor.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">This is a genuinely different situation than the early days of distributed tracing, where teams had to implement everything by hand before tracing tools could show them anything useful. Because the GenAI conventions are increasingly baked into agent frameworks by default, a huge amount of the instrumentation legwork is already done before you even open an observability tool. The remaining work is mostly making sure your exporter is pointed somewhere that understands the attributes it's receiving, rather than a generic logging pipeline that treats a gen_ai.usage.input_tokens field as just another unstructured string.</p>
+          </section>
+
+          <section id="building-an-ai-agent-observability-pipeline-step-by-step" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Building an AI Agent Observability Pipeline, Step by Step
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">With the concepts in place, here's what setting this up looks like in practice for a team that's already running one or more agents in production.</p>
+          </section>
+
+          <section id="start-with-what-youre-already-emitting" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Start with what you're already emitting
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Before reaching for a new SDK or rewriting instrumentation, check what your existing agent framework already produces. If you're using a framework built after 2024, there's a reasonable chance OpenTelemetry GenAI spans are either on by default or a configuration flag away. Point that exporter at a backend that understands GenAI attributes and you'll typically see your first traces within minutes, not days. This is one of the more pleasant surprises in this space: the instrumentation problem that used to take a dedicated sprint for traditional distributed tracing is often a two-environment-variable change for agents, provided your telemetry destination speaks the same standard your framework already emits.</p>
+          </section>
+
+          <section id="attribute-cost-to-the-agent-level-not-just-the-account-level" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Attribute cost to the agent level, not just the account level
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A single "AI spend this month" number is close to useless for debugging. The moment something looks off, you need to be able to answer "which agent, and starting when" within seconds, not after exporting a CSV and pivoting it in a spreadsheet. Make sure whatever you're sending includes an agent identifier as a first-class attribute on every span, not just a model name, so that spend, latency, and error rate can all be sliced the same way.</p>
+          </section>
+
+          <section id="correlate-agent-spans-with-the-rest-of-your-system" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Correlate agent spans with the rest of your system
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">One of the more common mistakes here is treating agent telemetry as its own silo, viewable only in a separate AI-specific dashboard disconnected from the rest of your application's logs, metrics, and traces. That separation actively costs you time during an incident. If an agent's latency spikes, you want to be able to tell in one place whether the bottleneck is the model itself, a slow tool call to an internal API, or the database that tool call eventually hits. Splitting that investigation across two different tools, one for "AI stuff" and one for "everything else," reintroduces exactly the kind of manual cross-referencing that observability as a discipline exists to eliminate. Distributed tracing that treats agent spans as just another kind of span on the same timeline, rather than a separate category, is what keeps that investigation in one place.</p>
+          </section>
+
+          <section id="set-alerts-on-behavior-not-just-thresholds" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Set alerts on behavior, not just thresholds
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A static threshold like "alert if latency exceeds 5 seconds" is a reasonable starting point, but it misses the failure mode that matters most for agents: gradual, self-inflicted drift. A better approach layers in relative alerting, calling volume up sharply against an agent's own recent baseline, error rate climbing on a specific tool rather than the system, cost per session trending upward over a period of days rather than spiking in a single hour. These patterns are exactly what a runaway loop or a slowly escalating prompt injection attempt tends to look like before it becomes an emergency.</p>
+          </section>
+
+          <section id="make-prompts-and-completions-searchable-with-redaction-in-place" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Make prompts and completions searchable, with redaction in place
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">There's real tension here worth naming honestly: the content that makes an agent's behavior explainable, the actual prompts, completions, and tool call payloads, is also some of the most sensitive data in your entire stack. It can contain anything a user typed and anything your internal systems have returned. Searchable content is what turns "this agent got expensive" into "here's the exact input that sent it into a loop," but that searchability needs to sit behind the same access controls and redaction discipline you'd apply to any other sensitive customer data. Stripping secrets and PII before storage, rather than after, is the safer default.</p>
+          </section>
+
+          <section id="decide-where-the-data-lives" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Decide where the data lives
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">For most teams, a hosted platform is the right tradeoff: less infrastructure to run, faster time to value, and someone else responsible for keeping the ingestion pipeline healthy. But agent traffic raises the stakes on this decision a bit more than typical application logs do, precisely because prompts and completions can carry more sensitive content than a standard access log ever would. Teams in regulated industries, or those simply uncomfortable sending prompt content to a third party, should specifically check whether their observability platform offers a genuinely equivalent self-hosted deployment rather than a stripped-down version of the hosted product.</p>
+          </section>
+
+          <section id="monitoring-cost-without-getting-surprised-by-it" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Monitoring Cost Without Getting Surprised by It
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Cost deserves its own deeper look, because it's the signal that tends to get teams' attention first and the one where sloppy measurement causes the most damage.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">The naive approach is to track a single aggregate number: total tokens used, or total dollars spent, across your whole AI footprint, updated at the end of each billing cycle. This tells you almost nothing useful in the moment, because by the time that number is available, whatever caused it has already been running for weeks. The useful version of cost monitoring breaks spend down along at least two axes continuously, not retrospectively: by model, since different models carry wildly different per-token pricing and a shift toward a more expensive model for the same workload should be visible immediately, and by agent, since a shared cost pool for five different agents is exactly the situation that turns a five-minute investigation into a month-long one.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">It's also worth building in the discipline of comparing spending against a rolling baseline rather than a fixed monthly budget alone. A budget alert that fires when you cross $10,000 for the month tells you that you have a problem sometime after the fact. A baseline comparison that flags "this agent's daily spend just jumped to four times its trailing seven-day average" catches the same problem on the day it starts, which is the difference between a same-day fix and an uncomfortable finance conversation weeks later.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">One more point worth being direct about: not every call your agents make will have a clean, precise cost attached to it. Gateway-routed calls, less common providers, and certain fine-tuned or self-hosted models can all produce usage that's genuinely hard to price with confidence. The temptation in that situation is to default those calls to zero cost, so the dashboard looks complete. Resist that. A dashboard that silently treats unpriced calls as free will systematically understate your real spend in exactly the cases where something unusual is happening, since unusual routing is often correlated with the exact anomalies you're trying to catch in the first place. Flagging calls as genuinely unpriced, rather than quietly zeroing them out, keeps the rest of the picture trustworthy.</p>
+          </section>
+
+          <section id="monitoring-behavior-catching-the-failures-that-dont-throw-errors" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Monitoring Behavior: Catching the Failures That Don't Throw Errors
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Behavioral monitoring is the part of AI agent observability that has the least precedent in traditional monitoring practice, which is exactly why it’s worth spending extra time getting right.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">The core idea is straightforward even though the implementation takes some care: establish what normal looks like for a given agent doing a given kind of task and then watch for meaningful deviation from that baseline. "Normal" here isn't a single number. It's closer to a small profile: typical number of tool calls per session, typical reasoning steps before producing a final answer, typical distribution of which tools get used for which kinds of requests, and typical session length. None of these numbers need to be perfectly precise to be useful. What matters is having enough historical signal that a genuine departure, a support agent that usually makes two or three tool calls per ticket suddenly making forty, stands out clearly rather than blending into noise.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A runaway tool loop is the textbook example of why these matters, and it's worth walking through concretely because the pattern repeats constantly in production. An agent calls a tool, gets a result, and based on how it interprets that result, decides to call the same tool again, or a related one, without ever reaching a state where it considers the task complete. Nothing about any single call in that sequence looks wrong in isolation: the tool was executed successfully, the model responded, no exception was thrown anywhere. The problem only becomes visible when you look at the sequence as a whole and notice that call volume has climbed sharply without any corresponding increase in useful output. That's a pattern a human reviewing individual log lines will almost never catch quickly, and it's exactly the kind of thing automated behavioral baseline is built to surface within minutes instead of days.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Admittedly, a runaway loop isn't always a bug. Sometimes it's a straightforward implementation issue, a poorly designed termination condition, or a tool that returns a response the agent's reasoning loop doesn't know how to interpret as "done." But sometimes it's the fingerprint of adversarial input deliberately crafted to keep an agent spinning, either to run up a victim's bill, to exhaust a rate limit on a downstream service, or to create cover for a different action elsewhere in the same session. This is precisely why behavioral monitoring and security monitoring for agents end up being the same discipline in practice rather than two separate ones: the same anomalous pattern can be a bug or an attack, and you often can't tell which without the same investigation either way.</p>
+          </section>
+
+          <section id="why-ai-agent-security-has-to-live-inside-observability-not-beside-it" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why AI Agent Security Has to Live Inside Observability, Not Beside It
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">For decades, the operating assumption in application security was simple: code does exactly what it's told, and the risk lives in who's allowed to tell it what to do. Access control, input validation, and authentication were all built around that assumption. Agents quietly broke it. An agent doesn't just execute instructions from its developers; it executes instructions from whatever content it reads while doing its job, and that content can come from anywhere: a customer's message, a web page it browsed, a document it was asked to summarize, the output of a tool it called earlier in the same session.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">This is what makes prompt injection a genuinely new category of threat rather than a variant of something security teams already knew how to handle. There's no buffer overflow, no malformed SQL string, nothing that trips a signature-based detection built for classic exploits. There's just text, doing exactly what text can now do to a model that's been given the ability to act on what it reads. A support ticket that looks like an ordinary customer complaint can also contain a set of instructions telling the agent to handle it to ignore its guardrails and pull up a different customer's account data. To a security tool that only sees "a model was called, a tool ran, a reply went out," every individual step in that sequence looks completely legitimate. The attack is only visible at the level of why the agent did what it did, which requires seeing the actual content it read and the way its behavior changed immediately afterward.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">That's the specific reason agent security can't be bolted onto observability as an afterthought or run as a separate practice with its own separate telemetry pipeline. The data a security team needs to catch a prompt injection, the untrusted content an agent read, the instructions embedded in it, the tool calls that followed, are identical to the data an engineering team needs to understand cost and performance. Standing up two parallel pipelines to capture the same spans twice, once for an observability tool and once for a security tool, is pure overhead with no corresponding benefit. The more sensible architecture treats agent telemetry as a single stream that answers both questions at once: what did this agent do and what did it cost, and separately, was any of that attack.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Runaway tool loops and cost abuse deserve mention again here specifically because they sit at the intersection of both concerns. A sudden spike in an agent's tool-calling volume is simultaneously a cost problem, a performance problem, and potentially a security incident, depending on what triggered it. Sensitive tool use, an agent reaching for a destructive or high-consequence capability outside the context where that would normally make sense, is the same story: it might be a bug in how the agent was prompted, or it might be exactly what a successful injection attempt looks like from the outside. Tool-protocol manipulation, attacks aimed at the boundary between an agent and the tools or other agents it communicates with through structured protocols, is a newer variant of the same underlying issue as these protocols become more standardized and more widely adopted.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">This overlap between operational and security telemetry isn't unique to agents; it's part of a broader shift in how modern platforms think about observability generally (our complete guide to observability covers that convergence in more depth). None of this means every anomaly is an attack, and treating every behavioral blip as a security incident would just recreate the alert fatigue problem that plagues traditional monitoring. The point is narrower: the detections that catch these patterns need to be purpose-built for the shape of an agent's behavior, not a generic anomaly model pointed at logs that don't understand what a model call, a tool call, or an agent step are. A conventional SIEM watching agent traffic without that context sees a stream of API calls and has no concept of what a prompt injection looks like, because prompt injection isn't a pattern that exists at the network or system-call level. It exists at the level of meaning, which is exactly the level generic security tooling was never built to inspect.</p>
+          </section>
+
+          <section id="common-mistakes-teams-make-when-monitoring-ai-agents" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Common Mistakes Teams Make When Monitoring AI Agents
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A handful of mistakes show up repeatedly across teams that shipped agents quickly and thought about monitoring later, or not at all.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Treating an evaluation tool as if it were observability</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Evaluation and prompt-testing tools answer a genuinely important but fundamentally different question: did this agent give a good answer during testing? Observability answers what your agents are doing in production right now, what they're costing, how fast they're responding, and how that's changing over time. Teams that rely entirely on evaluation results from before launch have no visibility into how an agent's real-world behavior drifts once it's exposed to actual user input, which is precisely where the interesting failures tend to show up. You need both, but only one of them is watching the live system in real time.</p>
+          </section>
+
+          <section id="measuring-cost-in-aggregate-instead-of-per-agent" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Measuring cost in aggregate instead of per agent
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A single combined number for AI spends across every agent you run tells you that something might be wrong, eventually, and gives you no starting point for figuring out which agent caused it. This is the single most common gap on teams that get blindsided by an invoice, and it's also one of the cheapest to fix, since most frameworks already have an agent identifier available; it just needs to be captured as a span attribute rather than discarded.</p>
+          </section>
+
+          <section id="ignoring-behavioral-drift-because-nothing-errored" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Ignoring behavioral drift because nothing "errored"
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Teams accustomed to traditional monitoring naturally focus their attention on error rates and exceptions, because that's where traditional failures show up. Agents frequently fail while returning a technically successful response, which means a monitoring setup tuned purely for errors will miss a meaningful share of real incidents. Behavioral baselining isn't optional polish; it's the mechanism that catches the failures error-rate dashboards are structurally blind to.</p>
+          </section>
+
+          <section id="building-a-separate-silo-for-ai-telemetry" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Building a separate silo for AI telemetry
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Keeping agent traces in a standalone AI-specific tool, disconnected from application logs, metrics, and traces, feels natural when a team is moving fast and adopts an AI-specific point tool first. It becomes a real liability the first time an agent's slowdown needs to be traced back to whether the model or a downstream dependency is the actual bottleneck, and the answer requires jumping between two unrelated tools and manually lining up timestamps by eye.</p>
+          </section>
+
+          <section id="assuming-security-is-someone-elses-telemetry-problem" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Assuming security is someone else's telemetry problem
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Security teams that haven't yet built agent-specific detections, and engineering teams that assume "security will handle that separately," both tend to leave a gap in the middle where nobody's watching for prompt injection or tool abuse. Because the underlying data for security and observability is the same, this is usually a coordination problem rather than a genuinely hard technical one, but it's a coordination problem that needs to be resolved deliberately rather than assumed away.</p>
+          </section>
+
+          <section id="alerting-everything-and-understanding-nothing" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Alerting everything and understanding nothing
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">It's tempting, once agent telemetry starts flowing, to set aggressive thresholds on every metric available. The result is usually noise fatigue within a few weeks, followed by alerts getting ignored or muted entirely, which defeats the purpose. Detections that are gated to genuinely anomalous behavior relative to an agent's own baseline, rather than static thresholds applied uniformly across every agent regardless of its normal usage pattern, produce far fewer false alarms and a much higher signal-to-noise ratio during an actual incident.</p>
+          </section>
+
+          <section id="what-good-ai-agent-observability-looks-like-in-practice" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What Good AI Agent Observability Looks Like in Practice
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">It's worth walking through what a mature setup looks like when something goes wrong, because the difference between a well-instrumented team and an under-instrumented one is stark once you see it side by side.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">A support agent has been running without incident for weeks. Overnight, its token spends quadruples. No deployment went out. No traffic spike hit. In a team with no agent-aware cost attribution, this is invisible until the billing cycle closes and someone notices the total is off, at which point the investigation starts with thirty days of history and a dozen candidate agents. In a team with proper attribution, the spike shows up against that specific agent's own baseline the next morning, and because unpriced calls are flagged honestly rather than hidden, there's no doubt the spike is real rather than a measurement artifact.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">The performance data points toward the cause almost immediately: the same agent's call volume has jumped sharply without a matching increase in the actual work getting completed, the classic signature of a loop that isn't converging. Because prompts, completions, and tool calls are searchable, the investigation moves from "this agent got expensive" to "here's the exact input and the exact sequence it keeps repeating" in a single step, rather than requiring someone to manually reconstruct the session from scattered log fragments.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">And because observability and security run on the same telemetry, this is also the point where the investigation naturally checks whether the loop was accidental or induced. A runaway tool loop is a cost and performance problem on its own, but it's also a plausible symptom of adversarial input deliberately trying to keep the agent spinning, and the same spans that revealed the cost spike are what a security detection would use to check for that signature. The team caps the loop, fixes the input handling that let it happen, and returns to baseline the same day, a same-day catch of a problem that, left unmonitored, would have run quietly for weeks and shown up as a bill.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">That contrast, weeks of undetected drain versus a same-day catch, is the entire value proposition of AI agent observability distilled into one scenario. It isn't about having more dashboards. It's about having the specific telemetry, attributed correctly, that turns a vague and expensive mystery into a concrete, fixable finding within hours instead of a full billing cycle.</p>
+          </section>
+
+          <section id="choosing-an-ai-agent-observability-approach-what-actually-matters" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Choosing an AI Agent Observability Approach: What Actually Matters
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Given how quickly this space is moving, it's worth being direct about the landscape rather than pretending there's one obviously correct choice for every team.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Dedicated evaluation and prompt-tracing tools, built specifically for iterating on prompts and testing agent quality before launch, are genuinely useful and solve a real problem: they help you catch quality regressions before you ship a change. They generally aren't designed to be the system watching your live production traffic around the clock, correlating cost and behavior with the rest of your application stack, or catching a security incident as happens. Teams sometimes reach for these tools expecting production observability and end up with a testing tool wearing a production hat, which explains a lot of the "why didn't anything catch this" surprise that shows up after an incident.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">General-purpose observability platforms that have bolted on AI support after building their core product around traditional infrastructure metrics are a mixed bag. Some have genuinely built out GenAI-aware attribution for cost and behavior; others have added a thin AI dashboard on top of metrics that were never designed to understand what a token, a prompt, or a tool call represents. It's worth asking specifically whether cost is attributed honestly, including flagging calls that can't be precisely priced, and whether the platform treats prompts and completions as searchable first-class data rather than opaque metadata.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Platforms built specifically around the assumption that agents are a new kind of workload, like 24Observe's approach to AI-agent observability, tend to handle the specific failure modes described throughout this piece more directly: cost by model and by agent with honest handling of unpriced calls, behavioral tracking that catches drift before it becomes an invoice, and dedicated security detections for prompt injection and tool abuse running on the exact same OpenTelemetry spans rather than a separate pipeline. The practical advantage of that unification isn't abstract. It means a single OpenTelemetry exporter pointed at one endpoint gives an engineering team its cost and performance view and gives a security team its threat detection, without either team standing up and maintaining a second instrumentation layer for the same underlying data. It also means agent telemetry lives on the same timeline as the rest of a team's logs, metrics, and traces, so a slow agent and a slow downstream database show up in the same investigation rather than two disconnected ones.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Whichever direction a team chooses, the underlying question to ask is consistent: does this give you cost attributed at the agent level with honest handling of what can't be priced, behavioral visibility that would catch a loop or drift before it becomes expensive, and security coverage on the same data rather than a second system to maintain. A platform that answers yes to all three is doing the actual job. One that only covers evaluation, or only covers cost, or treats security as an entirely separate purchase, is solving part of the problem and leaving the rest for you to build.</p>
+          </section>
+
+          <section id="best-practices-for-monitoring-ai-agents-going-forward" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Best Practices for Monitoring AI Agents Going Forward
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Pulling the threads of this together, a handful of practices consistently separate teams that catch agent problems early from teams that find out from an invoice or a customer complaint.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Instrument agents with OpenTelemetry's GenAI conventions from day one, rather than treating telemetry as something to bolt on after an incident forces the issue. Most modern agent frameworks make this close to free, and retrofitting instrumentation onto an agent that's already misbehaving in production is a much harder position to work from than having the data flowing before anything goes wrong.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Attribute every signal, cost, latency, error rate, and behavioral baseline, at the level of the individual agent, not just the model or the account. This is the single change that turns "something is off somewhere" into "this specific agent, starting at this specific time" and it costs almost nothing to implement if the identifier is already available in your framework.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Treat behavioral drift as a first-class signal alongside errors and latency, not an afterthought. The failures unique to agents rarely announce themselves as errors, and a monitoring setup that only watches for exceptions and status codes will structurally miss a meaningful share of real incidents.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Run security detection on the same telemetry as observability rather than standing up a parallel pipeline. The data that explains what an agent did is the same data that reveals whether it was manipulated into doing it, and duplicating instrumentation to answer both questions separately is wasted effort with no upside.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Keep prompts and completions searchable but redacted and think deliberately about where that data lives given how sensitive it can be. The searchability is what makes root-cause investigation fast; the redaction and deployment choice is what keeps that speed from becoming a liability.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Finally, resist the urge to alert on every available metric the moment telemetry starts flowing. Anchor alerts an agent's own historical baseline rather than uniform thresholds applied across every agent regardless of its normal usage pattern, and you'll get a monitoring setup that people trust and respond to, rather than one they've learned to mute.</p>
+          </section>
+        </div>
+
+        
+        {/* FAQ SECTION */}
+
+        <section id="faq" style="margin-bottom: 36px; padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            {FAQS.map((faq) => (
+              <details class="faq-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 22px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                <summary style="display: flex; align-items: center; justify-content: space-between; font-size: 1.08rem; font-weight: 700; color: #2A680D; cursor: pointer; list-style: none; user-select: none;">
+                  <span>{faq.q}</span>
+                  <span class="faq-toggle-icon" style="font-size: 1.2rem; font-weight: 800; color: #2A680D; flex-shrink: 0; margin-left: 14px; display: inline-block;">+</span>
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 14px 0; color: #2A680D;">Wrapping It Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">Agents don't crash like normal software. They get expensive, drift, or get talked into things, all while returning what looks like a perfectly good response. Catching that means watching four things from the same telemetry: cost by agent, performance across the full chain of tool calls, behavior against the agent's own baseline, and security signals on those exact same spans.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">The good news is that most of the hard part, instrumentation, is already done for you. Agent frameworks increasingly speak OpenTelemetry's GenAI conventions out of the box, so the real gap for most teams isn't collecting the data. It's having somewhere that understands it, so a loop that starts at 2 AM gets caught the same morning instead of showing up on next month's bill.</p>
+<p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">That's what 24Observe does with AI-agent observability and AI-agent security: one stream, one timeline, cost and threats both covered before either one becomes a surprise.</p>
+
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+              Start free with 24Observe →
+            </a>
+          </div>
+        </section>
+      </main>
+
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL (EXACT MATCH FOR BLOG.ASTRO) */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>

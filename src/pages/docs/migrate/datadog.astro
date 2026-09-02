@@ -1,0 +1,313 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Faq from '../../../components/Faq.astro';
+
+
+const DUAL = `# Most stacks already emit OpenTelemetry, or can.
+# Point your existing OTel exporter (or collector) at 24Observe —
+# you can keep shipping to Datadog at the same time during the migration.
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://api.24observe.com/api/v1/otlp"
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer obs_<your_token>"`;
+
+const faqs = [
+  {
+    q: 'Do I have to cut over all at once?',
+    a: 'No — and you should not. The whole migration is designed to run in parallel. Because 24Observe ingests OpenTelemetry, the same instrumentation feeding Datadog can fan out to both at the same time, so you compare them on identical, live data with zero risk. You move one surface at a time, prove it, and only retire Datadog for that surface once you are satisfied. Nothing is a big-bang switch.',
+  },
+  {
+    q: 'How do I send the same telemetry to 24Observe?',
+    a: 'If your services already emit OpenTelemetry, it is a destination change — point the exporter at our OTLP endpoint with two environment variables, no code change. If you run the OpenTelemetry collector, add 24Observe as an additional exporter so it ships to both during the migration. For host telemetry, the one-line Sensor replaces a host agent. The principle is open standards in, so you are not re-instrumenting, just re-routing.',
+  },
+  {
+    q: 'What replaces my Datadog monitors?',
+    a: 'Synthetic checks become 24Observe monitors (HTTP, TCP, TLS, ping, content, cron), and metric monitors become metric-threshold alerts with a sustain duration. The concepts map cleanly; the main difference you will feel is that when one fires here, it opens an incident the analyst investigates rather than only notifying. Recreate your most important monitors first and watch them behave.',
+  },
+  {
+    q: 'What about my dashboards?',
+    a: 'This is the honest part: Datadog\'s dashboarding is broad and mature, and 24Observe is not trying to replicate it panel-for-panel. You get the views that serve monitoring and investigation — search, live tail, charts from saved queries, the topology health map. Many teams find they relied on far fewer dashboards than they maintained, because investigation is automatic here; recreate the handful you actually use, and judge whether you miss the rest.',
+  },
+  {
+    q: 'How do APM traces carry over?',
+    a: 'Traces arrive over OpenTelemetry and become searchable spans on the same timeline as your logs, and the service relationships feed the topology map. We are candid that if your single requirement is a deep flame-graph profiler, that is a Datadog strength; if your requirement is to follow a request, see its spans next to the logs it emitted, and understand service dependencies, that carries over well. See the tracing page for exactly what we do and do not claim.',
+  },
+  {
+    q: 'Will my bill actually change?',
+    a: 'We will not quote Datadog\'s prices, but the structural difference is real: 24Observe uses one consolidated volume allowance across logs, metrics, and traces rather than many separately-metered products. Teams migrating because of an unpredictable, compounding bill are responding to that structural difference, and running in parallel lets you see your real volumes here before committing.',
+  },
+  {
+    q: 'What do I gain that Datadog doesn’t offer?',
+    a: 'The investigation, primarily — every incident arrives with a root-cause verdict and evidence rather than leaving you to dig. Plus a real SIEM on the same data, first-class AI-agent observability and security, an agent-programmable API, and the option to self-host. The comparison page lays out both sides honestly, including where Datadog still leads.',
+  },
+  {
+    q: 'Is there anything I’ll miss?',
+    a: 'Possibly — and we would rather you know up front. Datadog\'s integration catalogue, dashboard depth, and APM maturity are real, and if you depend heavily on a long tail of its proprietary integrations or on flame-graph profiling, weigh that honestly. Running in parallel is exactly how you find out whether those gaps matter for your team before you commit.',
+  },
+  {
+    q: 'Can I keep some things in Datadog and move others?',
+    a: 'Yes — a hybrid is perfectly legitimate and often sensible. Because both speak open standards, you can move the surfaces where 24Observe is strongest (alerting that needs investigation, security, AI-agent coverage, the parts of the bill that hurt) and keep Datadog for anything where its breadth or APM depth genuinely earns its place. There is no rule that says a migration has to be total. Move what benefits, keep what does not, and let your own evidence draw the line.',
+  },
+];
+---
+<Base
+  title="Migrate from Datadog to 24Observe — run in parallel, no big-bang | 24Observe"
+  description="A practical guide to moving from Datadog: fan out your OpenTelemetry to both at once, recreate monitors as investigated incidents, compare on live data, and cut over one surface at a time."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Migrate from Datadog</div>
+          <h1 class="h1">Move off Datadog <em>without a big-bang cutover.</em></h1>
+          <p class="lede">
+            You do not migrate a deeply-integrated observability platform overnight, and you should not try. This guide
+            takes the safe path: because 24Observe ingests OpenTelemetry, the same instrumentation feeding Datadog can
+            ship to both at once, so you compare them on live, identical data, move one surface at a time, and retire
+            Datadog only when you are satisfied. Honest about what carries over cleanly and what to weigh.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare/datadog" class="btn btn-ghost btn-lg">The honest comparison</a>
+          </div>
+          <div class="hero-meta">
+            <span>Run in <b>parallel</b></span>
+            <span>OpenTelemetry <b>dual-ship</b></span>
+            <span>One surface <b>at a time</b></span>
+            <span>Compare on <b>live data</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> migration · parallel run</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Dual-shipping OTel</div>
+              <div class="con-meta">datadog + 24observe</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">same spans → both backends</div>
+                <div class="con-sub"><span>no re-instrumentation</span><span class="tech">live compare</span></div>
+              </div>
+              <span class="sev sev-med">SAFE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">monitor recreated → opens incident</div>
+                <div class="con-sub"><span>now investigated</span><span class="tech">verdict attached</span></div>
+              </div>
+              <span class="sev sev-med">+RCA</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">satisfied? retire DD for this surface</div>
+                <div class="con-sub"><span>one at a time</span><span class="tech">clean export anytime</span></div>
+              </div>
+              <span class="sev sev-med">CUT</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Reversible, incremental, judged on your own data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The principle</div>
+        <h2 class="h2">Parallel-run, then retire — never rip-and-replace.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The single most important decision in any observability migration is to not make it a migration at all, at
+          first. Run the new platform alongside the old, on the same live data, until you trust it — then retire the old
+          one surface by surface. This removes the risk that makes teams put migrations off for years.
+        </p>
+        <p>
+          What makes this possible with Datadog specifically is that both platforms speak OpenTelemetry. Your applications
+          and your collector already emit it (or can), and OpenTelemetry is happy to ship to more than one destination at
+          once. So you are not choosing between Datadog and 24Observe during the migration — you are sending the same
+          telemetry to both, watching them side by side, and forming a judgement from your own production data rather than
+          from a vendor demo or a comparison page. That is as low-risk as a platform evaluation gets.
+        </p>
+        <p>
+          From there the work is incremental and reversible. You pick the surface that matters most or hurts most — often
+          the alerts you cannot keep up with, or the part of the bill that grows fastest — recreate it in 24Observe, and
+          run it in parallel until you are satisfied it is better. If it is, you retire Datadog for that surface; if it is
+          not, you have lost nothing and learned something. Because 24Observe also exports your data cleanly, even a full
+          migration later never becomes a trap: your data remains yours to take anywhere.
+        </p>
+        <p>
+          The rest of this guide is the practical version of that principle — how to dual-ship your telemetry, what
+          replaces each Datadog concept, how to compare fairly, and how to cut over when you are ready. Throughout, it is
+          honest about what carries over cleanly and what you should weigh, because a migration guide that oversells the
+          ease only costs you trust when you hit the part it glossed over.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Dual-ship your telemetry.</h2>
+        <p class="lede">
+          Send the same logs, metrics, and traces to 24Observe without taking them away from Datadog — a destination
+          change, not a re-instrumentation.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          If your services already emit OpenTelemetry, add 24Observe as a destination with two environment variables:
+        </p>
+        <pre class="code-block">{DUAL}</pre>
+        <p>
+          If you run the OpenTelemetry collector, the cleaner approach is to add 24Observe as an additional exporter in
+          its configuration, so the collector fans every signal out to both backends. Either way, you change where data
+          goes, not how it is produced — there is no application code to rewrite and no new agent to roll across your
+          fleet. For host-level telemetry that currently comes from a Datadog host agent, install the one-line Sensor,
+          which ships logs and host metrics and self-enrolls; you can run it alongside the existing agent during the
+          migration.
+        </p>
+        <p>
+          Within minutes, the same telemetry you see in Datadog is also flowing into 24Observe, attributed and
+          searchable. That is the foundation for everything else: now you can recreate monitors and detections here and
+          compare their behaviour against Datadog on genuinely identical data, which is the only fair way to evaluate.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Map the concepts.</h2>
+        <p class="lede">
+          Most Datadog concepts have a direct equivalent. The one meaningful upgrade is that monitors here open
+          investigated incidents, not just notifications.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Synthetic monitors</div><div class="spec-val">→ 24Observe <a href="/product/uptime">monitors</a> (HTTP, TCP, TLS, ping, content, cron). A failure <b>opens an investigated incident</b>.</div></div>
+        <div class="spec-row"><div class="spec-key">Metric monitors</div><div class="spec-val">→ <a href="/docs/metric-alerts">metric-threshold alerts</a> with a sustain duration. Crosses the line, opens an incident, routes to on-call.</div></div>
+        <div class="spec-row"><div class="spec-key">Log pipelines / search</div><div class="spec-val">→ ingest + a <a href="/product/logs">readable query language</a> for search and live tail. Common formats normalised on arrival.</div></div>
+        <div class="spec-row"><div class="spec-key">APM / traces</div><div class="spec-val">→ <a href="/product/tracing">searchable spans</a> on one timeline with logs, feeding a live service topology. (Not a flame-graph profiler.)</div></div>
+        <div class="spec-row"><div class="spec-key">Dashboards</div><div class="spec-val">→ search, charts from saved queries, and the <b>topology health map</b>. Fewer bespoke panels, because investigation is automatic.</div></div>
+        <div class="spec-row"><div class="spec-key">Incident / on-call</div><div class="spec-val">→ built-in <a href="/product/incidents">on-call, escalation</a>, and root-cause grouping — plus a verdict on every incident.</div></div>
+        <div class="spec-row"><div class="spec-key">Security (Cloud SIEM)</div><div class="spec-val">→ a <a href="/product/siem">SIEM</a> on the same data: 87 detections, correlation, threat intel — investigated, not just alerted.</div></div>
+      </div>
+      <div class="prose" style="margin-top: 24px;">
+        <p>
+          Recreate your most important monitors and detections first, not all of them. The point of the parallel run is to
+          build confidence on the surfaces that matter, and a handful of well-chosen monitors tells you more than a
+          wholesale re-creation of everything you ever configured in Datadog — much of which, on honest inspection, you may
+          no longer need.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3</div>
+        <h2 class="h2">Compare fairly, then cut over.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          With both platforms seeing the same data, compare them where it counts: on a real incident. Wait for something
+          to genuinely break, or engineer a realistic test, and watch what each does with it. In Datadog you will get the
+          alert and the dashboards to investigate from; in 24Observe you will get an incident that arrives with a
+          root-cause verdict and evidence attached. That difference — start the investigation, or start from the
+          conclusion — is the heart of what you are evaluating, and it only shows up on a bad day, not a calm one.
+        </p>
+        <p>
+          Pay attention to the people who will live with the tool, not just the person choosing it. Have your on-call
+          engineers and analysts work a few incidents in 24Observe during the parallel run and tell you whether arriving
+          at a verdict beats arriving at a dashboard for them specifically. Their day-to-day experience is what determines
+          whether a platform is adopted or quietly worked around, so their judgement should weigh heavily.
+        </p>
+        <p>
+          When a surface clearly works better here — the alerts are calmer, the investigations faster, the bill more
+          predictable — retire Datadog for that surface and move to the next. There is no forced cutover date; you
+          progress at the speed your confidence allows, and you keep Datadog running for anything still under evaluation.
+          If you ever decide to stop, 24Observe exports your data cleanly, so the decision was never a trap door in either
+          direction. That reversibility is precisely what lets you migrate without the usual dread.
+        </p>
+        <p>
+          Be honest with yourself at each step about what you are gaining and what, if anything, you are giving up.
+          Datadog's integration breadth, dashboard depth, and APM maturity are real; 24Observe's investigation,
+          consolidation, AI-agent coverage, and self-hosting are real. The parallel run exists so you can weigh those
+          against each other on your own evidence, surface by surface, rather than betting the whole migration on a
+          comparison you have not tested. Done this way, moving off Datadog is a series of small, reversible, well-informed
+          decisions — which is the only kind worth making about something this important.
+        </p>
+        <h3>A realistic timeline and who to involve</h3>
+        <p>
+          Teams often ask how long a parallel run should last. There is no fixed answer, but a useful frame is: long enough
+          to live through a representative sample of incidents on both platforms. For a busy service that might be a couple
+          of weeks; for something quieter, longer. The point is not to rush to a cutover date but to accumulate enough
+          real, bad-day evidence that your judgement is grounded in how the platforms actually behaved under pressure, not
+          in how they demoed. Resist the urge to decide on the first quiet week — the difference shows up in incidents, and
+          you need a few to see it.
+        </p>
+        <p>
+          Involve the right people early, because a tooling decision made only by whoever signs the contract tends to come
+          undone in practice. The engineers who carry the pager and the analysts who work the queue are the ones whose
+          daily experience determines whether a platform is embraced or quietly circumvented, so put the parallel run in
+          their hands and weight their verdict heavily. If they find that arriving at an investigated incident genuinely
+          lightens their load, that is the strongest signal you will get; if they do not, you have learned something
+          important before committing, which is exactly what the parallel run is for.
+        </p>
+        <p>
+          Finally, treat the migration as a chance to prune, not just to port. Most long-lived Datadog deployments
+          accumulate monitors, dashboards, and alerts that no longer earn their keep — created for an incident years ago,
+          never removed. Rather than faithfully recreating all of it, recreate what you actually use and act on, and let
+          the rest lapse. Teams routinely discover they relied on a fraction of what they maintained, and that the move is
+          as much a decluttering as a migration. The result on the other side is a leaner, more legible setup that
+          investigates for you — which, for most teams, is the whole reason they started looking.
+        </p>
+        <p>
+          One practical caution as you cut over: do not retire a Datadog surface until its replacement has survived a real
+          incident, not just a quiet week of green dashboards. The temptation, once the parallel run looks good, is to
+          switch things off quickly to stop paying twice — but the value of the parallel period is the bad day, and a
+          surface that has only been tested on calm days has not really been tested. Hold each surface in parallel through
+          at least one genuine incident, confirm the investigation and routing behaved, and then retire it with
+          confidence. The small extra cost of overlapping for a little longer is trivial against the cost of discovering a
+          gap after you have already turned the old tool off.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Migrating from Datadog — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Migrate at the speed of your own confidence.</h2>
+      <p class="final-cta-sub">
+        Dual-ship your OpenTelemetry, recreate the monitors that matter, compare on live data, and retire Datadog one
+        surface at a time — reversible the whole way.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/compare/datadog" class="btn btn-ghost btn-lg">vs Datadog, honestly</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-06-22';
+---
+<Base
+  title="Refund & Cancellation Policy — 24Observe"
+  description="How subscriptions, cancellations, refunds, and usage-based charges work at 24observe. Cancel anytime, no lock-in, no surprise charges."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · last updated {updated}</div>
+      <h1 class="h1">Refund &amp; Cancellation Policy</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Plain terms for paying, cancelling, and refunds on the 24observe hosted service.
+        No lock-in, no cancellation fees, and no charge you can't see coming.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">1. Subscriptions &amp; billing</h2>
+      <p>
+        Paid plans (Team, Business, Scale) are <b>monthly subscriptions</b>, billed in advance on a
+        recurring cycle that starts the day you subscribe. Payments are processed by our payment
+        provider, <b>Dodo Payments</b>; we do not store your card details. The Free plan is, and always
+        will be, $0 — no card required.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">2. Usage-based charges</h2>
+      <p>
+        Log ingestion above your plan's monthly included allowance is billed as metered usage at the
+        per-GB rate shown on the <a href="/pricing">pricing page</a>. Usage charges accrue during the
+        billing period and are invoiced with your next renewal. Because these reflect resources already
+        consumed, <b>usage charges already incurred are non-refundable</b>. Your current allowance and
+        any accrued usage are always visible in <i>Settings → Billing</i> before you're billed.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">3. Cancelling</h2>
+      <p>
+        You can cancel any time — there is no minimum term and no cancellation fee. Cancel from the
+        dashboard: <i>Settings → Billing → Manage billing → Cancel subscription</i> (this opens our
+        provider's secure billing portal). On cancellation:
+      </p>
+      <ul style="line-height: 1.8;">
+        <li>Your paid features remain active <b>through the end of the current billing period</b> you've already paid for.</li>
+        <li>At the end of that period the subscription stops renewing and your organization reverts to the Free plan.</li>
+        <li>We do not auto-charge you again after you cancel.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">4. Refunds</h2>
+      <p>
+        Because cancelling lets you keep paid access through the period you've already paid for,
+        monthly subscription fees are <b>generally non-refundable</b> for the current period. We will,
+        however, promptly refund:
+      </p>
+      <ul style="line-height: 1.8;">
+        <li><b>Duplicate or erroneous charges</b> — billed twice, or charged after a confirmed cancellation.</li>
+        <li><b>Verified billing faults on our side</b> — e.g. you were charged for a tier you did not select.</li>
+        <li><b>First-time goodwill</b> — if you upgraded and immediately realised it was a mistake, contact us within <b>7 days</b> of the charge and we'll work it out.</li>
+      </ul>
+      <p>
+        Approved refunds go back to the original payment method via Dodo Payments, typically within
+        5–10 business days depending on your bank. Downgrading mid-cycle takes effect at your next
+        renewal; we don't prorate partial-month downgrades.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">5. Failed payments</h2>
+      <p>
+        If a renewal payment fails, we retry over a short dunning window and email the account owner.
+        If it ultimately can't be collected, the subscription is cancelled and the organization reverts
+        to the Free plan — your data is not deleted by a payment failure.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">6. Deleting your account</h2>
+      <p>
+        Deleting your organization (<i>Settings</i> → delete) immediately cancels any active
+        subscription so you are not billed again, then irreversibly purges your data. See the
+        <a href="/legal/privacy">Privacy Policy</a> for data-deletion timelines.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">7. Contact</h2>
+      <p>
+        Billing questions or refund requests: <a href="mailto:support@24observe.com">support@24observe.com</a>.
+        Include your organization name and the charge date so we can find it quickly.
+      </p>
+    </div>
+  </section>
+</Base>

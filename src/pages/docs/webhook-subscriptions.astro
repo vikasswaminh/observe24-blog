@@ -1,0 +1,221 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Event webhook subscriptions — 24Observe"
+  description="Register a URL, receive signed JSON pushes when incidents open / ack / resolve and when monitors change state. Replaces polling. Full CRUD + retry + auto-disable + delivery log."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · event webhook subscriptions</div>
+      <h1 class="h1">Stop polling. Subscribe to events.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Register a URL with one POST. We push a signed JSON envelope to it the
+        moment an event fires anywhere in your org — typically under 500&nbsp;ms
+        from API action to your receiver. Retries are automatic, signing is
+        HMAC-SHA256, broken receivers auto-disable.
+      </p>
+      <p style="margin-top: 16px; color: var(--ink-1); font-size: 15px;">
+        Distinct from the <a href="/docs/webhooks/" style="color: var(--accent);">per-monitor alert webhook</a>
+        (one URL on a monitor row, fires when that monitor goes down). Subscriptions
+        are <b>org-scoped</b>, fire on event types, and carry a structured envelope.
+        Same signing scheme — the same receiver code verifies both.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Event types</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>incident.opened</code> — monitor crossed its alertThreshold and an incident was auto-created (or a log-alert rule fired).</li>
+        <li><code>incident.acknowledged</code> — a team member acked an incident without resolving.</li>
+        <li><code>incident.resolved</code> — incident closed (manually OR auto on monitor recovery). Payload's <code>auto_resolved</code> flag tells you which.</li>
+        <li><code>monitor.status_changed</code> — a monitor's <code>lastStatus</code> transitioned (up → down → degraded → up). Fires on every real transition, not just incident-opening ones.</li>
+        <li><code>log_alert.fired</code> — a log-alert rule matched its threshold and opened an incident.</li>
+        <li><code>detection.fired</code> — a Sigma detection rule (community ruleset, evaluated by the detection engine) matched an event and opened an incident; payload carries <code>rule_id</code>, <code>rule_title</code>, <code>severity</code>, <code>mitre_technique</code>, and the opened <code>incident_id</code>.</li>
+        <li><code>correlation_rule.fired</code> — a multi-event correlation rule (sequence or cardinality) matched across the log stream and opened an incident.</li>
+        <li><code>analyst.verdict</code> — the AI analyst finished triaging an incident; payload carries the disposition, confidence, summary, and recommended actions.</li>
+        <li><code>analyst.escalation</code> — the AI analyst confirmed a true-positive threat above the escalation threshold; payload adds the cited evidence.</li>
+        <li><code>analyst.enforcement_proposed</code> — the analyst proposed one or more enforcement actions (e.g. block IP) for human approval; no action is taken until approved.</li>
+        <li><code>sensor.offline</code> — a Linux Sensor host stopped shipping telemetry past the staleness window; payload carries <code>hostname</code>, <code>sensor_host_id</code>, and the opened <code>incident_id</code>.</li>
+        <li><code>sensor.online</code> — a previously-offline Sensor host resumed shipping; the offline incident is auto-resolved and this fires with the same host identifiers.</li>
+        <li><code>storm.detected</code> — many related incidents sharing one root cause were auto-collapsed into a single case; payload carries <code>case_id</code>, <code>shared_entity</code>, and the grouped <code>incident_ids</code>.</li>
+        <li><code>metric_alert.fired</code> — a metric-threshold rule breached (CPU / latency / interface util / SNMP); payload carries the <code>metric_name</code>, observed <code>value</code>, <code>comparator</code>/<code>threshold</code>, and the opened <code>incident_id</code>.</li>
+      </ul>
+      <p>
+        An empty <code>eventTypes: []</code> on the subscription means "send me
+        every event type the org produces." Useful for the first-day
+        configuration; agents tend to narrow it later.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Create a subscription</h2>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`curl -X POST https://api.24observe.com/api/v1/webhook-subscriptions \\
+  -H 'Authorization: Bearer obs_<pat-with-webhooks:write>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "url": "https://agent.example.com/24observe-events",
+    "eventTypes": ["incident.opened", "incident.resolved"],
+    "description": "incident-bot in prod"
+  }'
+
+# Response (201)
+{
+  "id": 42,
+  "url": "https://agent.example.com/24observe-events",
+  "eventTypes": ["incident.opened", "incident.resolved"],
+  "description": "incident-bot in prod",
+  "enabled": true,
+  "disabledAt": null,
+  "consecutiveFailures": 0,
+  "lastDeliveryAt": null,
+  "lastDeliveryStatus": null,
+  "lastDeliveryStatusCode": null,
+  "createdAt": "2026-05-23T18:00:00.000Z"
+}`}</pre>
+      <p>
+        Required scope: <code>webhooks:write</code>. Required role:
+        <code>owner</code> or <code>admin</code>. <b>SSRF preflight runs at write
+        time</b> — URLs resolving to private/loopback/link-local addresses are
+        rejected with <code>400 WEBHOOK_URL_UNSAFE</code>; DNS failures get
+        <code>400 WEBHOOK_URL_UNRESOLVABLE</code>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Delivery envelope</h2>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`POST https://agent.example.com/24observe-events
+Content-Type: application/json
+User-Agent: 24observe-webhooks/1.0
+X-24Observe-Event: incident.opened
+X-24Observe-Delivery-Id: sub-42-incident.157.opened.1
+X-24Observe-Timestamp: 1716480000
+X-24Observe-Signature: t=1716480000,v1=<64-char-hex>
+
+{
+  "id": "incident.157.opened",
+  "type": "incident.opened",
+  "created": 1716480000,
+  "data": {
+    "incident_id": 157,
+    "monitor_id": 7,
+    "monitor_name": "checkout-api",
+    "monitor_url": "https://api.example.com/healthz",
+    "status": "investigating",
+    "error_message": "HTTP 503",
+    "opened_at": "2026-05-23T18:00:00.000Z"
+  }
+}`}</pre>
+      <p>
+        Verify the signature exactly as for per-monitor alert webhooks — same
+        HMAC-SHA256 scheme, same org-level secret. Working Node / Python / Go
+        examples on <a href="/docs/webhooks/" style="color: var(--accent);">/docs/webhooks/</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Retry + auto-disable</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>5 attempts</b> per event with exponential backoff and 30% jitter
+          (≈ 30 s, 5 min, 30 min, 2 h, then dead).</li>
+        <li><b>Any non-2xx</b> from your receiver counts as a failure. We retry.</li>
+        <li><b>Timeout: 10 s</b> per attempt. Long-running receivers — return
+          202 + queue locally + process async.</li>
+        <li><b>10 consecutive failed deliveries across events</b> = subscription
+          auto-disabled. We flip <code>enabled</code> to false and set
+          <code>disabledReason</code> so your dashboard shows why. A POST that
+          succeeds resets the consecutive counter to zero.</li>
+      </ul>
+      <p>
+        Re-enable via PATCH after fixing the receiver. The
+        <code>consecutiveFailures</code> counter is cleared and any new event
+        fan-out lands again.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">List subscriptions + delivery history</h2>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`# List all subscriptions for your org (bare array — no envelope)
+GET /api/v1/webhook-subscriptions
+
+# Disable / re-enable / change eventTypes / change URL
+PATCH /api/v1/webhook-subscriptions/:id
+  { "enabled": false }
+  { "enabled": true }   # also clears disabledAt + disabledReason + consecutiveFailures
+  { "eventTypes": ["incident.opened"] }
+  { "url": "https://new-receiver.example.com/x" }
+
+# Delete (cascades the delivery rows)
+DELETE /api/v1/webhook-subscriptions/:id
+
+# Inspect the last 50 delivery attempts for one subscription
+GET /api/v1/webhook-subscriptions/:id/deliveries
+# Returns: id, eventType, eventId, attempt, status, statusCode, errorMessage,
+#          payloadJson (exact bytes we sent), responseBodyExcerpt
+#          (first 1 KB of receiver's response), deliveredAt, createdAt`}</pre>
+      <p>
+        The <code>payloadJson</code> field on each delivery row is the exact
+        bytes we POSTed to your receiver — including the timestamp the signature
+        was computed against. If your receiver's signature check is failing, this
+        is the byte sequence to verify against.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Required scopes</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>webhooks:read</code> — list subscriptions, read delivery history.</li>
+        <li><code>webhooks:write</code> — create / update / delete subscriptions.</li>
+      </ul>
+      <p>
+        Plus role: <code>owner</code> or <code>admin</code> on writes. Members and
+        viewers can list but not modify.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Reference receiver (Node)</h2>
+      <p>
+        Minimal Express receiver that verifies signatures and logs deliveries.
+        Drop in, set <code>OBSERVE24_WEBHOOK_SECRET</code> from <code>GET /api/v1/me/webhook-secret</code>,
+        and you're done.
+      </p>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`import express from 'express';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+const SECRET = process.env.OBSERVE24_WEBHOOK_SECRET;
+const app = express();
+
+app.post('/24observe-events', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.header('x-24observe-signature') || '';
+  const parts = Object.fromEntries(sig.split(',').map(p => p.split('=')));
+  const t = Number(parts.t);
+  if (Math.abs(Date.now() / 1000 - t) > 300) return res.sendStatus(400); // replay defense
+
+  const expected = createHmac('sha256', SECRET).update(\`\${t}.\${req.body.toString('utf8')}\`).digest();
+  const actual = Buffer.from(parts.v1, 'hex');
+  if (actual.length !== expected.length || !timingSafeEqual(expected, actual)) {
+    return res.sendStatus(401);
+  }
+
+  const envelope = JSON.parse(req.body.toString('utf8'));
+  const eventType = req.header('x-24observe-event');
+  console.log(\`[\${eventType}] \${envelope.id}\`, envelope.data);
+
+  // Return 200 within 10s. Heavy work belongs in a job queue.
+  res.sendStatus(204);
+});
+
+app.listen(3000);`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Common mistakes</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>Parsing the body before verifying.</b> <code>JSON.parse</code> may reorder keys; the HMAC was computed against the raw bytes we sent. Use the raw body for the verification step.</li>
+        <li><b>Returning slow.</b> The 10 s timeout is per-attempt. If your handler does heavy work synchronously you'll get retried mid-flight.</li>
+        <li><b>Forgetting <code>X-24Observe-Event</code>.</b> The event type is in the header AND the envelope's <code>type</code> field. If you only branch on the JSON body, missing or malformed bodies look like an unknown event type.</li>
+        <li><b>Re-enabling without fixing.</b> Auto-disable triggers when your receiver fails 10 in a row. Re-enabling resets the counter; the next 10 failures will trip it again. Fix the receiver first.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">When NOT to use this</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>You want per-monitor alerting.</b> Use the per-monitor <code>alertWebhookUrl</code> field instead — different shape, same signing.</li>
+        <li><b>You want a push notification to a human (Slack, Discord, Telegram).</b> Use the per-monitor alert channels; they include rich message formatting our subscriptions don't.</li>
+        <li><b>You need delivery guarantees stronger than at-least-once.</b> Subscriptions are at-least-once (BullMQ retries). For exactly-once semantics, dedupe on <code>envelope.id</code> in your receiver — every event has a stable id, retries land with the same id.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Related</h2>
+      <ul style="line-height: 1.8;">
+        <li><a href="/docs/webhooks/" style="color: var(--accent);">/docs/webhooks/</a> — signature verification recipe (Node / Python / Go).</li>
+        <li><a href="/docs/api-for-agents/" style="color: var(--accent);">/docs/api-for-agents/</a> — the broader agent API story.</li>
+        <li><a href="/docs/api/" style="color: var(--accent);">/docs/api/</a> — full reference, PAT scopes, error codes.</li>
+        <li><a href="/blog/observability-api-for-ai-agents/" style="color: var(--accent);">Launch post</a> — why we built this surface for agents first.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

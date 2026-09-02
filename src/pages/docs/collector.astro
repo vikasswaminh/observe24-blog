@@ -1,0 +1,156 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const COLLECTOR_CONFIG = `receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+
+exporters:
+  otlphttp:
+    endpoint: https://api.24observe.com/api/v1/otlp
+    compression: gzip
+    headers:
+      authorization: "Bearer \${env:OBSERVE24_PAT}"
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]`;
+
+const SYSLOG_FLUENT_EXTRAS = `# Add to the receivers block:
+  syslog/rfc5424:
+    tcp:
+      listen_address: 0.0.0.0:5414
+    protocol: rfc5424
+  syslog/rfc3164:
+    udp:
+      listen_address: 0.0.0.0:5413
+    protocol: rfc3164
+  fluentforward:
+    endpoint: 0.0.0.0:24224
+
+# And widen the logs pipeline:
+#   receivers: [otlp, syslog/rfc5424, syslog/rfc3164, fluentforward]`;
+---
+<Base
+  title="OpenTelemetry Collector with 24Observe — gRPC, syslog, and Fluent Bit in one config"
+  description="Point the standard OpenTelemetry Collector at 24observe with one config file: OTLP gRPC + HTTP in, authenticated gzip OTLP out. Verified config included."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · collector</div>
+      <h1 class="h1">The standard Collector. One config. Everything flows here.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        24observe works with the stock
+        <a href="https://github.com/open-telemetry/opentelemetry-collector-contrib">OpenTelemetry Collector (contrib)</a> —
+        no custom image, no fork. Drop in the config below and the collector accepts
+        telemetry over <b>OTLP/gRPC</b> (the SDK and collector default) and OTLP/HTTP,
+        then forwards it to 24observe authenticated and gzip-compressed.
+      </p>
+      <p>
+        Use the collector when your apps export over gRPC, when you don't want the API
+        token in every app's environment, or when you have legacy sources (syslog,
+        Fluent Bit). If your SDK already exports OTLP/HTTP, you can also target our
+        <a href="/docs/logs#opentelemetry-otlphttp">endpoint</a> directly — we accept
+        JSON and binary protobuf natively.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">The config (verified against the live API)</h2>
+      <p>Save as <code>config.yaml</code>:</p>
+      <pre class="code-block">{COLLECTOR_CONFIG}</pre>
+      <p>
+        The <code>otlphttp</code> exporter appends <code>/v1/logs</code>,
+        <code>/v1/traces</code>, <code>/v1/metrics</code> to the endpoint automatically —
+        don't add them yourself. The PAT needs the <code>logs:write</code> scope
+        (plus <code>metrics:write</code> if you ship metrics). Mint one with:
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_<your-existing-admin-token>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{ "name": "collector", "scopes": ["logs:write", "metrics:write"] }'`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Run it (Docker)</h2>
+      <pre class="code-block">{`docker run -d --name otelcol \\
+  -e OBSERVE24_PAT=obs_xxxxxxxxxxxxxxxxxxxx \\
+  -v $(pwd)/config.yaml:/etc/otelcol-contrib/config.yaml:ro \\
+  -p 4317:4317 -p 4318:4318 \\
+  otel/opentelemetry-collector-contrib:latest`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Run it (docker compose)</h2>
+      <pre class="code-block">{`services:
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    environment:
+      OBSERVE24_PAT: \${OBSERVE24_PAT}
+    volumes:
+      - ./config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    restart: unless-stopped`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Point your apps at it</h2>
+      <pre class="code-block">{`OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317   # gRPC, the default
+# That's it — no protocol override, no auth headers in your apps.
+# The collector adds the 24observe PAT on the outbound hop.`}</pre>
+      <p>
+        This is the zero-config path: every official OTel SDK and every existing
+        collector deployment exports OTLP/gRPC to <code>localhost:4317</code> by
+        default, and this config bridges it to 24observe unchanged.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Verify it's flowing</h2>
+      <p>
+        The collector project ships <code>telemetrygen</code> for exactly this. Send five
+        test traces through your collector, then check the Logs view:
+      </p>
+      <pre class="code-block">{`docker run --rm --network host \\
+  ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:latest \\
+  traces --otlp-endpoint localhost:4317 --otlp-insecure --traces 5
+
+# Then search:  service:telemetrygen        (in the dashboard or via the API)`}</pre>
+      <p>
+        This whole page is tested exactly as written — collector
+        <code>contrib:latest</code>, gRPC in, gzip out — against the live API.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Legacy sources: syslog &amp; Fluent Bit</h2>
+      <p>
+        The contrib image includes receivers for syslog and Fluent Forward; extend
+        the same config:
+      </p>
+      <pre class="code-block">{SYSLOG_FLUENT_EXTRAS}</pre>
+      <p>
+        Then point rsyslog at <code>@@collector-host:5414</code> (RFC5424/TCP) or
+        Fluent Bit's <code>forward</code> output at port <code>24224</code>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Good to know</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>gRPC lands here.</b> Our API speaks OTLP/HTTP (JSON + protobuf); the collector is the supported bridge for gRPC exporters — which is most default SDK and collector setups.</li>
+        <li><b>PAT stays out of your app envs.</b> Only the collector holds the credential; rotate it in one place.</li>
+        <li><b>Resilience.</b> The collector's retry + sending queue buffer through a brief API blip and drain on recovery.</li>
+        <li><b>Compression.</b> <code>compression: gzip</code> is in the config and our API decompresses natively — large log batches arrive at a small fraction of their raw size on the wire.</li>
+        <li><b>Metric types.</b> Gauge and Sum (counter) metrics are ingested today; Histogram/Summary points are acknowledged-but-skipped and reported in the OTLP <code>partialSuccess</code> response (full histogram support is on the roadmap).</li>
+        <li><b>AI-agent traces.</b> GenAI spans (<code>gen_ai.*</code>) flowing through this collector get the full treatment: searchable content, cost analytics, and the AI-agent security detection pack.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

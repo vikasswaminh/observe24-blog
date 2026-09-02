@@ -1,0 +1,181 @@
+---
+import TopBar from '../components/TopBar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Social card image (site-root path). Absolutised for og:image/twitter:image. */
+  image?: string;
+  /** Keep a page out of the index (drafts/templates). Emits robots noindex. */
+  noindex?: boolean;
+  activeNav?: 'monitors' | 'logs' | 'security' | 'ai-agents' | 'ai-analyst' | 'noc' | 'agents' | 'integrations' | 'pricing' | 'blog' | 'docs' | 'self-host' | 'changelog' | 'roadmap' | null;
+}
+
+const {
+  title,
+  description = '24Observe — the observability platform AI agents can actually drive. Synthetic monitoring + log ingestion + search + live tail + signed event webhooks + a pure-REST API with pre-converted LLM tool definitions. Self-hostable. One-tenth the bill of a legacy uptime + log vendor.',
+  image = '/dash/01-overview.webp',
+  noindex = false,
+  activeNav = null,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// og:image must be absolute. Default is the product overview shot (1500x938);
+// swap for a purpose-built 1200x630 PNG when one exists (LinkedIn's crawler
+// doesn't render webp, so that asset is still worth making).
+const imageURL = new URL(image, Astro.site);
+
+// Auto page-level structured data by section (no per-page work) — built from the
+// title/description each page already sets. /docs index → CollectionPage, docs
+// articles → TechArticle, and /compare + /solutions pages → WebPage. Pages with
+// their own descriptor (home, product/*, features, …) use <PageSchema/> instead.
+// Every page also gets Organization + WebSite below.
+const path = Astro.url.pathname;
+const docsIsIndex = path === '/docs' || path === '/docs/';
+const isDocs = docsIsIndex || path.startsWith('/docs/');
+const isSectionPage = path.startsWith('/compare') || path.startsWith('/solutions');
+const autoType = isDocs ? (docsIsIndex ? 'CollectionPage' : 'TechArticle') : isSectionPage ? 'WebPage' : null;
+const autoLd = autoType
+  ? {
+      '@context': 'https://schema.org',
+      '@type': autoType,
+      name: title,
+      ...(autoType === 'TechArticle' ? { headline: title } : {}),
+      description,
+      url: canonicalURL.href,
+      isPartOf: { '@type': 'WebSite', name: '24Observe', url: 'https://24observe.com' },
+      publisher: { '@type': 'Organization', name: '24Observe' },
+    }
+  : null;
+
+// Auto BreadcrumbList for every non-home page — one source of truth, no per-page
+// work. Deliberately two levels (Home > page): the section paths (/product/,
+// /solutions/, /blog/) have no index page and canonicalise to home, so linking a
+// crumb at them would point at a duplicate. Labels come from the leaf slug.
+const CRUMB_LABELS: Record<string, string> = {
+  siem: 'SIEM', soc: 'SOC', noc: 'NOC', sre: 'SRE', msp: 'MSP', api: 'API', sso: 'SSO', mcp: 'MCP',
+  'ai-analyst': 'AI analyst', 'ai-agent-security': 'AI agent security', 'ai-teams': 'AI teams',
+  'llm-observability': 'AI-agent observability', 'context-graph': 'Context graph',
+  'status-pages': 'Status pages', 'self-host': 'Self-host', 'api-for-agents': 'API for agents',
+  pagerduty: 'PagerDuty', openapi: 'OpenAPI', dpa: 'DPA', sla: 'SLA',
+};
+const titleCaseSlug = (s: string) =>
+  s.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+const segs = path.split('/').filter(Boolean);
+const leaf = segs.length ? segs[segs.length - 1] : '';
+const crumbLd = leaf
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://24observe.com/' },
+        { '@type': 'ListItem', position: 2, name: CRUMB_LABELS[leaf] ?? titleCaseSlug(leaf), item: canonicalURL.href },
+      ],
+    }
+  : null;
+---
+<!doctype html>
+<html lang="en" data-theme="light" data-density="regular">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:site_name" content="24Observe" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imageURL} />
+
+    <!-- Fonts — self-hosted (latin-subset woff2), served from our own edge with
+         immutable cache headers. Zero third-party requests and no render-block
+         (was Google Fonts: 2 extra origins + an uncacheable `private` CSS).
+         Preload the two above-the-fold Lato weights; Geist Mono ships as one
+         variable file (400–600) that loads on demand. display:swap = no FOIT. -->
+    <!-- Google Fonts Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/fonts/lato-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/lato-700.woff2" as="font" type="font/woff2" crossorigin />
+    <style is:inline>
+      @font-face{font-family:'Lato';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/lato-400.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Lato';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/lato-700.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+      @font-face{font-family:'Geist Mono';font-style:normal;font-weight:400 600;font-display:swap;src:url('/fonts/geistmono-var.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      Plausible Analytics (self-hosted at analytics.networkershome.com).
+      Cookie-less, GDPR-friendly, no PII, no fingerprinting. Defer attribute
+      keeps it off the critical render path. `data-domain` MUST match the
+      site name registered in the Plausible admin — change here and in
+      Plausible if the marketing domain ever moves.
+    -->
+    <script
+      defer
+      data-domain="24observe.com"
+      src="https://analytics.networkershome.com/js/script.js"
+    ></script>
+
+    <!-- Site-wide structured data (agent / search legibility). Page-level schema
+         is added per page via <PageSchema/> or a head-slot ld+json block. -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: '24Observe',
+      url: 'https://24observe.com',
+      description: 'One platform for uptime monitoring, log management, and a SIEM — with an AI analyst and a pure-REST + MCP API built for AI agents. Self-hostable.',
+      sameAs: ['https://github.com/vikasswaminh/observe24'],
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: '24Observe',
+      url: 'https://24observe.com',
+    })} />
+
+    {autoLd && <script type="application/ld+json" set:html={JSON.stringify(autoLd)} />}
+    {crumbLd && <script type="application/ld+json" set:html={JSON.stringify(crumbLd)} />}
+
+    <!-- Per-page head extras (JSON-LD structured data, etc.) -->
+    <slot name="head" />
+  </head>
+  <body style="background-color: #f5faeb; color: #111827;">
+    <!-- Top announcement strip like screenshot -->
+    <div style="background: #f5faeb; border-bottom: 1px solid #cdebc2; padding: 7px 16px; font-size: 12px; text-align: center; color: #1f2937; font-weight: 600;">
+      <span style="color: #111827; font-weight: 700;">Looking for a specific feature or guide?</span>
+      <a href="/product/uptime" style="color: #2A680D; text-decoration: none; margin-left: 6px;">Uptime</a> · 
+      <a href="/product/logs" style="color: #2A680D; text-decoration: none;">Logs</a> · 
+      <a href="/product/siem" style="color: #2A680D; text-decoration: none;">SIEM &amp; Security</a> · 
+      <a href="/product/ai-analyst" style="color: #2A680D; text-decoration: none;">AI Analyst</a> · 
+      <a href="/product/network" style="color: #2A680D; text-decoration: none;">Network Monitoring</a> · 
+      <a href="/solutions/noc" style="color: #2A680D; text-decoration: none;">For NOC &amp; SRE</a> · 
+      <a href="/agents" style="color: #2A680D; text-decoration: none;">Agent API</a> · 
+      <a href="/docs" style="color: #2A680D; text-decoration: none;">Docs &amp; Guides</a> · 
+      <a href="/features" style="color: #2A680D; font-weight: 700; text-decoration: none;">All Features →</a>
+    </div>
+
+    <TopBar activeNav={activeNav} />
+    <slot />
+    <Footer />
+
+    <!-- Sticky bottom-right floating pill button -->
+    <a href="https://login.24observe.com/register" class="floating-cta-pill" style="background: #2A680D; color: #ffffff; padding: 10px 20px; border-radius: 20px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.35); display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 16px;">+</span> Get Free Trial / Demo
+    </a>
+  </body>
+</html>

@@ -1,0 +1,361 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import PageSchema from '../../components/PageSchema.astro';
+
+const faqs = [
+  {
+    q: 'What makes this different from a traditional SIEM?',
+    a: 'A traditional SIEM is very good at producing alerts and very bad at the part that matters — turning an alert into a decision. 24Observe closes that gap. Every detection opens an incident, and an AI analyst immediately investigates it: it gathers the evidence, traces what the threat touches, and returns a verdict you can act on. You are not handed a firehose of raw alerts to triage by hand; you are handed conclusions with the proof attached. See the <a href="/product/ai-analyst">AI analyst</a> for how that investigation works.',
+  },
+  {
+    q: 'How many detections come built in?',
+    a: 'Eighty-seven prebuilt detections across fourteen packs, covering authentication abuse, data exfiltration, secret exposure, web attacks, threat-intel matches, AI-agent and tool-protocol abuse, cloud control-plane tampering, Linux host security, infrastructure and network health, and reliability. Most carry a recognised attack-technique mapping. You enable a pack with one action and tune the thresholds to your own environment — nothing is a black box you cannot adjust.',
+  },
+  {
+    q: 'Can I write my own detections?',
+    a: 'Yes, in a readable query language — no proprietary scripting dialect to learn. A detection is a saved query over your events with a threshold, a severity, and an attack-technique tag. The moment it matches, it opens an incident through the exact same pipeline, alert routing, and investigation as everything else. Writing a new rule takes a single line, not a training course.',
+  },
+  {
+    q: 'Does it detect multi-step attacks, not just single events?',
+    a: 'Yes. Single-event rules catch a spike; correlation catches a story. The platform can detect a sequence — many failed logins followed by a success for the same account — and cardinality patterns — one source touching ten distinct accounts, the signature of a spray or enumeration. These multi-event detections open incidents the analyst then investigates like any other.',
+  },
+  {
+    q: 'How does threat intelligence factor in?',
+    a: 'Every public address in your incoming events is checked against threat intelligence the moment it lands — known-bad indicators, anonymising networks, and listings — and flagged inline. You can also bring your own private indicators (addresses, domains, file fingerprints). A flagged indicator becomes a one-line detection and a strong corroborating signal in any analyst verdict.',
+  },
+  {
+    q: 'Does it cover AI-agent and LLM-app threats?',
+    a: 'Yes — and this is a category most SIEMs do not touch yet. There are dedicated detections for prompt injection, runaway tool loops, token and cost abuse, sensitive tool use, and tool-protocol manipulation between agents and the services they call. If you run AI agents in production, those threats are watched alongside your traditional security signals. See <a href="/product/ai-analyst">the analyst</a> and the AI-agent security detections.',
+  },
+  {
+    q: 'Is security a separate, more expensive tier?',
+    a: 'No. The detection engine, correlation, threat intelligence, enrichment, cases, and the analyst are part of the platform — not a bolt-on "security tier" with its own per-gigabyte intelligence meter. Consolidating detection and investigation into one place is the entire point; gating it behind a second product would defeat it.',
+  },
+  {
+    q: 'Can I forward detections to my existing SOC tooling?',
+    a: 'Yes. Every detection can fire a signed webhook to your own systems, and a cursor-paginated export streams your audit trail gap-free for any downstream SIEM or data lake to poll. 24Observe is happy to be the detection-and-investigation layer that feeds the tools you already run.',
+  },
+  {
+    q: 'How are incidents grouped when one event triggers many detections?',
+    a: 'When a single root cause lights up many related incidents, the platform clusters the ones that share a root and collapses them into a single case with one notification — so one event does not page you fifty times. You investigate the case, not the flood.',
+  },
+  {
+    q: 'What do I need to send for detections to work?',
+    a: 'Your logs and events. Common formats — authentication logs, web-server access logs, firewall and cloud-security events — are normalised on the way in, so detections behave consistently regardless of how the upstream source formatted them. Point your sources at the platform and the relevant packs start matching.',
+  },
+];
+---
+<Base
+  title="SIEM that investigates every detection | 24Observe"
+  description="A SIEM where detections don't pile up — they open incidents an AI analyst immediately investigates. 87 detections, correlation, and threat intelligence."
+  activeNav="security"
+>
+  <PageSchema type="SoftwareApplication" name="24Observe SIEM & Detections" path="/product/siem"
+    description="A SIEM where every detection opens an incident an AI analyst investigates — 87 detections across 14 packs, multi-event correlation, and threat intel at ingest."
+    features={["87 detections across 14 packs (MITRE ATT&CK-tagged)", "Multi-event correlation (sequence + cardinality)", "Threat-intel matching at ingest", "GeoIP + identity + asset enrichment", "Security cases + forward-cursor SIEM export"]}
+  />
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> SIEM &amp; Detections</div>
+          <h1 class="h1">Detections that don’t pile up. They <em>open a case the analyst works.</em></h1>
+          <p class="lede">
+            Most security teams are not short on alerts. They are short on time to investigate them. A classic SIEM
+            generates signal all day and leaves the hard part — deciding what is real and what to do — entirely to you.
+            24Observe detects the threat and then investigates it: every detection becomes an incident, and an analyst
+            returns a verdict with the evidence. Detection and investigation, finally in one place.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+          </div>
+          <div class="hero-meta">
+            <span><b>87</b> detections</span>
+            <span><b>14</b> packs</span>
+            <span>Multi-event <b>correlation</b></span>
+            <span>Threat intel <b>at ingest</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/detections</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Live detections</div>
+              <div class="con-meta">14 packs · enabled</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Authentication brute-force</div>
+                <div class="con-sub"><span>T1110</span><span class="tech">→ incident #2471</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Credentials in a request URL</div>
+                <div class="con-sub"><span>T1552</span><span class="tech">→ incident #2470</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Prompt injection · agent tool loop</div>
+                <div class="con-sub"><span>AI-agent pack</span><span class="tech">→ analyst triaging</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">SSH key added to a host</div>
+                <div class="con-sub"><span>T1098.004</span><span class="tech">persistence</span></div>
+              </div>
+              <span class="sev sev-med">MED</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Every match opens an incident — and the analyst investigates it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The SIEM problem</div>
+        <h2 class="h2">A SIEM that only detects is half a product.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The dirty secret of the security-information-and-event-management market is that the alert was never the hard
+          part. Finding out whether an alert matters is.
+        </p>
+        <p>
+          Buy a traditional SIEM and you get a powerful detection engine that will happily produce thousands of alerts a
+          day. What you do not get is anyone to work them. So they queue. Analysts cherry-pick the scary-looking ones,
+          ignore the rest, and quietly tune down anything noisy until the dashboard is calm again — which is exactly how
+          real intrusions slip through a fully-deployed SIEM. The tool did its job. The job it did just was not the one
+          that protects you.
+        </p>
+        <p>
+          The investigation is where the cost lives. For every alert worth a second look, someone has to pull the related
+          events, line up the timestamps, check the source against threat intelligence, see whether a failed-login burst
+          was followed by a success, figure out which account and which host are involved, and decide if this is an
+          attacker or a misconfigured cron job. That is twenty minutes of skilled work per alert, on a good day, and there
+          are never enough skilled people or enough good days.
+        </p>
+        <p>
+          24Observe was built around the belief that detection and investigation are one product, not two. The detections
+          are excellent — but their job is to open an incident, and the moment they do, the
+          <a href="/product/ai-analyst">analyst</a> goes to work: gathering the evidence, tracing the blast radius, and
+          returning a verdict a human can act on or audit. You stop drowning in alerts and start reading conclusions.
+        </p>
+        <p>
+          There is a quiet second benefit to this design. When investigation is automatic and consistent, the temptation
+          to tune detections down into silence disappears. Teams mute noisy rules because every alert costs them time they
+          do not have; remove that cost and you can afford to keep coverage broad and sensitive. A detection that fires a
+          little too often is no longer a burden to be silenced — it is just a few extra incidents the analyst dispositions
+          in seconds, most of them closed as benign before a human ever looks. Detection coverage and analyst sanity stop
+          being a trade-off, which is the trade-off that quietly hollows out most SIEM deployments within a year of
+          go-live.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A SIEM that hands you ten thousand alerts has not reduced your work — it has relocated it. We do the
+        investigation, not just the detection.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The content</div>
+        <h2 class="h2">Eighty-seven detections, fourteen packs, on by intention.</h2>
+        <p class="lede">
+          Prebuilt detections are starting points you can trust and then tune — not a marketing number. Each pack groups
+          a real attacker behaviour or operational failure, and most rules map to a recognised attack technique so they
+          slot straight into how your team already thinks.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Access &amp; identity</div><p>Brute-force, password spray, account lockouts, multi-factor disabled, new privileged accounts — the front door of almost every breach.</p></div>
+        <div class="why-card"><div class="why-num">Data exfiltration</div><p>Bulk export, unusually large outbound transfers, database dumps, and data leaving over unexpected channels — the moment information starts walking out the door.</p></div>
+        <div class="why-card"><div class="why-num">Secret exposure</div><p>Credentials, keys, and tokens leaking into logs, URLs, or request bodies — the leaks attackers harvest first.</p></div>
+        <div class="why-card"><div class="why-num">Web attacks</div><p>Injection, traversal, and scanning against your applications, surfaced from the events your edge already produces.</p></div>
+        <div class="why-card"><div class="why-num">Threat intelligence</div><p>Known-bad addresses, anonymising networks, and listed indicators matched the instant an event arrives.</p></div>
+        <div class="why-card"><div class="why-num">AI-agent security</div><p>Prompt injection, runaway tool loops, token and cost abuse, sensitive tool use, and tool-protocol manipulation.</p></div>
+        <div class="why-card"><div class="why-num">Cloud control-plane</div><p>Root usage, key creation, audit-trail tampering, and console abuse in your cloud accounts.</p></div>
+        <div class="why-card"><div class="why-num">Linux host security</div><p>New users, privilege escalation, persistence via scheduled tasks and SSH keys, reverse shells, and recon on your hosts.</p></div>
+        <div class="why-card"><div class="why-num">Infrastructure &amp; network</div><p>Memory exhaustion, disk-full, kernel faults, service crash loops, and interface or routing failures across your estate.</p></div>
+        <div class="why-card"><div class="why-num">Reliability</div><p>Fatal errors and error-rate spikes — the operational signals that sit right next to security ones.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Beyond single events</div>
+        <h2 class="h2">Correlation, intelligence, and context — built in, not bolted on.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Write a detection in one readable line</h3>
+          <p>
+            Detections use the same readable query language as your everyday search — no proprietary scripting dialect to
+            certify in. A rule is a query, a window, a threshold, a severity, and an attack-technique tag. When it matches,
+            it opens an incident through the same pipeline and routing as everything else. Authoring a new detection is a
+            one-line change a responder can make between calls, not a project.
+          </p>
+          <h3>Multi-event correlation</h3>
+          <p>
+            Some attacks are invisible in any single event and obvious across several. The platform detects sequences — a
+            wall of failed logins <em>then</em> a success for the same account — and cardinality patterns — one source
+            touching ten distinct accounts, the fingerprint of a spray or enumeration sweep. These higher-order detections
+            open incidents the analyst investigates exactly like the rest.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Threat intelligence at the moment of ingest</h3>
+          <p>
+            Every public address in an incoming event is checked against threat intelligence as it lands — known-bad
+            indicators, anonymising and datacenter networks, and listings — and flagged inline. Bring your own private
+            indicators too: addresses, domains, and file fingerprints, scoped to your organisation. A match is both a
+            one-line detection and a powerful corroborating signal the analyst weighs in its verdict.
+          </p>
+          <h3>Enrichment that makes a search a sentence</h3>
+          <p>
+            Source addresses resolve to geography and network owner inline. Your own directory of identities and assets
+            stamps risk and criticality onto matching events. So "a failure on a critical asset, from a high-risk source,
+            outside business hours" becomes a single readable query instead of a join across three different tools.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The differentiator</div>
+        <h2 class="h2">Detection is the start of the story. The analyst writes the rest.</h2>
+        <p class="lede">
+          This is what separates 24Observe from a detection engine with a dashboard. The instant a detection fires, the
+          analyst investigates — and you get a verdict, not a row in a queue.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">It opens</div><div class="spec-val">A detection match <b>opens an incident</b> — the same first-class incident a failed check or a metric breach would.</div></div>
+        <div class="spec-row"><div class="spec-key">It links</div><div class="spec-val">The incident is wired to the <b>identities, hosts, and assets</b> it implicates, so the blast radius is visible immediately.</div></div>
+        <div class="spec-row"><div class="spec-key">It investigates</div><div class="spec-val">The <a href="/product/ai-analyst">analyst</a> corroborates the signal across independent indicators and returns a <b>verdict with cited evidence</b>.</div></div>
+        <div class="spec-row"><div class="spec-key">It groups</div><div class="spec-val">Related incidents sharing one root <b>collapse into a single case</b> — one event never pages you fifty times.</div></div>
+        <div class="spec-row"><div class="spec-key">It routes</div><div class="spec-val">A signed webhook carries every detection to your <b>own tooling and SOAR</b>; a gap-free export feeds any downstream SIEM.</div></div>
+        <div class="spec-row"><div class="spec-key">It learns</div><div class="spec-val">Your analysts’ corrections feed back, so verdicts <b>align to how your team triages</b> over time.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">From signal to closed case, step by step.</h2>
+        <p class="lede">
+          Abstract claims are easy. Here is the concrete path a single detection travels — the same path every one of them
+          follows, every time, without a human kicking it off.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A burst of failed logins hits one of your services. The access-and-identity pack has a brute-force detection
+          watching exactly this, and the moment the count crosses its window threshold it does what every detection does:
+          it opens an incident. Not a line in a log, not a muted notification — a first-class incident, the same kind a
+          failed health check or a saturated host would open, carrying the rule’s severity and its attack-technique tag.
+        </p>
+        <p>
+          Because the incident is wired into the live map of your environment as it opens, the affected account, the
+          source address, and the host behind the service are already attached. There is no "now go figure out what this
+          touches" step — the blast radius is part of the incident from the first second. That wiring is also what lets the
+          investigation start instantly instead of from a cold search.
+        </p>
+        <p>
+          Now the analyst goes to work. It does not take the failed-login spike at face value — a spike alone is often a
+          misconfigured client or a forgotten cron job, not an attack. It corroborates. Was there a <em>successful</em>
+          login for that account immediately after the wall of failures? Is the source address flagged by threat
+          intelligence, or coming from an anonymising network? Is the geography impossible for this user? Has this account
+          touched anything sensitive since? Each question is answered by a read-only tool against your real telemetry, and
+          each answer is recorded as a citation.
+        </p>
+        <p>
+          The verdict that comes back is a decision, not a description. If the evidence converges — failures, then a
+          success, from a flagged source, in an impossible location — it is a confident true positive, with every
+          supporting record linked so a human can verify the call in seconds rather than reconstruct it over twenty
+          minutes. If the evidence is thin or contradictory, the analyst says so and routes it to a person instead of
+          crying wolf. Either way, the recommended next action — block the source, force a password reset, isolate the
+          host — is proposed for a human to approve, never executed automatically.
+        </p>
+        <p>
+          Suppose the same intrusion tripped five detections at once across a few services. Rather than paging you five
+          times, the platform recognises that they share a root and collapses them into a single case, so you investigate
+          the incident, not the echoes. And when your analyst reviews the verdict and corrects it — confirms it, downgrades
+          it, adds a note — that correction is captured and feeds future investigations, so the system gets measurably
+          better at reading <em>your</em> environment over time.
+        </p>
+        <p>
+          Finally, none of this traps you inside 24Observe. The detection fires a signed webhook to your own tooling and
+          SOAR the instant it matches, and a gap-free export streams your audit trail for any downstream system to consume.
+          You can run 24Observe as your detection-and-investigation brain and still feed every other tool you own. The
+          point was never to lock the data in — it was to make sure no detection ever again dies unread in a queue.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">Legacy SIEM vs a SIEM that investigates.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Legacy SIEM</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">After a detection fires</div><div>An alert in a queue, for a human to work.</div><div class="cmp-us">An incident, already investigated by the analyst.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Authoring a rule</div><div>A proprietary query dialect and a steep learning curve.</div><div class="cmp-us">One readable line over your events.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent threats</div><div>Not covered.</div><div class="cmp-us">A dedicated detection pack.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Pricing model</div><div>A security tier plus a per-gigabyte intelligence meter.</div><div class="cmp-us">Part of the platform, not a second product.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Alert floods</div><div>Fifty alerts for one root cause.</div><div class="cmp-us">One case, root grouped, one notification.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">SIEM &amp; detections — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Detect the threat. Then actually investigate it.</h2>
+      <p class="final-cta-sub">
+        Turn on the packs, point your sources at the platform, and watch detections become investigated incidents — with
+        the evidence and the next step already attached.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">See the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

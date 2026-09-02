@@ -1,0 +1,89 @@
+/* 24Observe design tokens — ported from the Claude Design handoff bundle. */
+
+:root {
+  --brand-green: #2A680D;
+  --brand-green-hover: #3B9112;
+  --brand-green-light: #f5faeb;
+  --brand-green-border: #cdebc2;
+  --brand-green-glow: rgba(42, 104, 13, 0.25);
+
+  --brand-red: #2A680D;
+  --brand-red-hover: #3B9112;
+  --brand-red-light: #f5faeb;
+  --brand-red-border: #cdebc2;
+  --brand-red-glow: rgba(42, 104, 13, 0.25);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-sub: #475569;
+  --text-light: #94a3b8;
+  --bg-page: #FFFFFF;
+  --bg-subtle: #FAFAFB;
+  --bg-card: #FFFFFF;
+  --border-color: #E2E8F0;
+  --border-light: #F1F5F9;
+  --blue-badge-bg: #f5faeb;
+  --blue-badge-text: #3B9112;
+  --green-badge-bg: #f5faeb;
+  --green-badge-text: #3B9112;
+
+  --bg: #FFFFFF;
+  --bg-1: #FAFAFB;
+  --bg-2: #f5faeb;
+  --bg-3: #cdebc2;
+  --border: #E2E8F0;
+  --line: #E2E8F0;
+  --line-2: #CBD5E1;
+  --ink: #0f172a;
+  --ink-1: #1e293b;
+  --ink-2: #475569;
+  --ink-3: #64748b;
+  --accent: #2A680D;
+  --accent-hover: #3B9112;
+  --accent-dim: #f5faeb;
+  --accent-line: #cdebc2;
+  --purple: #2A680D;
+  --amber: #D97706;
+  --blue: #2A680D;
+  --violet: #2A680D;
+
+  --font-main: "Lato", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", "Geist Mono", monospace;
+  --mono: var(--font-mono);
+  --sans: var(--font-main);
+
+  --radius-pill: 9999px;
+  --radius-card: 16px;
+  --radius-inner: 10px;
+  --rad: 9999px;
+  --rad-lg: 16px;
+
+  --maxw: 1280px;
+  --pad: 24px;
+}
+
+[data-theme="light"],
+[data-theme="dark"] {
+  --bg: #FFFFFF;
+  --bg-1: #FAFAFB;
+  --bg-2: #f5faeb;
+  --bg-3: #cdebc2;
+  --bg-card: #FFFFFF;
+  --border: #E2E8F0;
+  --line: #E2E8F0;
+  --line-2: #CBD5E1;
+  --ink: #09090B;
+  --ink-1: #334155;
+  --ink-2: #64748B;
+  --ink-3: #94A3B8;
+  --accent: #2A680D;
+  --accent-dim: #f5faeb;
+  --accent-line: #cdebc2;
+}
+
+[data-density="compact"] {
+  --pad: 20px;
+}
+
+[data-density="comfy"] {
+  --pad: 48px;
+}

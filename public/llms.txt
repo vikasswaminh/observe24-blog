@@ -1,0 +1,41 @@
+# 24Observe
+
+> One platform for uptime monitoring, log management, and a SIEM — with an AI
+> analyst that investigates every incident, an operational knowledge graph it
+> reasons over, and a pure-REST + MCP API built for AI agents to drive.
+> Self-hostable; one predictable bill with every feature on every plan.
+
+## What it does
+
+- **Uptime** — 12 monitor types (HTTP, TCP, SSL, ping, port, keyword, heartbeat/cron, browser), multi-region, SLO targets, status pages: https://24observe.com/features
+- **Logs** — ship from anywhere (Lambda, Heroku, Vercel, Docker, journald, OpenTelemetry, or curl), search in plain words, pattern grouping, error tracking, anomaly alerts: https://24observe.com/product/logs
+- **SIEM** — 87 detections across 14 packs (most MITRE ATT&CK-tagged), multi-event correlation, threat-intel matched at ingest, security cases: https://24observe.com/product/siem
+- **AI agent security** — prompt injection, runaway tool loops, token/cost abuse, and sensitive tool calls surfaced as detections: https://24observe.com/product/ai-agent-security
+- **AI analyst** — every incident is auto-investigated and returned as an evidence-cited verdict: https://24observe.com/product/ai-analyst
+- **Context graph** — services, hosts, identities, and AI agents linked into one operational graph the analyst walks for root cause: https://24observe.com/docs/context
+- **Connectors** — 30+ one-click sources (CrowdStrike, SentinelOne, Palo Alto, Okta, CloudTrail, and more) or any source via universal ingest: https://24observe.com/integrations
+- **Agent-native API** — pure REST, an MCP server, and pre-converted tool definitions for OpenAI / Anthropic / LangChain: https://24observe.com/agents
+
+## For AI agents
+
+- Agent overview and how to drive the platform: https://24observe.com/agents
+- Build an agent against the API: https://24observe.com/docs/build-an-agent
+- Connect an agent (OpenTelemetry GenAI): https://24observe.com/docs/connect-agent
+- MCP server: https://24observe.com/docs/mcp
+- OpenAI tool definitions: https://api.24observe.com/openapi/openai-tools.json
+- Anthropic tool definitions: https://api.24observe.com/openapi/anthropic-tools.json
+- LangChain tool definitions: https://api.24observe.com/openapi/langchain-tools.json
+- OpenAPI spec: https://api.24observe.com/openapi.json
+
+## Docs
+
+- Quickstart: https://24observe.com/docs/quickstart
+- Detections: https://24observe.com/docs/detections
+- Logs: https://24observe.com/docs/logs
+- Linux Sensor / collector: https://24observe.com/docs/sensor
+- Webhook subscriptions: https://24observe.com/docs/webhook-subscriptions
+- Self-host: https://24observe.com/self-host
+
+## Pricing
+
+- Free tier; paid plans from $29/mo; self-host free forever. Every feature on every plan — no security tier, no per-host metering: https://24observe.com/pricing

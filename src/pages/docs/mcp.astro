@@ -1,0 +1,327 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const MCP_CONFIG = `{
+  "mcpServers": {
+    "24observe": {
+      "command": "npx",
+      "args": ["-y", "@observe24/mcp"],
+      "env": {
+        "OBSERVE24_TOKEN": "obs_<your_scoped_token>"
+      }
+    }
+  }
+}`;
+
+const ASK = `You: "What incidents opened in the last hour, and what did the analyst conclude?"
+Assistant: (calls list_incidents, then get_incident for each)
+  → 2 incidents. #5210 — checkout latency, root cause: upstream payment timeout
+    (analyst verdict, 6 citations). #5211 — disk filling on db-primary, runaway log.`;
+
+const faqs = [
+  {
+    q: 'What is the MCP server, in one sentence?',
+    a: 'It is a curated, safety-bounded gateway that lets an MCP-speaking assistant — Claude, an IDE assistant, or your own agent — drive your 24Observe organisation through a vetted set of tools, authenticated by a scoped token you control.',
+  },
+  {
+    q: 'How is the MCP server different from the raw API?',
+    a: 'The raw API is the complete surface; the MCP server is a deliberately curated allowlist of tools chosen to be safe and useful for an assistant to call, and it is fail-closed — anything not explicitly allowed is simply not exposed. So an assistant connected over MCP can do meaningful work (search logs, read incidents, manage monitors) without being handed the entire administrative surface. It is the right entry point for AI assistants; direct API access is the right choice for trusted backend automation.',
+  },
+  {
+    q: 'How do I authenticate it?',
+    a: 'With a scoped token. Mint a token under Settings → API tokens with only the scopes the assistant needs — read-only for an analyst assistant, specific write scopes if you want it to manage monitors or acknowledge incidents — and put it in the server\'s environment. The token is the boundary: the assistant can do exactly what the token permits and nothing more, and every action it takes is recorded in the audit trail as coming from that token.',
+  },
+  {
+    q: 'Which assistants and IDEs can connect?',
+    a: 'Any client that speaks the Model Context Protocol — including Claude\'s desktop and IDE integrations and other MCP-compatible editors and agents. The configuration is the same shape everywhere: tell the client to launch the 24Observe MCP server and pass it your scoped token. Once connected, the assistant can see and call the curated tools as part of its normal reasoning.',
+  },
+  {
+    q: 'What can an assistant actually do once connected?',
+    a: 'Within the scopes you grant: search and tail logs, read metrics, list and inspect incidents and the analyst\'s verdicts, walk the context graph, and — if you allow write scopes — create or adjust monitors, acknowledge or resolve incidents, and manage detections. The curated tool set is broad enough to make an assistant a genuine operator of the platform, while staying inside the allowlist and your token\'s scopes.',
+  },
+  {
+    q: 'Is it safe to give an AI assistant access to my observability platform?',
+    a: 'It is, when bounded the way this is. Three layers protect you: the curated allowlist (the assistant can only call vetted tools), the scoped token (it can only do what you granted), and the audit trail (everything it does is recorded and attributable). Start read-only to build confidence, watch what the assistant does in the audit log, and widen scopes deliberately as you trust it — exactly as you would onboard a new team member.',
+  },
+  {
+    q: 'Should I start read-only?',
+    a: 'Yes, almost always. A read-only token lets an assistant investigate, summarise incidents, search logs, and answer questions with zero risk of it changing anything — which is where most of the value is and where trust is built. Once you have watched it work and are comfortable, mint a token with specific write scopes for the actions you want it to take. The deny-by-default posture means widening access is a deliberate choice, never an accident.',
+  },
+  {
+    q: 'How do I revoke access?',
+    a: 'Revoke the token. Because the MCP server\'s entire authority comes from the scoped token in its environment, revoking that token under Settings → API tokens immediately cuts off the assistant\'s access without touching anything else. One token, one clean off-switch — which is exactly why per-assistant, narrowly-scoped tokens are the right pattern.',
+  },
+];
+---
+<Base
+  title="MCP server setup — connect Claude, your IDE, or an agent to 24Observe | 24Observe"
+  description="Connect any MCP-speaking assistant to your 24Observe organisation through a curated, fail-closed tool set and a scoped token — so an AI can investigate and operate the platform, safely."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · MCP server</div>
+          <h1 class="h1">Let an assistant drive your platform — <em>inside a boundary you set.</em></h1>
+          <p class="lede">
+            The 24Observe MCP server connects any Model-Context-Protocol assistant — Claude, an IDE assistant, your own
+            agent — to your organisation through a curated, fail-closed set of tools, authenticated by a token you scope.
+            So you can ask an assistant to investigate an incident, search your logs, or check what is on fire, and it
+            does the work by calling vetted tools — never with more access than you granted, and always on the record.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Get a token <span class="arr">→</span></a>
+            <a href="/docs/agent-cookbook" class="btn btn-ghost btn-lg">Build an agent on the API</a>
+          </div>
+          <div class="hero-meta">
+            <span>Curated <b>tool set</b></span>
+            <span>Scoped <b>token</b></span>
+            <span>Fail-<b>closed</b></span>
+            <span>Fully <b>audited</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> assistant · 24observe MCP</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Connected · read-only token</div>
+              <div class="con-meta">curated tools</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">“What’s on fire right now?”</div>
+                <div class="con-sub"><span>calls list_incidents</span><span class="tech">2 open</span></div>
+              </div>
+              <span class="sev sev-med">ASK</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">reads analyst verdict + citations</div>
+                <div class="con-sub"><span>get_incident</span><span class="tech">summarises</span></div>
+              </div>
+              <span class="sev sev-med">DO</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">every call logged to audit trail</div>
+                <div class="con-sub"><span>attributed to token</span><span class="tech">revocable</span></div>
+              </div>
+              <span class="sev sev-med">SAFE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> An operator, bounded by allowlist, scope, and audit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Why MCP</div>
+        <h2 class="h2">An assistant is only useful if it can act — safely.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          An AI assistant that can only talk is a chatbot; an assistant that can also see your incidents, search your
+          logs, and adjust a monitor is an operator. The Model Context Protocol is how you give an assistant that ability
+          — and the whole question is how to do it without handing over the keys to everything.
+        </p>
+        <p>
+          24Observe answers that with a curated MCP server. Rather than exposing the entire API surface to an assistant —
+          which would include sensitive administrative actions an assistant has no business calling — the MCP server
+          presents a deliberately chosen allowlist of tools that are safe and useful for an assistant to invoke: search
+          and tail logs, read metrics, list and inspect incidents and the analyst's verdicts, walk the context graph, and,
+          where you permit it, manage monitors and acknowledge incidents. It is fail-closed by design: anything not
+          explicitly on the allowlist is not exposed at all, so the boundary is defined by what is permitted, not by
+          remembering to forbid each dangerous thing.
+        </p>
+        <p>
+          On top of the allowlist sits the token. The MCP server's entire authority comes from a scoped token you mint and
+          place in its environment, so even within the allowlist the assistant can only do what the token's scopes permit.
+          A read-only token lets it investigate and answer questions while being structurally incapable of changing
+          anything; a token with specific write scopes lets it take exactly the actions you intend and no others. And
+          everything it does is recorded in the audit trail, attributed to that token, so an assistant's actions are never
+          confused with a human's and are always reviewable after the fact.
+        </p>
+        <p>
+          Those three layers — curated allowlist, scoped token, full audit — are what make it genuinely safe to let an AI
+          operate your observability platform. The rest of this guide is how to set it up, starting read-only, and how to
+          widen access deliberately as you build trust.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Setup</div>
+        <h2 class="h2">Connect a client in three steps.</h2>
+        <p class="lede">
+          The shape is the same for any MCP-speaking client: mint a scoped token, point the client at the 24Observe MCP
+          server, and start asking.
+        </p>
+      </div>
+      <div class="prose">
+        <h3>1. Mint a scoped token</h3>
+        <p>
+          Under <b>Settings → API tokens</b>, create a token for this assistant. Start read-only: grant read scopes for
+          the areas you want the assistant to see — logs, incidents, metrics, context — and nothing more. Name it for the
+          assistant it belongs to, so the audit trail and any future revocation are unambiguous. Copy the token; you will
+          place it in the client's configuration.
+        </p>
+        <h3>2. Configure your MCP client</h3>
+        <p>
+          Tell your MCP client to launch the 24Observe MCP server and pass it the token. In a typical client configuration
+          that looks like this:
+        </p>
+        <pre class="code-block">{MCP_CONFIG}</pre>
+        <p>
+          The exact location of this configuration depends on your client — a desktop assistant, an IDE extension, or your
+          own agent runtime — but the contents are the same everywhere: launch <code>@observe24/mcp</code>, and give it
+          your scoped token in the environment. On start, the client discovers the curated tools the server exposes and
+          makes them available to the assistant.
+        </p>
+        <h3>3. Ask it something</h3>
+        <p>
+          With the client connected, simply ask a question that requires platform data. The assistant will call the
+          appropriate curated tools, reason over the results, and answer:
+        </p>
+        <pre class="code-block">{ASK}</pre>
+        <p>
+          That is the whole loop. The assistant decided which tools to call, called them within the bounds of your
+          read-only token, and synthesised an answer — and every one of those calls is sitting in your audit trail,
+          attributed to the token, for you to review.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The safety model</div>
+        <h2 class="h2">Three boundaries, by construction.</h2>
+        <p class="lede">
+          You are not trusting the assistant to behave; you are bounding what it can do. Each layer is independent, so a
+          gap in one is caught by the others.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Curated allowlist</div><div class="spec-val">The assistant can only call <b>vetted tools</b>; anything not explicitly allowed is not exposed. Fail-closed, so the boundary is what's permitted.</div></div>
+        <div class="spec-row"><div class="spec-key">Scoped token</div><div class="spec-val">Within the allowlist, the assistant can do <b>only what the token's scopes permit</b> — read-only stays read-only, structurally.</div></div>
+        <div class="spec-row"><div class="spec-key">Full audit</div><div class="spec-val">Every call is <b>recorded and attributed</b> to the token, so an assistant's actions are never confused with a person's and are always reviewable.</div></div>
+        <div class="spec-row"><div class="spec-key">One clean off-switch</div><div class="spec-val">Revoking the token <b>cuts off all access instantly</b>, without touching anything else — which is why per-assistant tokens are the right pattern.</div></div>
+        <div class="spec-row"><div class="spec-key">Start read-only</div><div class="spec-val">Most value is in investigation, which needs no write access. Begin read-only, watch the audit log, and <b>widen deliberately</b>.</div></div>
+        <div class="spec-row"><div class="spec-key">Least privilege per assistant</div><div class="spec-val">One narrowly-scoped token per assistant means you adjust or revoke one without disturbing the others.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Growing into it</div>
+        <h2 class="h2">From read-only to a trusted operator.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          The right way to adopt an MCP-connected assistant mirrors how you would onboard a capable new hire: start with
+          read access, watch how they work, and extend responsibility as trust is earned. For the first while, keep the
+          token read-only. An assistant that can search your logs, read your incidents and the analyst's verdicts, walk
+          the context graph, and summarise what is happening is already enormously useful — it can answer "what changed,"
+          triage your morning incident list, and pull together the context for an investigation — and it can do none of it
+          dangerously, because it physically cannot change anything.
+        </p>
+        <p>
+          Spend that period reading the audit trail. Because every tool call the assistant makes is recorded and
+          attributed to its token, you can see exactly what it did and judge whether its behaviour is what you want. This
+          is the evidence on which you widen access, and it is far more reassuring than any promise: you are not trusting
+          the assistant's intentions, you are observing its actions.
+        </p>
+        <p>
+          When you are ready to let it act, mint a new token with specific write scopes for the actions you want — perhaps
+          acknowledging incidents, creating monitors, or adjusting detections — and update the client to use it. Because
+          the posture is deny-by-default, this is always a deliberate widening, never an accident: the assistant gains
+          exactly the new capability you granted and nothing adjacent to it. If you ever want to pull it back, revoke the
+          token and you are instantly back to no access, with the audit trail intact.
+        </p>
+        <p>
+          Handled this way, an MCP-connected assistant becomes a genuine member of your operations — investigating,
+          summarising, and eventually acting — without ever being a security liability. The boundary did the work, so you
+          did not have to rely on trust alone. For building a fully custom agent against the complete API rather than the
+          curated MCP surface, see the <a href="/docs/agent-cookbook">agent cookbook</a> and the
+          <a href="/agents">API for agents</a>.
+        </p>
+        <h3>MCP versus the raw API — when to use which</h3>
+        <p>
+          It helps to be clear about the two ways an automation can reach the platform, because they suit different
+          situations. The MCP server is the curated, fail-closed surface designed for an <em>assistant</em> — something
+          reasoning in the moment, deciding which tools to call, where you want strong guardrails because the caller is
+          improvising. The raw API is the complete surface, designed for <em>trusted backend automation</em> — a deploy
+          pipeline, a chatops bot, a scheduled job — where the caller is a program you wrote and reviewed, doing a known
+          set of operations. Both authenticate with scoped tokens and both are fully audited; the difference is whether
+          you want the safety of a curated allowlist or the completeness of the full surface.
+        </p>
+        <p>
+          A useful rule of thumb: if a human is in the loop talking to an assistant, prefer MCP, because the allowlist
+          protects you from the open-ended nature of natural-language requests. If a machine is executing a fixed workflow
+          you control, the raw API is appropriate, scoped tightly to that workflow's needs. Many teams use both — an MCP
+          connection for their analysts to investigate conversationally, and a few narrowly-scoped API tokens for their
+          pipelines and bots — and the audit trail keeps the two cleanly distinguished.
+        </p>
+        <h3>Good habits for MCP in a team</h3>
+        <p>
+          As more people connect assistants, a little discipline keeps it manageable. Mint one token per assistant or per
+          person rather than sharing a single token, so the audit trail tells you who did what and you can revoke one
+          without disrupting the others. Keep the default posture read-only, and treat any write scope as a deliberate
+          grant tied to a specific need. Periodically review the tokens in use and revoke any you cannot account for — an
+          orphaned token with broad scope is exactly the kind of quiet exposure worth catching early. None of this is
+          heavy process; it is the same least-privilege hygiene that applies to every credential, applied to the
+          assistants that are increasingly part of how your team works.
+        </p>
+        <p>
+          Treat the assistants you connect as a real, growing part of your operations surface — because that is what they
+          are becoming. The same review cadence you apply to human access applies here: periodically confirm each
+          connected assistant still has a reason to exist and still has the narrowest scope that lets it do its job. An
+          MCP connection is not a set-and-forget integration; it is a standing grant of access that deserves the same
+          ongoing care as any other, and the audit trail is what makes that care cheap — a short read rather than an
+          investigation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">MCP server — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Give your assistant a safe seat at the platform.</h2>
+      <p class="final-cta-sub">
+        Mint a scoped token, point your MCP client at the 24Observe server, and let an assistant investigate and operate
+        inside a boundary of allowlist, scope, and audit.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/agents" class="btn btn-ghost btn-lg">API for agents</a>
+      </div>
+    </div>
+  </section>
+</Base>

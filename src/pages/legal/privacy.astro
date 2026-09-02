@@ -1,0 +1,95 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-04-26';
+---
+<Base
+  title="Privacy Policy — 24Observe"
+  description="What data we collect, why, who we share it with, and how to get it deleted. No dark patterns."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · last updated {updated}</div>
+      <h1 class="h1">Privacy Policy</h1>
+      <p class="lede" style="margin-top: 24px;">
+        We collect the minimum needed to run the Service and bill you. We don't sell data, we don't run
+        trackers, and the only third party that ever sees your traffic is Cloudflare (TLS + DDoS).
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">What we collect</h2>
+      <h3 class="h3" style="margin-top: 24px;">Account data</h3>
+      <ul style="line-height: 1.8;">
+        <li>Email address (sign-in identifier, used for account-related notifications only)</li>
+        <li>Argon2id hash of your password (we never see or store the plaintext)</li>
+        <li>Organization name and slug (your input)</li>
+        <li>Account creation timestamp</li>
+      </ul>
+
+      <h3 class="h3" style="margin-top: 24px;">Service data</h3>
+      <ul style="line-height: 1.8;">
+        <li>Monitors you configure (name, URL, type, interval, alert destination)</li>
+        <li>Check results (status, response time, status code, optional error message), retained 30 days</li>
+        <li>Custom request headers you set, encrypted at rest with AES-256-GCM</li>
+        <li>Webhook signing secret (HMAC-SHA256) — generated, rotatable on demand</li>
+      </ul>
+
+      <h3 class="h3" style="margin-top: 24px;">Operational data</h3>
+      <ul style="line-height: 1.8;">
+        <li>Source IP of API requests (used for rate-limit + abuse defense, retained 7 days in logs)</li>
+        <li>Audit log of every account-mutating action with the actor user, the org, the action, and a timestamp</li>
+        <li>Request IDs for end-to-end tracing across api → scheduler → worker → alerter</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">What we don't collect</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>No analytics cookies.</b> The marketing site uses Cloudflare Web Analytics (cookieless,
+          no fingerprinting) — see <a href="https://www.cloudflare.com/web-analytics/">CF's privacy notes</a>.</li>
+        <li><b>No third-party trackers.</b> No Google Analytics, no Facebook Pixel, no Hotjar, nothing.</li>
+        <li><b>No payment card data.</b> When billing ships, we'll use Stripe — they handle PCI scope, we never
+          see your card number.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Subprocessors</h2>
+      <p>
+        Full list at <a href="/legal/subprocessors">/legal/subprocessors</a>. In short: Cloudflare for DNS,
+        TLS termination on the marketing/dashboard SPA, and DDoS protection. Everything else (Postgres,
+        ClickHouse, Redis, the API, the workers) runs on infrastructure we control.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Your rights (GDPR, CCPA, and similar)</h2>
+      <p>
+        Email <a href="mailto:privacy@24observe.com">privacy@24observe.com</a> from the address on your account
+        to request:
+      </p>
+      <ul style="line-height: 1.8;">
+        <li><b>Access:</b> a JSON export of every row associated with your org</li>
+        <li><b>Deletion:</b> immediate purge from production within 30 days, backups within 90</li>
+        <li><b>Correction:</b> direct edits, or via the dashboard yourself</li>
+        <li><b>Portability:</b> the access export is the same format the API returns</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Retention</h2>
+      <ul style="line-height: 1.8;">
+        <li>Account data: until you delete the account</li>
+        <li>Check results: 30 days rolling</li>
+        <li>Audit logs: 1 year (kept for security forensics)</li>
+        <li>Operational logs (HTTP access logs): 7 days</li>
+        <li>Backups: 30 days, then overwritten</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Security</h2>
+      <p>
+        TLS 1.3 in transit. Postgres at rest is on encrypted disks; sensitive columns (request headers,
+        webhook secrets) are additionally AES-256-GCM-encrypted at the application layer with a key
+        derived via scrypt from a master key never written to logs. See <a href="/security">/security</a>
+        for the full picture.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Contact</h2>
+      <p>
+        Privacy questions: <a href="mailto:privacy@24observe.com">privacy@24observe.com</a><br/>
+        Operational issues: <a href="mailto:support@24observe.com">support@24observe.com</a><br/>
+        Security disclosures: <a href="mailto:security@24observe.com">security@24observe.com</a>
+      </p>
+    </div>
+  </section>
+</Base>

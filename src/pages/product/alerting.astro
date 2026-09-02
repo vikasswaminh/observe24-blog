@@ -1,0 +1,353 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Which channels can alerts reach me on?',
+    a: 'Ten: email, signed webhook, Slack, Discord, Microsoft Teams, Telegram, PagerDuty, Opsgenie, SMS, and voice call. The point of having all of them is that the channel should match the stakes — a voice call that wakes someone for a genuine emergency, a quiet chat message for the routine, a webhook into your own automation for the things a machine should handle. You route by severity and team rather than blasting everything everywhere.',
+  },
+  {
+    q: 'What can trigger an alert?',
+    a: 'Every kind of signal the platform produces: a failed uptime check, a metric crossing a threshold, a fired security detection, a silent cron heartbeat, a host going offline. They all become incidents that route through the same alerting, so you configure how you want to be told once and it applies across monitoring and security alike — not a separate alerting setup per product.',
+  },
+  {
+    q: 'Will one root cause flood every channel?',
+    a: 'No. When a single failure opens many related incidents, the platform groups them by their shared root in the <a href="/product/context-graph">context graph</a> and sends one notification for the case, not one per symptom. The thing that destroys trust in alerting — the 3 a.m. flood where the real signal drowns in its own echoes — is designed out. One root cause, one alert.',
+  },
+  {
+    q: 'How do escalation and on-call fit in?',
+    a: 'Alerting is the delivery layer; on-call and escalation decide who and when. An incident routes to whoever is genuinely on call, and if they do not acknowledge, an escalation chain steps it up to the next responder automatically. So an alert is never just fired into the void and hoped about — it climbs until a human owns it. See <a href="/product/incidents">on-call &amp; incidents</a>.',
+  },
+  {
+    q: 'Are the webhooks secure?',
+    a: 'Yes. Outbound webhooks are signed with an HMAC so your receiver can verify the payload genuinely came from us and was not tampered with — you are not trusting any POST that arrives at your endpoint. And alert destinations are checked against server-side request forgery: a webhook URL that resolves to a private, loopback, or metadata address is rejected, so alerting cannot be turned into a tool for probing your internal network.',
+  },
+  {
+    q: 'How are my channel credentials protected?',
+    a: 'The secrets and tokens behind your alert channels — chat webhooks, API keys, phone integrations — are encrypted at rest. The credentials that let the platform reach your tools are treated as the sensitive material they are, not stored in the clear, so a configured channel is not a liability sitting in a database.',
+  },
+  {
+    q: 'Can an alert do something, not just notify someone?',
+    a: 'Yes — that is what the signed webhook is for. An alert can drive your own automation: trigger a runbook, post to a system you own, or hand the incident to an agent that takes the first remediation step. Combined with the platform\'s events — incident.opened, metric_alert.fired, correlation_rule.fired, sensor.offline, and more — alerting becomes a programmable layer, not just a set of notifications. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'How do I avoid alert fatigue?',
+    a: 'Three ways, built in. Root-cause grouping means one outage pages once. Routing by severity means routine signals go to a quiet channel and only real emergencies ring a phone. And because every incident can arrive with an <a href="/product/ai-analyst">analyst</a> verdict attached — including benign signals dispositioned automatically — the alerts that reach a human are more likely to be the ones that deserve one. The goal is fewer, better alerts, not more.',
+  },
+  {
+    q: 'Is alerting a premium add-on?',
+    a: 'No. All ten channels, escalation, on-call, grouping, and signed webhooks are part of the platform, not a notifications tier with its own meter. Charging extra to be told about the problems you are already paying us to detect would defeat the point.',
+  },
+];
+---
+<Base
+  title="Alerting and on-call escalation — ten channels | 24Observe"
+  description="Route alerts across ten channels by severity, group a cascade into one notification, escalate until acknowledged, and drive automation with signed webhooks."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Alerting &amp; notifications</div>
+          <h1 class="h1">Alerting should fight fatigue, <em>not cause it.</em></h1>
+          <p class="lede">
+            Most alerting fails the same way: it tells everyone about everything, so people learn to ignore it, and the one
+            alert that mattered drowns in the thousand that did not. 24Observe routes alerts across ten channels by
+            severity, collapses a cascade into a single notification, escalates until a human acknowledges, and lets an
+            alert drive automation — so what reaches you is fewer, better, and worth reacting to. The goal is signal, not
+            volume.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; escalation</a>
+          </div>
+          <div class="hero-meta">
+            <span>Ten <b>channels</b></span>
+            <span>Route by <b>severity</b></span>
+            <span>One root, <b>one alert</b></span>
+            <span>Signed <b>webhooks</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/alerting</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Routing rules</div>
+              <div class="con-meta">by severity · by team</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">CRIT → voice call + PagerDuty</div>
+                <div class="con-sub"><span>wakes on-call</span><span class="tech">escalates if no ack</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">HIGH → Slack #incidents + SMS</div>
+                <div class="con-sub"><span>storm-grouped</span><span class="tech">1 message, not 50</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">routine → signed webhook → your runbook</div>
+                <div class="con-sub"><span>HMAC verified</span><span class="tech">automation handles it</span></div>
+              </div>
+              <span class="sev sev-med">AUTO</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> The channel matches the stakes — and one outage pages once</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The alerting problem</div>
+        <h2 class="h2">An alert everyone ignores is worse than no alert at all.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The cruel irony of alerting is that the more you add, the less it works. Every team that has been burned by an
+          outage responds by alerting on more things — and ends up with a channel so noisy that the next real outage
+          scrolls past unread, indistinguishable from the daily flood.
+        </p>
+        <p>
+          This is alert fatigue, and it is not a personal failing — it is the predictable result of treating every signal
+          as equally urgent and sending it to everyone. When a routine warning and a genuine emergency arrive on the same
+          channel, in the same format, with the same ping, people cannot triage them at a glance, so they stop trying.
+          They mute the channel, or they skim it, or they build a mental filter that occasionally filters out the one that
+          mattered. The alerting system technically did its job — it fired — but firing into a stream nobody trusts is not
+          the same as telling someone.
+        </p>
+        <p>
+          The flood makes it worse. When one failure cascades into fifty downstream symptoms and each fires its own alert,
+          the real signal is not just buried — it is buried by itself, fifty times over. The responder's first job becomes
+          archaeology: working out, by hand, that this wall of alerts is one incident. By the time they have, the alerts
+          have taught them one more time that the channel is noise.
+        </p>
+        <p>
+          And the crude routing underneath it all — everyone gets everything, or one rigid rule sends a critical page to a
+          chat channel nobody watches overnight — means the alert that should have rung a phone instead sat quietly in a
+          room with the lights off. The mismatch between the stakes of a signal and the way it is delivered is where most
+          missed incidents actually live.
+        </p>
+        <p>
+          24Observe treats alerting as a problem of restraint, not reach. Ten channels exist so the delivery can match the
+          stakes — a voice call for an emergency, a quiet message for the routine, a webhook for what a machine should
+          handle. Root-cause grouping means one outage pages once. Escalation means an unacknowledged alert climbs until a
+          human owns it rather than dying in a muted channel. And because incidents can arrive already investigated, the
+          alerts that reach a person are likelier to be the ones that deserve one. The aim throughout is fewer, better
+          alerts — the only kind anyone actually keeps trusting.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Alerting on more things does not make you safer; it makes the next real alert easier to miss. The discipline is
+        fewer, better, well-matched alerts.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Ten channels</div>
+        <h2 class="h2">Match the channel to the stakes.</h2>
+        <p class="lede">
+          The reason to support every major channel is not box-ticking — it is that an emergency and a routine warning
+          should not arrive the same way. Route by severity and team so the delivery carries the urgency.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Voice &amp; SMS</div><p>For the things that must wake someone — a phone that rings and a text that lands, so a real emergency is impossible to sleep through.</p></div>
+        <div class="why-card"><div class="why-num">Slack · Discord · Teams</div><p>For the team channels where work already happens, so most incidents land where people are already looking, in context.</p></div>
+        <div class="why-card"><div class="why-num">Telegram &amp; email</div><p>For broader reach and for the record — durable, universal channels that need no special integration to receive.</p></div>
+        <div class="why-card"><div class="why-num">PagerDuty &amp; Opsgenie</div><p>If you already run a dedicated on-call tool, route into it — 24Observe is happy to feed the escalation system your team has standardised on.</p></div>
+        <div class="why-card"><div class="why-num">Signed webhooks</div><p>For the alerts a machine should handle — HMAC-signed so your receiver can trust them, driving your runbooks and your agents.</p></div>
+        <div class="why-card"><div class="why-num">Routed by severity</div><p>Critical rings a phone; routine posts to chat; the mundane goes to automation. The same incident, delivered in proportion to what it means.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Fewer, better alerts</div>
+        <h2 class="h2">Three mechanisms that fight fatigue by design.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Grouping: one root, one alert</h3>
+          <p>
+            The single biggest source of alert noise is a cascade — one failure that lights up dozens of downstream
+            symptoms. The platform collapses those into a single case by recognising their shared root in the
+            <a href="/product/context-graph">context graph</a>, and sends one notification for the case. The flood that
+            would have buried the real signal never reaches you; you get one alert about the cause, with the cascade
+            attached as context. This alone is the difference between a channel people trust and one they mute.
+          </p>
+          <h3>Severity routing: proportion, not blast</h3>
+          <p>
+            Not every signal deserves a phone call, and pretending otherwise is how phone calls get ignored. Route
+            critical incidents to voice and your on-call tool, important ones to chat and SMS, and routine ones to a quiet
+            channel or straight to automation. The delivery carries the urgency, so a responder can tell an emergency from
+            a warning before they have even read the message — by which channel it arrived on.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Escalation: never fired into the void</h3>
+          <p>
+            An alert that fires and is not seen is the most dangerous kind, because everyone assumes it was handled. So an
+            unacknowledged incident does not sit — it climbs an <a href="/product/incidents">escalation chain</a> to the
+            secondary, the lead, a wider channel, until a human acknowledges. Alerting and escalation are one system:
+            firing the alert and making sure it lands are not separate concerns here.
+          </p>
+          <h3>Investigated-first: fewer false pages</h3>
+          <p>
+            The best way to reduce noise is to not send the alerts that did not need sending. Because the
+            <a href="/product/ai-analyst">analyst</a> investigates incidents and can disposition benign ones automatically,
+            the signals that reach a human are weighted toward the ones that genuinely warrant attention. You are not
+            tuning detections down into blindness to keep the noise manageable; the investigation does the filtering.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Trustworthy by construction</div>
+        <h2 class="h2">Alerts you can act on, and credentials you can store safely.</h2>
+        <p class="lede">
+          An alerting layer touches your most sensitive integrations and reaches outside your perimeter, so it has to be
+          secure in both directions. These are not afterthoughts.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Signed payloads</div><div class="spec-val">Outbound webhooks are <b>HMAC-signed</b>, so your receiver can verify a payload genuinely came from us and was not tampered with — you trust the signature, not the sender's IP.</div></div>
+        <div class="spec-row"><div class="spec-key">SSRF defense</div><div class="spec-val">A webhook URL that resolves to a <b>private, loopback, or metadata address is rejected</b>, so alerting can never be turned into a probe of your internal network.</div></div>
+        <div class="spec-row"><div class="spec-key">Encrypted credentials</div><div class="spec-val">The secrets and tokens behind your channels are <b>encrypted at rest</b> — a configured channel is not a plaintext liability sitting in a database.</div></div>
+        <div class="spec-row"><div class="spec-key">Event-driven</div><div class="spec-val">Subscribe to <b>incident.opened, metric_alert.fired, correlation_rule.fired, sensor.offline</b> and more — alerting becomes a programmable layer, not just notifications.</div></div>
+        <div class="spec-row"><div class="spec-key">Drives automation</div><div class="spec-val">An alert can <b>trigger a runbook or hand an incident to an agent</b>, so the routine cases are handled by a machine and only the judgement calls reach a person.</div></div>
+        <div class="spec-row"><div class="spec-key">Part of the platform</div><div class="spec-val">All ten channels, grouping, escalation, and signed webhooks are <b>included</b> — not a notifications tier with its own meter.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The night the channel didn’t flood.</h2>
+        <p class="lede">
+          The same cascade that turns an alerting channel into noise everyone mutes — and how grouping, routing, and
+          escalation turn it into a single, well-aimed page instead.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A dependency fails at the worst time, and its failure ripples: a dozen services degrade, their metrics breach,
+          their checks fail, downstream calls time out. In a typical alerting setup this is the moment the channel betrays
+          you — fifty notifications hit at once, the on-call phone vibrates itself off the nightstand, and somewhere in
+          that wall is the one alert that explains everything, indistinguishable from the forty-nine that are merely
+          symptoms.
+        </p>
+        <p>
+          Here, the grouping happens before anything is sent. The platform sees that those fifty incidents share a root in
+          the context graph and collapses them into one case. So the alerting layer is not handed fifty things to deliver;
+          it is handed one — the dependency failure, with the cascade attached as context. The flood is prevented at the
+          source rather than endured at the destination.
+        </p>
+        <p>
+          Then routing decides how that one alert arrives. Because the case is critical, it does not go to a chat channel
+          to be discovered in the morning; it rings the on-call engineer's phone and posts to the dedicated on-call tool,
+          while the routine warnings elsewhere in the system continue to flow quietly to a channel nobody has to watch.
+          The severity of the signal is encoded in the way it reaches a human, so even half-asleep they know this one is
+          real before they read a word.
+        </p>
+        <p>
+          Suppose the first engineer sleeps through the call. The alert is not lost, because firing it and landing it are
+          the same system: the escalation chain steps up to the secondary, and if needed the lead, until someone
+          acknowledges. The incident cannot quietly go unowned on the assumption that it was handled — it climbs until it
+          is handled.
+        </p>
+        <p>
+          And the routine breaches that night? They never woke anyone. They went to a signed webhook that fed a runbook,
+          which handled them automatically, exactly as a machine should handle the things that do not need a human. In the
+          morning the on-call engineer sees one meaningful page, a record of one investigated incident, and a log of the
+          automation quietly doing its job — not a scrollback of fifty alarms that taught them, one more time, to stop
+          trusting the channel. That is what alerting is supposed to feel like, and it is what fewer, better, well-matched
+          alerts actually deliver.
+        </p>
+        <p>
+          Step back and the through-line is simple: every mechanism here exists to protect the one resource alerting
+          actually depends on, which is a human's willingness to believe the next alert. Grouping protects it by never
+          burying the real signal under its own echoes. Severity routing protects it by making sure a quiet warning never
+          arrives dressed as an emergency, or vice versa. Escalation protects it by guaranteeing that taking an alert
+          seriously is never wasted because the alert was lost. And investigation protects it by keeping the false pages
+          off the channel in the first place. Each is a different defence of the same fragile, essential thing — trust.
+        </p>
+        <p>
+          That is why alerting cannot be treated as a dumb delivery pipe bolted onto monitoring, and why it lives here as
+          part of the platform that detects, groups, investigates, and escalates. A notification is only as valuable as
+          the confidence the recipient has that it deserved their attention, and that confidence is built or destroyed by
+          the system as a whole, not by the message itself. Send fewer, better, well-aimed alerts and the channel stays
+          something people act on; send everything and you have, with the best intentions, built a machine for teaching
+          your team to look away.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">Blast-everything alerting vs alerting with restraint.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Blast-everything alerting</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">One outage</div><div>Fifty notifications.</div><div class="cmp-us">One grouped alert.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Delivery</div><div>Everything, one channel, same ping.</div><div class="cmp-us">Routed by severity to the right channel.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Unacknowledged alert</div><div>Sits, assumed handled.</div><div class="cmp-us">Escalates until a human owns it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Routine signals</div><div>Wake a person.</div><div class="cmp-us">Handled by automation via webhook.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Webhook security</div><div>Trust any POST.</div><div class="cmp-us">HMAC-signed, SSRF-protected.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Net effect</div><div>A channel people mute.</div><div class="cmp-us">A channel people still trust.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Alerting &amp; notifications — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Send fewer alerts. Trust the ones you send.</h2>
+      <p class="final-cta-sub">
+        Route across ten channels by severity, collapse a cascade into one notification, escalate until acknowledged, and
+        drive automation with signed webhooks — alerting built to fight fatigue, not feed it.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

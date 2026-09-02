@@ -1,0 +1,167 @@
+/* Reset + base typography */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg) !important;
+  color: var(--ink);
+}
+
+/* Disable all background animations */
+.hero-bg, .kg-bg, .kg-svg, [class*="bg-anim"], [class*="hero-bg"] {
+  animation: none !important;
+  transition: none !important;
+  display: none !important;
+}
+
+body {
+  font-family: var(--sans);
+  /* Lato doesn't have the Geist-specific stylistic sets; rely on its
+     default features for cleaner rendering. */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2A680D;
+}
+
+/* Faint gold grid background pattern */
+.grid-hero-bg {
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(to right, rgba(207, 198, 27, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(207, 198, 27, 0.06) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+/* Floating bottom-right action button */
+.floating-cta-pill {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #2A680D;
+  color: #ffffff;
+  padding: 14px 26px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 10px 25px -5px rgba(42, 104, 13, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.floating-cta-pill:hover {
+  background: #3B9112;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(44, 110, 62, 0.5);
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+.mono { font-family: var(--mono); font-feature-settings: "zero", "ss01"; }
+
+.container {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+section { position: relative; }
+
+.section {
+  padding: 88px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Full-bleed alternating band — applied to every other section so the design
+   uses the whole viewport width (not just the centered container) and the page
+   reads as banded slabs instead of one flat scroll. */
+.section-alt { background: var(--bg-1); }
+
+.section-tight { padding: 56px 0; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+}
+
+.eyebrow .bar {
+  width: 14px;
+  height: 1px;
+  background: var(--ink-3);
+}
+
+/* Heading weights tuned for Lato — its real weight stops are 100/300/400/700/900.
+   Use 700 for headings (Lato Bold) since 500 doesn't exist and the browser
+   synthesizes an in-between that looks blurry. */
+.h1 {
+  font-size: clamp(42px, 6vw, 70px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.h2 {
+  font-size: clamp(30px, 3.8vw, 46px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin: 0 0 6px;
+}
+
+.lede {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--ink-1);
+  max-width: 760px;
+  text-wrap: pretty;
+}
+
+/* Hero text block — H1 + lede share consistent widths across pages.
+   Use on the heading itself or on a wrapper. Replaces the per-page
+   inline `style="max-width: 920px"` overrides that caused width
+   inconsistency between pages and within the same page. */
+.hero-text { max-width: 920px; }
+.hero-text .lede { max-width: 720px; }
+
+.muted { color: var(--ink-2); }
+
+/* focus-visible — accessibility the prototype didn't spell out */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--rad);
+}

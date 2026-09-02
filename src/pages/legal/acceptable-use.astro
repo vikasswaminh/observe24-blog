@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-06-22';
+---
+<Base
+  title="Acceptable Use Policy — 24Observe"
+  description="What you may and may not do with 24observe. Keep your monitoring and security tooling lawful, authorized, and non-abusive."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · last updated {updated}</div>
+      <h1 class="h1">Acceptable Use Policy</h1>
+      <p class="lede" style="margin-top: 24px;">
+        24observe gives you monitoring, log/SIEM, and AI-assisted security tooling. This policy keeps
+        that power lawful and non-abusive. It applies to everyone using the hosted service, and breaching
+        it can get your account suspended or terminated. It supplements our
+        <a href="/legal/terms">Terms of Service</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">1. Authorization</h2>
+      <p>You may only point 24observe at systems you own or are explicitly authorized to monitor and analyze. Specifically, do not:</p>
+      <ul style="line-height: 1.8;">
+        <li>Configure probes against URLs, hosts, ports, or services you don't control or have written permission to test.</li>
+        <li>Use the platform to scan for vulnerabilities, brute-force credentials, or otherwise probe or attack third parties.</li>
+        <li>Ingest, search, or correlate logs and telemetry you have no lawful right to process.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">2. No abuse of the platform</h2>
+      <ul style="line-height: 1.8;">
+        <li>Don't set check intervals, ingest volumes, or request rates designed to overwhelm a target or our infrastructure. We enforce per-plan caps; chaining accounts to evade them is a breach.</li>
+        <li>Don't attempt to access another tenant's data, escalate privileges, or circumvent authentication, rate limits, or quotas.</li>
+        <li>Don't resell, sublicense, or white-label the hosted service. (You're free to fork and run the open-source distribution under its own terms.)</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">3. Content &amp; data restrictions</h2>
+      <ul style="line-height: 1.8;">
+        <li>Don't store secrets, payment-card data, government IDs, health records, or other regulated/highly-sensitive data where it isn't needed. Use the redaction features for anything that slips through.</li>
+        <li>Don't upload malware, illegal content, or material that infringes others' rights.</li>
+        <li>You are responsible for having a lawful basis to process any personal data you send us, and for honoring your own users' rights. See our <a href="/legal/dpa">Data Processing Addendum</a>.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">4. Agents &amp; automation</h2>
+      <p>
+        24observe is built to be driven by AI agents and automation via scoped tokens. You're responsible
+        for what your agents and integrations do under your credentials. Keep token scopes least-privilege,
+        rotate leaked tokens promptly, and don't use automation to evade plan limits or abuse third parties.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">5. Enforcement</h2>
+      <p>
+        We may investigate suspected violations and may suspend or terminate accounts that breach this
+        policy — immediately and without notice where there is risk of harm, abuse, or legal exposure.
+        Where practical we'll give notice and a chance to remediate. We will refund any unused prepaid
+        balance on a good-faith termination that isn't for serious abuse.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">6. Reporting</h2>
+      <p>
+        Report abuse or a suspected breach to <a href="mailto:abuse@24observe.com">abuse@24observe.com</a>.
+        Security vulnerabilities: <a href="mailto:security@24observe.com">security@24observe.com</a>
+        (see <a href="/.well-known/security.txt">/.well-known/security.txt</a>).
+      </p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro';
+
+const COMMITMENTS = [
+  {
+    title: 'Encrypted in transit and at rest',
+    body: 'Every byte that crosses the wire is over TLS 1.2+. Sensitive fields (custom request headers, signing secrets) are additionally encrypted at the application layer before being written to durable storage.',
+  },
+  {
+    title: 'Signed webhooks',
+    body: 'Every outbound webhook is cryptographically signed so your receiver can be certain it came from us, not a spoofer. You rotate the signing secret in one click.',
+  },
+  {
+    title: 'Tenant isolation by design',
+    body: 'Your data lives in a row that is filtered by your organization on every read. Cross-tenant access returns 404 — not 403 — so a foreign API token can\'t even confirm a resource exists. Verified end-to-end with a two-tenant integration test on every release.',
+  },
+  {
+    title: 'Permanent audit log',
+    body: 'Every account-mutating action — create, update, delete, role change, secret rotation — is recorded with the actor, the resource, and a timestamp. You can review and export your org\'s log at any time.',
+  },
+  {
+    title: 'Anti-abuse defenses at write time',
+    body: 'When you give us a URL — for a monitor target, an alert webhook, or an event-webhook subscription — we resolve it before the row is even saved and reject anything pointing at private, link-local, loopback, or cloud-metadata addresses. You see the rejection immediately (MONITOR_TARGET_UNSAFE / WEBHOOK_URL_UNSAFE) instead of discovering it at first-check time. Your monitoring tool can\'t be turned into a probe of your own internal network.',
+  },
+  {
+    title: 'Idempotency-Key body-mismatch detection',
+    body: 'Every mutating endpoint accepts an Idempotency-Key. Same key + same body returns the cached response (your agent\'s retry is safe). Same key + DIFFERENT body returns 409 IDEMPOTENCY_KEY_REPLAY_CONFLICT — surfacing a buggy retry loop immediately instead of silently doing the wrong thing.',
+  },
+  {
+    title: 'Event webhook signing + auto-disable',
+    body: 'Every event-webhook delivery is HMAC-SHA256 signed with your org\'s shared secret. Receivers verify with constant-time compare. We retry up to 5 times with exponential backoff + 30% jitter, then mark the delivery dead. A subscription that fails 10 deliveries in a row auto-disables — a misconfigured endpoint can\'t drain our queue or wake our on-call.',
+  },
+  {
+    title: 'Rotatable credentials',
+    body: 'Webhook signing secrets, API tokens, and heartbeat URLs can each be rotated independently from the dashboard. No support ticket required.',
+  },
+  {
+    title: 'Long-lived API tokens',
+    body: 'Personal access tokens for scripts and CI are stored as one-way hashes — even we can\'t recover the plaintext if you lose it. Show-once at creation.',
+  },
+  {
+    title: 'Runs where you can see it',
+    body: 'The full platform is self-hostable on infrastructure you control — same containers, same configuration we run. Your telemetry never has to leave your environment, and you can inspect exactly what the deployment does on your own hardware.',
+  },
+];
+
+const HONEST = [
+  {
+    title: 'No SOC 2 Type 2 yet',
+    body: 'We have not paid an auditor to certify our controls. If you need that letter today, we are not the fit. If you can wait or if your compliance team accepts source-available alternative audit, talk to us.',
+  },
+  {
+    title: 'No HIPAA BAA',
+    body: 'We will not sign a BAA today. Do not put PHI through our hosted service. Self-host if you need HIPAA-grade isolation.',
+  },
+  {
+    title: 'Single-region hosted today',
+    body: 'Our hosted SaaS runs in one region. If your data residency policy requires EU-only or India-only processing, self-host.',
+  },
+];
+---
+<Base
+  title="Security — how we protect your data | 24Observe"
+  description="What we promise about your data and our defenses, in plain English — encryption, tenant isolation, and the compliance gaps we have today, listed honestly."
+>
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Trust</div>
+      <h1 class="h1">Promises about your data, and the gaps we won't pretend aren't there.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        A monitoring tool sees a lot — your URLs, your alert routing, your incident history. Here's what we
+        commit to, what we will never do, and where our compliance posture is honestly incomplete.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Commitments</div>
+      <h2 class="h2">What we promise.</h2>
+      <div class="why-grid" style="grid-template-columns: repeat(2, 1fr);">
+        {COMMITMENTS.map((c) => (
+          <div class="why-card">
+            <div class="why-num mono">◉</div>
+            <h3 class="h3">{c.title}</h3>
+            <p>{c.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Honest gaps</div>
+      <h2 class="h2">Where we are not, today.</h2>
+      <p class="lede">
+        We will not pretend to have things we don't. If any of these is a hard requirement, we will tell you
+        we are not the fit before you sign.
+      </p>
+      <div class="why-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 32px;">
+        {HONEST.map((p) => (
+          <div class="why-card">
+            <div class="why-num mono">!</div>
+            <h3 class="h3">{p.title}</h3>
+            <p>{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow"><span class="bar"></span> Disclosures</div>
+      <h2 class="h2">If you find a vulnerability.</h2>
+      <p class="lede">
+        Email <a href="mailto:security@24observe.com">security@24observe.com</a> with details and (if you'd like)
+        a PGP key for response. We acknowledge within 1 business day, fix critical issues within 7 days, and
+        credit reporters publicly with their permission. See
+        <a href="/.well-known/security.txt">/.well-known/security.txt</a> for the full policy.
+      </p>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Read the source. Read the policies. Decide.</h2>
+      <p class="final-cta-sub">No NDA, no sales call gating, no "Talk to us for security details."</p>
+      <div class="final-cta-buttons">
+        <a href="/legal/privacy" class="btn btn-primary btn-lg">Privacy policy</a>
+        <a href="/legal/dpa" class="btn btn-ghost btn-lg">Data processing addendum</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,148 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Enterprise SSO (OIDC) — 24Observe"
+  description="Connect any OIDC-compliant identity provider — Okta, Azure AD, Google Workspace, Auth0, OneLogin — and let your team sign in to 24Observe with one click. One IdP per org, owner-configured, encrypted secrets, domain allowlisting."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · enterprise SSO</div>
+      <h1 class="h1">Sign in with your identity provider.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Enterprise SSO connects 24Observe to your existing identity provider over
+        generic <b>OpenID Connect</b>. Any spec-compliant IdP works — Okta,
+        Azure AD, Google Workspace, Auth0, OneLogin. Your team signs in through
+        the provider you already trust, users are provisioned automatically on
+        first login, and offboarding stays where it belongs: in your IdP.
+      </p>
+      <p style="margin-top: 16px; color: var(--ink-1); font-size: 15px;">
+        Each organization connects <b>one</b> IdP. Setup is owner-only and lives
+        in the dashboard under <b>Settings → Enterprise SSO (OIDC)</b>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Set it up in 3 steps</h2>
+      <ol style="line-height: 1.9;">
+        <li>
+          <b>Create an OIDC app at your IdP.</b> Register a new web application
+          and set its redirect URI to the single fixed 24Observe callback:
+          <pre class="code-block">https://api.24observe.com/api/v1/auth/sso/callback</pre>
+          The same callback is used for every organization — you only ever
+          register this one URI.
+        </li>
+        <li>
+          <b>Paste the connection into Settings.</b> Open
+          <a href="https://login.24observe.com" style="color: var(--accent);">login.24observe.com</a>
+          → <b>Settings → Enterprise SSO (OIDC)</b> and fill in your Issuer URL,
+          Client ID, and Client secret from the app you just created. Choose a
+          default role, set an optional domain allowlist, flip <b>Enabled</b> on,
+          and save.
+        </li>
+        <li>
+          <b>Share the sign-in URL with your team.</b> The dashboard shows a
+          team sign-in URL. Anyone you point at it lands on your IdP, and on
+          success arrives signed in to your org.
+        </li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Configuration fields</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>Issuer URL</b> — your IdP's OIDC issuer, e.g. <code>https://your-org.okta.com</code>. 24Observe discovers the IdP's endpoints and signing keys from here.</li>
+        <li><b>Client ID</b> — the public identifier of the OIDC app you registered.</li>
+        <li><b>Client secret</b> — write-only. It is stored <b>encrypted at rest</b> and never shown again. On update you may leave it blank to keep the existing secret.</li>
+        <li><b>Allowed email domain</b> (optional) — e.g. <code>acme.com</code>. When set, only identities whose email ends in <code>@acme.com</code> may sign in. Leave blank to allow any identity the IdP authenticates.</li>
+        <li><b>Default role</b> — the role granted to users provisioned on first login: <code>admin</code>, <code>member</code>, or <code>viewer</code>. SSO never grants <code>owner</code>.</li>
+        <li><b>Enabled</b> — the on/off toggle for the connection.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Values to copy into your IdP</h2>
+      <p>
+        The Settings page surfaces two values. Register the first in your IdP
+        app; hand the second to your team.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li>
+          <b>Redirect URI</b> — register this exactly, one fixed callback for
+          every org:
+          <pre class="code-block">https://api.24observe.com/api/v1/auth/sso/callback</pre>
+        </li>
+        <li>
+          <b>Team sign-in URL</b> — the entry point your team uses to start a
+          login:
+          <pre class="code-block">https://api.24observe.com/api/v1/auth/sso/&lt;your-org-slug&gt;/start</pre>
+        </li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">How a login works</h2>
+      <ol style="line-height: 1.9;">
+        <li>A user visits your team sign-in URL.</li>
+        <li>24Observe responds <code>302</code> to your IdP's authorization endpoint.</li>
+        <li>The user authenticates at the IdP and is sent back to the fixed callback.</li>
+        <li>We verify the returned <code>id_token</code> against the IdP's JWKS — signature, issuer, audience, and nonce all must match.</li>
+        <li>If an allowed email domain is configured, the identity's email must end in that domain or sign-in is refused.</li>
+        <li>We find-or-create the user, ensure they're a member of your org with the configured default role (existing members keep their current role), and issue a 24Observe session.</li>
+      </ol>
+      <p>
+        24Observe never stores the IdP's access or refresh token. We use the
+        verified <code>id_token</code> to establish identity, then issue our own
+        session — nothing more.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Azure AD</h2>
+      <p>
+        For Azure AD, use the <b>tenant-specific</b> issuer so audience and
+        issuer validation are unambiguous:
+      </p>
+      <pre class="code-block">https://login.microsoftonline.com/&lt;tenant-id&gt;/v2.0</pre>
+      <p>
+        The multi-tenant <code>/common</code> endpoint is intentionally not
+        supported — bind the connection to your tenant.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Management API</h2>
+      <p>
+        The same connection is manageable over the API with an owner PAT or a
+        full-access owner session. The secret is never returned on read.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>GET /api/v1/settings/sso</code> — returns the connection <b>without</b> the client secret, plus the team <code>loginUrl</code>.</li>
+        <li><code>PUT /api/v1/settings/sso</code> — create or update. Body: <code>{`{ issuer, clientId, clientSecret?, enabled?, defaultRole?, allowedDomain? }`}</code>. Omit <code>clientSecret</code> to keep the stored one.</li>
+        <li><code>DELETE /api/v1/settings/sso</code> — remove the connection.</li>
+      </ul>
+      <pre class="code-block">{`curl -X PUT https://api.24observe.com/api/v1/settings/sso \\
+  -H 'Authorization: Bearer obs_<owner>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "issuer": "https://acme.okta.com",
+    "clientId": "0oa1b2c3d4e5f6g7h8i9",
+    "clientSecret": "<from your IdP app>",
+    "defaultRole": "member",
+    "allowedDomain": "acme.com",
+    "enabled": true
+  }'
+
+# Read it back — note the absent secret and the surfaced loginUrl
+curl https://api.24observe.com/api/v1/settings/sso \\
+  -H 'Authorization: Bearer obs_<owner>'
+
+# Response (200)
+{
+  "issuer": "https://acme.okta.com",
+  "clientId": "0oa1b2c3d4e5f6g7h8i9",
+  "enabled": true,
+  "defaultRole": "member",
+  "allowedDomain": "acme.com",
+  "loginUrl": "https://api.24observe.com/api/v1/auth/sso/acme/start"
+}`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Security</h2>
+      <ul style="line-height: 1.9;">
+        <li>The login round-trip is CSRF-protected by an <b>HMAC-signed state cookie</b> paired with a per-login <b>nonce</b> that is checked back against the <code>id_token</code>.</li>
+        <li>The client secret is <b>encrypted at rest</b> and is never returned by any read endpoint or shown again in the dashboard.</li>
+        <li>The <code>id_token</code> is verified against the IdP's JWKS on every login — signature, issuer, audience, and nonce.</li>
+        <li>SSO provisions users <b>only</b> into the configured org and can <b>never</b> grant the <code>owner</code> role. Ownership stays a deliberate, human action.</li>
+        <li>The optional email-domain allowlist gates sign-in to a domain you control.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

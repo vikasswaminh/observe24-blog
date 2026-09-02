@@ -1,0 +1,769 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Send logs as JSON. Search them as JSON. — 24Observe Logs"
+  description="Ship structured log events with a PAT — JSON, NDJSON, or OTLP. Search by time + substring + service + level. Live-tail over SSE. Alert on patterns. No collector required."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · logs (v1)</div>
+      <h1 class="h1">Send logs as JSON. Search them as JSON.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        One bearer token, one HTTPS endpoint, the shape your code already produces.
+        No collector daemon, no proprietary query language, no per-GB markup that doubles
+        your bill the month traffic actually grows.
+      </p>
+      <p style="margin-top: 16px; color: var(--ink-1); font-size: 15px;">
+        Ship with <code>curl</code>, an OTel SDK, Vector, or Fluent Bit. Search by time +
+        substring + service + level. Live-tail over SSE — events land in your terminal
+        under 100 ms after they hit ingest. Pattern-match a threshold, get paged.
+        Same auth, audit, and multi-tenancy as the rest of the API.
+      </p>
+
+      <p style="background: var(--bg-2); border: 1px solid var(--line); padding: 12px 16px; border-radius: 8px; font-size: 13px; color: var(--ink-1); margin-top: 24px;">
+        <b style="color: var(--ink);">v1 scope.</b> Ingest + search + live tail +
+        log-based alerts + auto-facet extraction ship now. R2 archival,
+        saved searches, and dashboards are queued for v1.1+.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Endpoints</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>POST /api/v1/logs/ingest</code> — JSON object, JSON array (≤500), or NDJSON. PAT bearer auth.</li>
+        <li><code>GET /api/v1/logs/search</code> — time-range + substring + service + level. Cursor-paginated.</li>
+        <li><code>GET /api/v1/logs/tail</code> — Server-Sent Events. Same filters; tails forward from "now."</li>
+        <li><code>GET / POST / PATCH / DELETE /api/v1/log-alerts</code> — manage alert rules.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Ingest — event shape</h2>
+      <pre class="code-block">{`{
+  "ts": "2026-05-10T12:00:00Z",         // optional — defaults to now if absent
+  "level": "info",                       // trace | debug | info | warn | error | fatal
+  "service": "checkout",                 // any string ≤ 255
+  "source": "stdout",                    // optional; e.g. "stdout", "syslog", "file"
+  "host": "web-1",                       // optional
+  "message": "checkout completed",       // required, ≤ 8KB
+  "attrs": { "user_id": 42, "amount": 19.99 }  // optional, ≤ 4KB serialized
+}`}</pre>
+      <p>
+        Server stamps <code>org_id</code> from your PAT — agents <b>cannot</b> spoof an origin
+        org by lying in the body. <code>ingest_pat_id</code> and <code>client_ip</code> are
+        captured server-side for forensic queries.
+      </p>
+
+      <h2 class="h2" style="margin-top: 32px;">PAT scopes</h2>
+      <p>
+        Ingest requires the <code>logs:write</code> scope; search + tail require <code>logs:read</code>.
+        A wildcard PAT (<code>scopes: ["*"]</code>) covers both — that's the default for backward-compat.
+        For agent least-privilege, mint a narrow PAT (see <a href="/docs/api#authentication">/docs/api</a>):
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_<admin>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "aeoniti-log-shipper",
+    "scopes": ["logs:write"],
+    "dailyLogBytesLimit": 104857600
+  }'
+# Token only valid for /logs/ingest. Cap = 100 MB/day on this PAT.
+# Wrong-scope call returns 403 PAT_SCOPE_INSUFFICIENT.`}</pre>
+
+      <h2 class="h2" style="margin-top: 32px;">Limits</h2>
+      <ul style="line-height: 1.9;">
+        <li>Per request body: 1 MB hard cap.</li>
+        <li>Per request events: ≤ 500 in the array form.</li>
+        <li>Per event message: ≤ 8 KB. Per event attrs (JSON-serialized): ≤ 4 KB.</li>
+        <li>Per IP rate: 300 ingest calls / minute (shared across API instances, not per-machine).</li>
+        <li><b>Per-org monthly volume cap</b> (bytes): Free 1 GB · Startup 10 GB · Pro 100 GB. <code>429 PLAN_LIMIT_LOGS_VOLUME</code> when exhausted.</li>
+        <li><b>Per-PAT daily volume cap</b> (optional, set at PAT creation): <code>dailyLogBytesLimit</code>. <code>429 PAT_DAILY_LIMIT_EXCEEDED</code> on trip. Resets UTC midnight.</li>
+        <li>Server retention: 30 days (v1 default; per-plan retention queued).</li>
+      </ul>
+
+      <h2 id="wire-compression" class="h2" style="margin-top: 48px;">Wire compression</h2>
+      <p>
+        Set <code>Content-Encoding: gzip</code>, <code>deflate</code>, or
+        <code>br</code> on the request and send the compressed body. The
+        ingest endpoint decompresses natively — no per-customer plan
+        change, no special header. Measured on a 400-event pino batch
+        against production:
+      </p>
+      <p>
+        Compression is dramatic on structured logs — repetitive JSON keys and timestamps collapse
+        hard, so a busy batch routinely arrives at a small fraction of its raw size. <code>br</code>
+        (brotli) squeezes hardest, with <code>gzip</code> close behind and supported everywhere.
+      </p>
+      <p>
+        For a high-volume pipeline that's the difference between shipping tens of gigabytes a day and
+        shipping a sliver of that — a meaningfully smaller bandwidth bill on your side, and batches
+        that arrive faster end-to-end because there's simply less to upload.
+      </p>
+      <p>
+        <b>Per-shipper config — one line each.</b>
+      </p>
+      <p style="margin-top: 12px; margin-bottom: 4px;"><b>Vector</b> (TOML):</p>
+      <pre class="code-block">{`[sinks.observe24]
+type        = "http"
+inputs      = ["my_logs"]
+uri         = "https://api.24observe.com/api/v1/logs/ingest"
+compression = "gzip"
+[sinks.observe24.encoding]
+codec = "json"
+[sinks.observe24.auth]
+strategy = "bearer"
+token    = "obs_..."`}</pre>
+      <p style="margin-top: 12px; margin-bottom: 4px;"><b>Fluent Bit</b> (HTTP output):</p>
+      <pre class="code-block">{`[OUTPUT]
+    Name      http
+    Match     *
+    Host      api.24observe.com
+    Port      443
+    URI       /api/v1/logs/ingest
+    Format    json
+    compress  gzip
+    Header    Authorization Bearer obs_...
+    tls       on`}</pre>
+      <p style="margin-top: 12px; margin-bottom: 4px;"><b>OpenTelemetry Collector</b> (otlphttp exporter):</p>
+      <pre class="code-block">{`exporters:
+  otlphttp/24observe:
+    endpoint: https://api.24observe.com/api/v1/otlp
+    encoding: json
+    compression: gzip
+    headers:
+      authorization: "Bearer obs_..."`}</pre>
+      <p style="margin-top: 12px; margin-bottom: 4px;"><b>curl</b>:</p>
+      <pre class="code-block">{`gzip -c batch.json | curl -X POST https://api.24observe.com/api/v1/logs/ingest \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -H 'Content-Encoding: gzip' \\
+  --data-binary @-`}</pre>
+      <p>
+        If the body is truncated or corrupt, the response is
+        <code>400 BAD_COMPRESSED_BODY</code> — retry with a fresh
+        payload. The <a href="/docs/collector"><code>observe24-collector</code></a>
+        ships with <code>compression: gzip</code> enabled by default;
+        no configuration needed if you're using it.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">curl — single event</h2>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/logs/ingest \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{"level":"info","service":"my-app","message":"hello from my agent"}'
+
+# Response (202)
+{ "accepted": 1, "rejected": [], "bytesAccounted": 87 }`}</pre>
+
+      <h2 class="h2" style="margin-top: 32px;">curl — batch</h2>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/logs/ingest \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '[
+    {"level":"info","service":"web","message":"GET /healthz 200"},
+    {"level":"warn","service":"web","message":"slow query 1.2s","attrs":{"query":"select_users"}},
+    {"level":"error","service":"worker","message":"job failed","attrs":{"job_id":"abc123"}}
+  ]'`}</pre>
+
+      <h2 class="h2" style="margin-top: 32px;">curl — NDJSON (newline-delimited)</h2>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/logs/ingest \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/x-ndjson' \\
+  --data-binary $'{"level":"info","service":"web","message":"line1"}\\n{"level":"warn","service":"web","message":"line2"}'`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">TypeScript (Node 22)</h2>
+      <pre class="code-block">{`const PAT = process.env.OBSERVE24_PAT!;
+
+async function ship(events: object[]) {
+  const r = await fetch('https://api.24observe.com/api/v1/logs/ingest', {
+    method: 'POST',
+    headers: {
+      authorization: \`Bearer \${PAT}\`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(events),
+  });
+  if (!r.ok) throw new Error(\`ingest \${r.status}: \${await r.text()}\`);
+  return r.json();
+}
+
+await ship([{ level: 'info', service: 'my-app', message: 'started', attrs: { pid: process.pid } }]);`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Python</h2>
+      <pre class="code-block">{`import os, httpx
+
+PAT = os.environ['OBSERVE24_PAT']
+
+def ship(events):
+    r = httpx.post(
+        'https://api.24observe.com/api/v1/logs/ingest',
+        headers={'authorization': f'Bearer {PAT}', 'content-type': 'application/json'},
+        json=events,
+        timeout=10,
+    )
+    r.raise_for_status()
+    return r.json()
+
+ship([{'level': 'info', 'service': 'my-app', 'message': 'started'}])`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">OpenTelemetry (OTLP/HTTP)</h2>
+      <p>
+        Every official OTel SDK can ship logs to us directly — no agent, no
+        translation layer. Point your SDK at the OTLP endpoint and you're done.
+      </p>
+      <pre class="code-block">{`# Any OTel-instrumented service (Java / Python / Node / Go / .NET / Ruby / Rust)
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://api.24observe.com/api/v1/otlp
+export OTEL_EXPORTER_OTLP_HEADERS=authorization=Bearer obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+export OTEL_LOGS_EXPORTER=otlp`}</pre>
+      <ul style="line-height: 1.9;">
+        <li>Endpoint: <code>POST /api/v1/otlp/v1/logs</code> (the <code>/v1/logs</code> suffix is appended by the SDK).</li>
+        <li>Content-Type: <code>application/json</code> only in v1. For <code>http/protobuf</code>, run the <a href="/docs/collector">24observe collector</a> as a translator.</li>
+        <li>Body limit: 4 MB per export (matches OTel Collector default).</li>
+        <li>Auth: PAT with <code>logs:write</code> scope; same quota + per-PAT byte cap as <code>/logs/ingest</code>.</li>
+        <li>Response: empty <code>{`{}`}</code> on full success; <code>{`{"partialSuccess":{"rejectedLogRecords":N,"errorMessage":"..."}}`}</code> when some records were dropped (e.g. attrs &gt; 4KB). HTTP 200 in both cases per OTLP spec.</li>
+        <li>Severity mapping: OTLP <code>severityNumber</code> 1-4 → trace, 5-8 → debug, 9-12 → info, 13-16 → warn, 17-20 → error, 21-24 → fatal. Falls back to <code>severityText</code> if number is missing.</li>
+        <li>Resource attributes promoted to top-level columns: <code>service.name</code> → <code>service</code>, <code>host.name</code> → <code>host</code>, <code>telemetry.sdk.name</code> → <code>source</code>. Everything else lands in <code>attrs</code>.</li>
+        <li>Trace context preserved: <code>traceId</code> + <code>spanId</code> flow into <code>attrs.trace_id</code> / <code>attrs.span_id</code> so you can correlate logs with traces (when we ship Tracing v1).</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">24observe collector (Syslog · Fluent Bit)</h2>
+      <p>
+        For sources that don't speak OTLP natively — legacy syslog appliances
+        or Fluent Bit / Fluentd pipelines — run our pre-configured
+        <a href="/docs/collector">collector image</a>. Single Docker container,
+        forwards everything as OTLP to the endpoint above.
+      </p>
+
+      <h2 id="heroku-log-drains" class="h2" style="margin-top: 48px;">Heroku log drains</h2>
+      <p>
+        Heroku ships every app log line — dyno output, router events, deploys —
+        to a drain URL of your choice. Add ours to start receiving them; no
+        SDK install, no buildpack changes.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Mint a dedicated PAT in <a href="/dashboard/settings" class="text-accent">Settings → API tokens</a> with scope <code>logs:write</code> only and a sensible daily byte cap. A drain URL leaking into an ops doc shouldn't grant full account access.</li>
+        <li>Add the drain on your Heroku app:</li>
+      </ol>
+      <pre class="code-block">{`heroku drains:add \\
+  https://api.24observe.com/api/v1/logs/ingest/heroku/obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \\
+  --app my-heroku-app`}</pre>
+      <p>
+        Heroku starts forwarding immediately. Inside ~2 seconds you'll see
+        events arrive with <code>source=heroku</code>, <code>service=&lt;your
+        heroku app name&gt;</code>, and the dyno identifier
+        (<code>web.1</code>, <code>worker.2</code>, etc.) in <code>attrs.proc_id</code>.
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><b>Format:</b> octet-counted RFC 5424 syslog (<code>application/logplex-1</code>) — parsed server-side, no setup on your end.</li>
+        <li><b>Severity mapping:</b> syslog severity → log level (debug/info/warn/error/fatal). Heroku platform messages (router 5xx, dyno crashes) come in at the right severity automatically.</li>
+        <li><b>Auth:</b> the PAT in the URL is the only credential — protect it like a password. Revoke via the dashboard if it leaks; a new drain URL replaces it cleanly.</li>
+        <li><b>Quota:</b> same monthly + per-PAT-daily byte caps as the regular ingest endpoint.</li>
+      </ul>
+
+      <h2 id="vercel-log-drains" class="h2" style="margin-top: 48px;">Vercel log drains</h2>
+      <p>
+        Pull every Next.js / SvelteKit / Astro deployment's request logs,
+        function logs, edge logs, and build output into 24observe with one
+        URL. No edge function to deploy, no custom hooks.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Mint a dedicated PAT with scope <code>logs:write</code> and a daily byte cap (same advice as Heroku above).</li>
+        <li>In the Vercel dashboard → <b>Team Settings → Log Drains → Add Log Drain</b>, choose <b>NDJSON</b> as the delivery format and paste:</li>
+      </ol>
+      <pre class="code-block">{`https://api.24observe.com/api/v1/logs/ingest/vercel/obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`}</pre>
+      <p>
+        Pick which projects + sources (static / lambda / edge / build) the
+        drain should cover, hit save, and Vercel starts batching events to
+        you within a minute. Events arrive with <code>source=vercel</code>,
+        <code>service=&lt;your-project-name&gt;</code>, and the following
+        Vercel metadata promoted to <code>attrs</code> so you can facet on it:
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>request_id</code> — Vercel's <code>x-vercel-id</code> per request; correlate function logs with the originating HTTP request.</li>
+        <li><code>status_code</code> — for runtime/edge logs that wrap a response.</li>
+        <li><code>vercel_source</code> — one of <code>lambda</code>, <code>edge</code>, <code>static</code>, <code>build</code>, <code>external</code>.</li>
+        <li><code>deployment_id</code> — pin a log to a specific Vercel deployment.</li>
+        <li><code>path</code> — the URL path that produced the log line.</li>
+      </ul>
+      <p>
+        Level inference: status &ge; 500 → <code>error</code>, status &ge; 400
+        → <code>warn</code>, message starting with <code>ERROR</code> /
+        <code>Error</code> / <code>FATAL</code> → <code>error</code>,
+        everything else → <code>info</code>. Override server-side by
+        emitting structured JSON from your function and parsing the level
+        client-side via a saved KQL search.
+      </p>
+
+      <h2 id="aws-cloudwatch-logs" class="h2" style="margin-top: 48px;">AWS CloudWatch Logs</h2>
+      <p>
+        Pipe every Lambda function, ECS task, EKS pod, RDS instance, or
+        anything else logging to CloudWatch directly into 24observe via a
+        Kinesis Firehose subscription. No SDK install, no agent on the
+        instance — CloudWatch already has your logs, Firehose forwards
+        them to a URL.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Mint a dedicated PAT with scope <code>logs:write</code> only and a daily byte cap (CloudWatch can be high-volume; protect the blast radius).</li>
+        <li>Create a Kinesis Data Firehose delivery stream in the AWS console (or via <code>aws firehose create-delivery-stream</code>):
+          <ul>
+            <li>Source: <b>Direct PUT</b></li>
+            <li>Destination: <b>HTTP Endpoint</b></li>
+            <li>HTTP endpoint URL: <code>https://api.24observe.com/api/v1/logs/ingest/aws-firehose/&lt;your-PAT&gt;</code></li>
+            <li>Content encoding: <b>GZIP</b></li>
+            <li>Access key / S3 backup bucket: configure per AWS best practices.</li>
+          </ul>
+        </li>
+        <li>On the CloudWatch log group you want to ship, add a <b>subscription filter</b>:
+          <pre class="code-block">{`aws logs put-subscription-filter \\
+  --log-group-name "/aws/lambda/my-function" \\
+  --filter-name "ship-to-24observe" \\
+  --filter-pattern "" \\
+  --destination-arn "arn:aws:firehose:us-east-1:<account>:deliverystream/observe24-stream" \\
+  --role-arn "arn:aws:iam::<account>:role/CloudWatchLogsFirehoseRole"`}</pre>
+        </li>
+      </ol>
+      <p>
+        Events arrive with <code>source=aws-cloudwatch</code>,
+        <code>service=&lt;your log group name&gt;</code>, the log stream
+        in <code>host</code>, plus these CloudWatch attrs:
+      </p>
+      <ul style="line-height: 1.9;">
+        <li><code>cloudwatch_event_id</code> — CloudWatch's per-event id for dedup.</li>
+        <li><code>aws_account_id</code> — owning account.</li>
+        <li><code>log_stream</code> — duplicated from <code>host</code> for KQL search ergonomics.</li>
+      </ul>
+      <p>
+        Level inference: messages prefixed with <code>ERROR</code> / <code>WARN</code> /
+        <code>FATAL</code> / <code>DEBUG</code> (case-insensitive) get the
+        matching level; everything else lands as <code>info</code>. Lambda
+        runtime's standard prefixes work out of the box.
+      </p>
+
+      <h2 id="docker-daemon-logs" class="h2" style="margin-top: 48px;">Docker daemon logs</h2>
+      <p>
+        Docker's built-in syslog driver ships every container's stdout/stderr
+        to the 24observe collector — no per-container agent, no log file
+        scraping. The collector's RFC5424 receiver listens on TCP 5414.
+      </p>
+      <p>
+        <b>Daemon-wide</b> (every container on the host): in
+        <code>/etc/docker/daemon.json</code>:
+      </p>
+      <pre class="code-block">{`{
+  "log-driver": "syslog",
+  "log-opts": {
+    "syslog-address": "tcp://collector.local:5414",
+    "syslog-format":  "rfc5424",
+    "tag":            "{{.Name}}/{{.ImageName}}"
+  }
+}`}</pre>
+      <p>
+        <b>Per-container</b> (selective opt-in, no daemon restart):
+      </p>
+      <pre class="code-block">{`docker run --log-driver=syslog \\
+  --log-opt syslog-address=tcp://collector.local:5414 \\
+  --log-opt syslog-format=rfc5424 \\
+  --log-opt tag="my-app" \\
+  my-app:latest`}</pre>
+      <p>
+        Container name + image flow through as the syslog tag and surface
+        in <code>service</code> on the ingested rows. Restart of the Docker
+        daemon required for the daemon.json variant; the per-container flag
+        takes effect on the next <code>docker run</code>.
+      </p>
+
+      <h2 id="systemd-journald" class="h2" style="margin-top: 48px;">systemd-journald</h2>
+      <p>
+        For systemd hosts, the OTel Collector Contrib distribution (which our
+        collector image is built on) ships with a <code>journald</code>
+        receiver — point it at <code>/var/log/journal</code> and every unit's
+        output flows in with severity, unit name, and PID preserved as
+        structured attrs.
+      </p>
+      <p>
+        Drop this override config alongside the bundled config:
+      </p>
+      <pre class="code-block">{`# /etc/otelcol/journald.yaml
+receivers:
+  journald:
+    directory: /var/log/journal
+    # Optional: filter to specific systemd units. Omit to ship everything.
+    units:
+      - nginx
+      - my-app
+    priority: info
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp, syslog/rfc5424, syslog/rfc3164, fluentforward, journald]`}</pre>
+      <p>Then run the collector with the journal mounted and both configs:</p>
+      <pre class="code-block">{`# Pre-create the persistent-queue directory with the collector's UID
+# so the file_storage extension can write to it (the container runs
+# as non-root; the volume inherits root ownership otherwise).
+mkdir -p /var/lib/observe24-collector && chown 10001:10001 /var/lib/observe24-collector
+
+docker run -d --name observe24-collector \\
+  -v /var/log/journal:/var/log/journal:ro \\
+  -v /etc/machine-id:/etc/machine-id:ro \\
+  -v /etc/otelcol/journald.yaml:/etc/otelcol-contrib/override.yaml:ro \\
+  -v /var/lib/observe24-collector:/var/lib/otelcol/file_storage \\
+  -e OBSERVE24_PAT=obs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \\
+  -p 5414:5414 \\
+  observe24/collector:latest \\
+  --config /etc/otelcol-contrib/config.yaml \\
+  --config /etc/otelcol-contrib/override.yaml`}</pre>
+      <p style="font-size: 14px; color: var(--ink-2); margin-top: 8px;">
+        The <code>file_storage</code> volume keeps a persistent on-disk
+        queue so a collector restart doesn't lose buffered events. ~512&nbsp;MiB
+        is plenty for normal workloads.
+      </p>
+      <p>
+        The <code>/etc/machine-id</code> mount is required by journald to
+        identify the host. Read-only mounts are sufficient — the collector
+        never writes to the journal.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Vector</h2>
+      <p>
+        See <a href="https://github.com/vikasswaminh/observe24/blob/main/infra/vector/example.toml">infra/vector/example.toml</a>
+        in the repo for a working example. Key snippet:
+      </p>
+      <pre class="code-block">{`[sources.app_logs]
+type = "file"
+include = ["/var/log/myapp/*.log"]
+
+[transforms.parse_json]
+type = "remap"
+inputs = ["app_logs"]
+source = """
+. = parse_json!(string!(.message))
+.service = "myapp"
+"""
+
+[sinks.observe24]
+type = "http"
+inputs = ["parse_json"]
+uri = "https://api.24observe.com/api/v1/logs/ingest"
+encoding.codec = "ndjson"
+request.headers.Authorization = "Bearer \${OBSERVE24_PAT}"
+request.headers.Content-Type = "application/x-ndjson"
+batch.max_events = 500
+batch.timeout_secs = 2`}</pre>
+
+      <h2 id="search" class="h2" style="margin-top: 48px;">Search</h2>
+      <pre class="code-block">{`curl 'https://api.24observe.com/api/v1/logs/search?q=timeout&service=web&level=error&limit=200' \\
+  -H 'Authorization: Bearer obs_...'
+
+# Response
+{
+  "events": [
+    { "ts": "2026-05-10T12:00:00.123Z", "level": "error", "service": "web",
+      "host": "web-1", "source": "stdout",
+      "message": "upstream timeout after 30s",
+      "attrs": { "request_id": "abc" } }
+  ],
+  "nextCursor": "1715342400123:web",
+  "tookMs": 47
+}
+
+# Paginate by passing nextCursor as ?cursor=...`}</pre>
+      <h2 class="h2" style="margin-top: 48px;">Structured query (KQL-lite)</h2>
+      <p>
+        For anything beyond a single-string substring, pass <code>?query=...</code>
+        instead of (or alongside) <code>q</code>. KQL-lite is a small grammar an
+        agent can emit programmatically: <code>field:value</code>, <code>AND</code>
+        / <code>OR</code> / <code>NOT</code>, parentheses for grouping, wildcards,
+        and quoted values for terms with spaces. Whitelisted fields:
+        <code>service</code>, <code>level</code>, <code>host</code>,
+        <code>source</code>, <code>message</code>.
+      </p>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`# All 5xx errors in the checkout service over the last 24h
+?query=level:error AND service:checkout
+   &from=2026-05-24T00:00:00Z
+
+# Error OR warn in any "api"-prefixed service, EXCLUDING the health probe
+?query=(level:error OR level:warn) AND service:api* NOT message:"health check"
+
+# Bare terms = substring on message (same as ?q=...)
+?query=ECONNREFUSED
+
+# Quote values with spaces, escape with \\\\ inside a CLI
+?query=message:"connection refused"
+
+# Wildcards on field values (LIKE on the column)
+?query=host:web-*
+
+# Combine with ?service= / ?level= / ?q= — they all AND together`}</pre>
+      <p>
+        Parse errors return <code>400 KQL_PARSE_ERROR</code> with a message
+        indicating the position of the bad token. Unknown fields are rejected at
+        parse time (you can't query <code>org_id</code> or <code>attrs.*</code>
+        — those are intentionally outside the language).
+      </p>
+
+      <p>
+        <b>Default time window:</b> 1h back from <code>to</code> (or now) when <code>from</code> is
+        omitted. Hard 5s query timeout. Cursor-paginated to skip the cost of OFFSET.
+      </p>
+
+      <h2 id="error-tracking" class="h2" style="margin-top: 48px;">Error tracking</h2>
+      <p>
+        Stack-trace fingerprinting on log events. Stash a million
+        occurrences of <code>TypeError: x is undefined</code> as one row
+        with a count, first-seen, last-seen, and a sample message —
+        Sentry-lite, bundled, no extra meter.
+      </p>
+      <p>
+        The scheduler scans the last 6 min of logs every 5 min, extracts
+        a stable signature from each stack trace (normalized header + 1-3
+        frames, FNV-1a 64-bit hashed), and upserts one row per
+        <code>(org, signature)</code>. Languages auto-detected: JS / Node,
+        Python tracebacks, Java / Kotlin / JVM, Go panic, and generic
+        ERROR / FATAL prefixes.
+      </p>
+      <pre class="code-block">{`# List open errors
+curl 'https://api.24observe.com/api/v1/log-errors?status=open&limit=20' \\
+  -H 'Authorization: Bearer obs_...'
+
+# Response
+[
+  {
+    "id": 7,
+    "errorType": "TypeError",
+    "signature": "TypeError | at processUser (user.js) | at handle (server.js)",
+    "service": "api",
+    "sampleMessage": "TypeError: Cannot read properties of undefined ...",
+    "totalCount": 14821,
+    "firstSeen": "2026-05-27T08:14:00.000Z",
+    "lastSeen":  "2026-05-28T13:55:12.000Z",
+    "resolvedAt": null, "resolvedByUserId": null, "ignored": false
+  },
+  ...
+]
+
+# Mark resolved
+curl -X PATCH https://api.24observe.com/api/v1/log-errors/7 \\
+  -H 'Authorization: Bearer obs_...' -H 'Content-Type: application/json' \\
+  -d '{"resolved": true}'
+
+# Mark known noise (hides from default Open list)
+curl -X PATCH https://api.24observe.com/api/v1/log-errors/7 \\
+  -H 'Authorization: Bearer obs_...' -H 'Content-Type: application/json' \\
+  -d '{"ignored": true}'`}</pre>
+      <ul style="line-height: 1.9;">
+        <li><b>Signature stability</b> — line numbers, column numbers, and absolute paths are stripped. Same logical error from different deploys / runs / stack-depths collapses to one row.</li>
+        <li><b>No auto-resolve</b> — same rule as log alerts. Operators decide when an error is fixed; new occurrences increment the count but do NOT clear a resolved row.</li>
+        <li><b>Ignore</b> — for known noise (e.g. health-check 4xx, intentional test errors). Hidden from the default Open list, still counted.</li>
+        <li><b>Filters</b> — <code>?status=open|resolved|ignored|all</code>, <code>?service=...</code>, <code>?limit=...</code> (max 200).</li>
+        <li><b>Audit log</b> — every resolve / ignore mutation is recorded with actor + IP via the standard audit pipeline.</li>
+      </ul>
+
+      <h2 id="log-derived-metrics" class="h2" style="margin-top: 48px;">Log-derived metrics</h2>
+      <p>
+        Save any log query as a chartable, alertable time-series. The metric
+        is just <code>count(matching events per bucket)</code> — computed on
+        demand against the same store the search endpoint queries, so it
+        can't lag behind real log data.
+      </p>
+      <pre class="code-block">{`# Create a metric
+curl -X POST https://api.24observe.com/api/v1/log-metrics \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "5xx in checkout",
+    "query": "5xx",
+    "service": "checkout",
+    "level": "error",
+    "bucketSec": 300
+  }'
+
+# Fetch the series (last 6h by default, zero-filled buckets)
+curl 'https://api.24observe.com/api/v1/log-metrics/42/series?from=2026-05-28T00:00:00Z' \\
+  -H 'Authorization: Bearer obs_...'
+
+# Response
+{
+  "metricId": 42,
+  "bucketSec": 300,
+  "points": [
+    { "ts": "2026-05-28T00:00:00.000Z", "value": 12 },
+    { "ts": "2026-05-28T00:05:00.000Z", "value": 8 },
+    ...
+  ],
+  "tookMs": 41
+}`}</pre>
+      <ul style="line-height: 1.9;">
+        <li><b>Bucket sizes:</b> 60 / 300 / 900 / 1800 / 3600 seconds. Picked at create time, overridable per <code>/series</code> call.</li>
+        <li><b>Zero-fill:</b> empty buckets return <code>value: 0</code> rather than being absent — charts stay flat instead of jagged on quiet windows.</li>
+        <li><b>Default window:</b> 6h back from <code>to</code> when <code>from</code> is omitted.</li>
+        <li><b>Cost:</b> CRUD is free; <code>/series</code> is rate-limited at 60/min/IP and 5s hard timeout. The dashboard auto-refreshes each chart every 60s.</li>
+        <li><b>Alerting:</b> roadmap. Today you can mirror the metric's filter into a log alert (same query/service/level fields). Direct "alert when this metric &gt; N" is a follow-up.</li>
+      </ul>
+
+      <h2 id="pattern-grouping" class="h2" style="margin-top: 48px;">Pattern grouping</h2>
+      <p>
+        Group log messages by template, not exact string. The dashboard's
+        Patterns tab (or <code>GET /api/v1/logs/patterns</code>) returns the
+        top message templates by count after normalizing high-cardinality
+        tokens — so 10,000 lines that differ only in a timestamp and a UUID
+        collapse to one row.
+      </p>
+      <pre class="code-block">{`curl 'https://api.24observe.com/api/v1/logs/patterns?service=checkout&limit=20' \\
+  -H 'Authorization: Bearer obs_...'
+
+# Response (top-K templates by count, descending)
+{
+  "patterns": [
+    {
+      "templateHash": "14782...",
+      "template": "ERROR DB query took <NUM>ms for user_id=<NUM>",
+      "sample": "ERROR DB query took 2451ms for user_id=8821",
+      "service": "checkout",
+      "level": "error",
+      "count": 11423,
+      "firstSeen": "2026-05-27 12:00:00.000",
+      "lastSeen": "2026-05-28 11:59:31.420"
+    },
+    ...
+  ],
+  "tookMs": 1830,
+  "scannedRows": 14210
+}`}</pre>
+      <p>Normalized tokens:</p>
+      <ul style="line-height: 1.9;">
+        <li><code>&lt;TS&gt;</code> — ISO-8601 timestamps</li>
+        <li><code>&lt;UUID&gt;</code> — RFC 4122 UUIDs</li>
+        <li><code>&lt;IP&gt;</code> — IPv4 addresses</li>
+        <li><code>&lt;HEX&gt;</code> — hex blobs (≥ 8 chars, common for ids / signatures)</li>
+        <li><code>&lt;STR&gt;</code> — single- or double-quoted strings</li>
+        <li><code>&lt;NUM&gt;</code> — plain integers (applied last so it doesn't eat parts of the above)</li>
+      </ul>
+      <p>
+        Same filter ergonomics as <code>/search</code>:
+        <code>?service=...</code>, <code>?level=...</code>, <code>?q=...</code>
+        (pre-normalization substring match), <code>?from=...</code> /
+        <code>?to=...</code>. Default window 1h back. Hard 8s server timeout;
+        rate limit 30/min/IP (heavier per-call than search).
+      </p>
+
+      <h2 id="auto-extracted-facets" class="h2" style="margin-top: 48px;">Auto-extracted facets</h2>
+      <p>
+        Every search response now includes a <code>facets</code> object —
+        top-K key/value/count rollups over the visible result page. Top-level
+        columns (<code>level</code>, <code>service</code>, <code>host</code>,
+        <code>source</code>) plus any primitive-typed key in each row's
+        <code>attrs</code> blob become a facet. No schema declaration, no
+        index config — ship JSON, the keys auto-surface.
+      </p>
+      <pre style="background: var(--bg-1); border: 1px solid var(--line); color: var(--ink); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; font-family: var(--mono);">{`# Response shape (truncated)
+{
+  "events": [...],
+  "nextCursor": "...",
+  "tookMs": 47,
+  "facets": {
+    "level":   [{"value": "info", "count": 142}, {"value": "error", "count": 11}],
+    "service": [{"value": "checkout", "count": 89}, {"value": "api", "count": 64}],
+    "user_id": [{"value": "u_a8f", "count": 23}, {"value": "u_b14", "count": 9}, ...],
+    "method":  [{"value": "POST", "count": 88}, {"value": "GET", "count": 65}],
+    "status":  [{"value": "200", "count": 134}, {"value": "500", "count": 11}]
+  }
+}`}</pre>
+      <p>
+        Rules: top 20 keys (ranked by total occurrences), top 10 values per
+        key, values capped at 256 chars. Fields where every row has the same
+        value are suppressed (nothing to facet). Nested objects and arrays
+        in <code>attrs</code> are skipped — only string / number / boolean
+        primitives become chips. High-entropy IDs (<code>trace_id</code>,
+        <code>request_id</code>) are block-listed so they don't pollute the
+        panel.
+      </p>
+      <p>
+        Click a chip in the dashboard sidebar to filter by that
+        <code>key:value</code>; the clause is appended to your KQL
+        <code>query</code> with AND. Combine multiple chips to drill in.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Live tail (SSE)</h2>
+      <pre class="code-block">{`# curl
+curl -N 'https://api.24observe.com/api/v1/logs/tail?service=web&level=error' \\
+  -H 'Authorization: Bearer obs_...'
+
+# JS / browser EventSource (no Authorization header support; use ?token=)
+const es = new EventSource(\`https://api.24observe.com/api/v1/logs/tail?token=\${PAT}&service=web\`);
+es.addEventListener('log', (e) => console.log(JSON.parse(e.data)));
+es.addEventListener('timeout', () => es.close());   // 30-min server cap`}</pre>
+      <p>
+        <b>Real-time:</b> events are pushed the moment they're accepted by
+        <code>/ingest</code> — typically &lt; 100 ms end-to-end. On connect,
+        the last ~5 s of events are replayed from the event store so you see
+        recent context immediately. A <code>: hb</code> SSE comment is sent
+        every 15 s so intermediaries don't idle-close.
+        Hard 30-minute connection cap; clients reconnect.
+      </p>
+      <p>
+        Tail filter (<code>q</code> / <code>service</code> / <code>level</code>)
+        is applied subscriber-side using the same matching as <code>/search</code>.
+        Requires <code>logs:read</code> scope.
+      </p>
+
+      <h2 id="log-alerts" class="h2" style="margin-top: 48px;">Log-based alerts</h2>
+      <p>
+        Define a rule: <i>"open an incident when N events match (q + service + level) within W
+        seconds."</i> Same alert routing as monitor alerts (email, webhook, Slack, Discord, MS
+        Teams, Telegram). Rules are evaluated on a rolling 1-minute window.
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/log-alerts \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "5xx surge in web service",
+    "query": "5xx",
+    "service": "web",
+    "level": "error",
+    "threshold": 10,
+    "windowSec": 300,
+    "alertSlackUrl": "https://hooks.slack.com/services/..."
+  }'`}</pre>
+
+      <h3 id="anomaly-spike-vs-baseline-alerts" style="margin-top: 28px;">Anomaly (spike vs baseline) alerts</h3>
+      <p>
+        Set <code>kind: "anomaly"</code> to alert when the rate is N× higher
+        than a rolling baseline, instead of N events flat. Use when "normal"
+        varies by service / time-of-day and no single threshold fits — common
+        for "error rate suddenly spiked" rules where the magic number changes
+        as traffic grows.
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/log-alerts \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "Checkout error spike",
+    "kind": "anomaly",
+    "service": "checkout",
+    "level": "error",
+    "windowSec": 300,
+    "ratioThreshold": 3.0,
+    "baselineHours": 168,
+    "minBaselineEvents": 10,
+    "alertSlackUrl": "https://hooks.slack.com/services/..."
+  }'`}</pre>
+      <ul style="line-height: 1.9;">
+        <li><b><code>ratioThreshold</code></b> — fire when current count ≥ N × baseline avg. Default 3.0.</li>
+        <li><b><code>baselineHours</code></b> — rolling lookback for the baseline. Default 168 (7 days — smooths weekday/weekend traffic differences).</li>
+        <li><b><code>minBaselineEvents</code></b> — skip evaluation when baseline avg per bucket is below this floor. Prevents "3 vs 1 events" tripping a 3× rule on a tiny baseline. Default 10.</li>
+        <li><b>No ML, no model tuning.</b> One ratio comparison per tick: <code>count(now-window) / avg(count per same-sized bucket over baselineHours, excluding the current window) ≥ ratioThreshold</code>.</li>
+        <li><b>Webhook payload extras</b> when <code>log_alert_kind: "anomaly"</code>: <code>anomaly_ratio</code>, <code>ratio_threshold</code>, <code>baseline_hours</code>.</li>
+        <li>Latches and incident lifecycle are identical to threshold alerts — the only thing that differs is the fire condition.</li>
+        <li><b>Error code <code>LOG_ALERT_KIND_MISMATCH</code></b> — 400 response when create/update mixes shapes: anomaly-only fields (<code>ratioThreshold</code> / <code>baselineHours</code> / <code>minBaselineEvents</code>) sent with <code>kind: "threshold"</code>, or vice versa. Fix: pick a kind and send only its required fields.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Honest scope statements</h2>
+      <ul style="line-height: 1.9;">
+        <li><b>v1 ships:</b> ingest, search, KQL-lite, live tail, log alerts, dashboard tab, auto-facet extraction (primitive attrs keys), Vector example.</li>
+        <li><b>Not in v1:</b> field extraction from <em>unstructured</em> text (regex/grok pipelines), R2 archival, saved searches, dashboards/visualisations, multi-source onboarding wizard, log pattern grouping.</li>
+        <li><b>Capacity:</b> our v1 architecture handles ~5k events/sec comfortably; load-tested above that is unverified for v1. Talk to us if you're aiming for that.</li>
+        <li><b>Auto-resolve:</b> log alerts open incidents but do <b>not</b> auto-resolve — there's no "recovery" signal in absence of error logs. Operators close manually.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

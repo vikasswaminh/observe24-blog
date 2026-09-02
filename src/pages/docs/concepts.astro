@@ -1,0 +1,304 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What’s the single mental model I should hold?',
+    a: 'Signal in, incident out, investigated. Everything you send — logs, metrics, traces, check results, device data — is signal. Monitors and detections watch that signal and, when something matters, open an incident. The analyst investigates the incident and returns a verdict, and on-call routes it to a human who decides and acts. If you remember that one pipeline, the rest of the platform is just detail hanging off it.',
+  },
+  {
+    q: 'What’s the difference between a monitor and a detection?',
+    a: 'A monitor actively checks something from the outside — is this URL up, is this port open, is this certificate valid, did this job run. A detection passively watches the telemetry you send for a pattern — too many failed logins, a secret in a URL, a metric crossing a line. Monitors probe; detections observe. Both open incidents when they find a problem, through the same pipeline.',
+  },
+  {
+    q: 'What’s the difference between an incident and a case?',
+    a: 'An incident is a single thing that needs attention — one failed check, one fired detection, one metric breach. A case is a group of incidents that share a root cause, collapsed together so one underlying failure does not generate fifty separate things to work. You investigate and respond at the level of the case when incidents are related, and at the level of the incident when they stand alone.',
+  },
+  {
+    q: 'What exactly is the analyst?',
+    a: 'An autonomous investigator that runs on every incident. It gathers the related evidence, traces what the incident touches via the context graph, corroborates the signal (against threat intelligence, recent changes, and your telemetry), and returns a root-cause verdict with citations plus a recommended action. It proposes; it does not execute consequential actions automatically. Think of it as doing the first hour of a skilled responder\'s work, every time, before a human looks.',
+  },
+  {
+    q: 'What is the context graph, briefly?',
+    a: 'A live model of your environment — services, hosts, devices, identities, incidents, and the relationships between them — built automatically from your telemetry. It is what lets the platform reason about blast radius ("what depends on this?") and group an alert storm by shared root. The topology health map is the context graph with a health overlay drawn on top.',
+  },
+  {
+    q: 'What does "telemetry-gated" mean for detections?',
+    a: 'It means a detection stays silent until the kind of events it watches for actually arrive. So you can enable broad detection coverage without generating noise — a pack that watches authentication logs does nothing until authentication logs show up. It is why turning on many packs at once is safe: each only speaks when its data is present.',
+  },
+  {
+    q: 'Is there a recommended order to adopt all this?',
+    a: 'Yes: get data in, search it, add a monitor and the detection packs, wire an alert channel, then layer on on-call, status pages, and the context graph as you grow. Start with the one surface that hurts most, make it genuinely trustworthy, and widen deliberately. The platform rewards incremental adoption — a handful of signals you trust beats a hundred you ignore. The quickstart walks the first ten minutes.',
+  },
+  {
+    q: 'Where do I go deeper on each concept?',
+    a: 'Each term here links to the product page or guide that covers it in depth — the SIEM and detection authoring for detections, the analyst page for investigation, the context graph page for topology, the incidents and alerting pages for on-call and routing. This page is the map; those are the territory.',
+  },
+];
+---
+<Base
+  title="Concepts & glossary — how 24Observe fits together | 24Observe"
+  description="The mental model and key terms for 24Observe: signal in, incident out, investigated. A primer on how monitors, detections, incidents, the analyst, the context graph, and on-call relate — plus best practices."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Concepts</div>
+          <h1 class="h1">One pipeline to understand the whole platform: <em>signal in, incident out, investigated.</em></h1>
+          <p class="lede">
+            24Observe has a lot of capabilities, but they all hang off one simple pipeline. Everything you send is signal;
+            monitors and detections watch it; when something matters they open an incident; the analyst investigates and
+            returns a verdict; on-call routes it to a human who decides and acts. Hold that one idea and the rest is
+            detail. This primer lays out the mental model, defines the key terms, and offers the best practices that make
+            it all work.
+          </p>
+          <div class="hero-ctas">
+            <a href="/docs/quickstart" class="btn btn-primary btn-lg">Quickstart <span class="arr">→</span></a>
+            <a href="/docs" class="btn btn-ghost btn-lg">All docs</a>
+          </div>
+          <div class="hero-meta">
+            <span>The <b>mental model</b></span>
+            <span>Key <b>terms</b></span>
+            <span>How it <b>fits together</b></span>
+            <span>Best <b>practices</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> the pipeline</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> signal → incident → verdict</div>
+              <div class="con-meta">one model</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">1 · signal in (logs · metrics · traces · checks)</div>
+                <div class="con-sub"><span>open standards</span></div>
+              </div>
+              <span class="sev sev-med">IN</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">2 · monitors + detections → incident</div>
+                <div class="con-sub"><span>probe + observe</span></div>
+              </div>
+              <span class="sev sev-med">WATCH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">3 · analyst → verdict → on-call → act</div>
+                <div class="con-sub"><span>investigated</span><span class="tech">human decides</span></div>
+              </div>
+              <span class="sev sev-med">OUT</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Learn one pipeline; the whole platform follows</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The mental model</div>
+        <h2 class="h2">Everything is one pipeline.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The fastest way to understand 24Observe is to stop thinking of it as a collection of features and start thinking
+          of it as a single flow that every capability is part of. There is one pipeline, and it has four moves.
+        </p>
+        <p>
+          <strong>Signal in.</strong> Everything you send the platform is signal: application logs, metrics, and traces
+          over OpenTelemetry; host logs and metrics from the Sensor; firewall and device data by syslog and SNMP; the
+          results of synthetic checks. It arrives over open standards, gets normalised so common formats behave
+          consistently, and lands in one place on one timeline. This is the raw material everything else operates on, and
+          the first job of any deployment is simply getting the signal flowing.
+        </p>
+        <p>
+          <strong>Watching turns signal into incidents.</strong> Two kinds of watcher sit on the signal. Monitors probe
+          from the outside — is the site up, the certificate valid, the job running. Detections observe the telemetry from
+          the inside — too many failed logins, a secret in a URL, a metric over a line. When either finds something that
+          matters, it does the same thing: it opens an incident, a first-class object that represents one thing needing
+          attention. Whether the trigger was a failed check, a fired detection, or a breached threshold, the output is the
+          same kind of incident, flowing into the same pipeline.
+        </p>
+        <p>
+          <strong>Investigation turns incidents into verdicts.</strong> This is the move that makes the platform different.
+          The moment an incident opens, the analyst investigates it — gathering related evidence, using the context graph
+          to trace blast radius, corroborating the signal — and attaches a root-cause verdict with citations and a
+          recommended action. Related incidents that share a root are grouped into a case, so one failure becomes one
+          thing to work, not fifty. The output of this stage is understanding, delivered automatically.
+        </p>
+        <p>
+          <strong>Routing turns verdicts into action.</strong> Finally, on-call and alerting carry the investigated
+          incident to a human. The on-call schedule finds whoever is responsible, escalation climbs if they do not answer,
+          and the channels deliver by severity. The human reads the verdict, decides per the relevant playbook, and
+          approves the action — which is taken, recorded, and, when it resolves, reflected on the status page. A person
+          made the call; the platform did everything around it.
+        </p>
+        <p>
+          Every term in the glossary below is a piece of that pipeline. If you can place a concept on the flow — is it
+          signal, a watcher, the incident, the investigation, or the routing — you understand what it is for. That single
+          orientation is worth more than memorising any feature list.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Glossary</div>
+        <h2 class="h2">The key terms, placed on the pipeline.</h2>
+        <p class="lede">
+          Each term links to where it is covered in depth. Read them as a vocabulary for the one flow above.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Signal / telemetry</div><div class="spec-val">Everything you send — <a href="/product/logs">logs</a>, <a href="/product/metrics">metrics</a>, <a href="/product/tracing">traces</a>, check results, device data. The raw material of the pipeline.</div></div>
+        <div class="spec-row"><div class="spec-key">OTLP / OpenTelemetry</div><div class="spec-val">The open standard for sending telemetry. The primary, vendor-neutral way signal arrives — no proprietary agent required.</div></div>
+        <div class="spec-row"><div class="spec-key">Monitor</div><div class="spec-val">An outside-in <a href="/product/uptime">check</a> — HTTP, TCP, TLS, ping, content, or cron-heartbeat. Probes something and opens an incident when it fails.</div></div>
+        <div class="spec-row"><div class="spec-key">Detection</div><div class="spec-val">An inside-out rule — a saved query with a window, threshold, severity, and technique tag that <a href="/docs/detections">watches your telemetry</a> and opens an incident on a match.</div></div>
+        <div class="spec-row"><div class="spec-key">Pack</div><div class="spec-val">A group of related detections (authentication, exfiltration, host, AI-agent, and more). Enable one with a single action; rules are telemetry-gated.</div></div>
+        <div class="spec-row"><div class="spec-key">Telemetry-gated</div><div class="spec-val">A detection stays silent until the events it watches for arrive — so broad coverage does not mean noise.</div></div>
+        <div class="spec-row"><div class="spec-key">Metric alert</div><div class="spec-val">A <a href="/docs/metric-alerts">threshold</a> on a metric series with a sustain duration. Crosses the line, opens an incident.</div></div>
+        <div class="spec-row"><div class="spec-key">Incident</div><div class="spec-val">One thing needing attention, from any source — a failed check, a fired detection, a metric breach. The unit the pipeline revolves around.</div></div>
+        <div class="spec-row"><div class="spec-key">Case</div><div class="spec-val">A group of incidents sharing a root cause, collapsed together so one failure is one thing to work, not fifty.</div></div>
+        <div class="spec-row"><div class="spec-key">The analyst</div><div class="spec-val">The autonomous <a href="/product/ai-analyst">investigator</a> that works every incident and returns a root-cause verdict with citations and a recommended action.</div></div>
+        <div class="spec-row"><div class="spec-key">Verdict</div><div class="spec-val">The analyst's conclusion — true/false positive, root cause, evidence, recommended action. Proposed for a human, never auto-executed.</div></div>
+        <div class="spec-row"><div class="spec-key">Context graph</div><div class="spec-val">A live <a href="/product/context-graph">model</a> of your environment and its relationships, built from telemetry. Powers blast radius and storm grouping.</div></div>
+        <div class="spec-row"><div class="spec-key">Topology health map</div><div class="spec-val">The context graph with a health overlay — broken nodes light up, downstream impact is visible. The triage picture during an incident.</div></div>
+        <div class="spec-row"><div class="spec-key">Correlation / storm grouping</div><div class="spec-val">Collapsing incidents that share a root entity into one case — so one outage pages once, not fifty times.</div></div>
+        <div class="spec-row"><div class="spec-key">Threat intelligence / IOC</div><div class="spec-val">Known-bad indicators matched at ingest, plus your own private indicators. A corroborating signal in detections and verdicts.</div></div>
+        <div class="spec-row"><div class="spec-key">On-call &amp; escalation</div><div class="spec-val"><a href="/product/incidents">Rotations</a> that resolve to one responsible person, and chains that climb until acknowledged. How incidents reach a human.</div></div>
+        <div class="spec-row"><div class="spec-key">The Sensor</div><div class="spec-val">The one-line <a href="/product/sensor">Linux agent</a> that ships host logs and metrics, redacts secrets at the edge, and self-enrolls.</div></div>
+        <div class="spec-row"><div class="spec-key">Redaction</div><div class="spec-val">Stripping secrets — tokens, keys, credentials — before storage, at the edge and at ingest. Privacy by default.</div></div>
+        <div class="spec-row"><div class="spec-key">Scoped token</div><div class="spec-val">A least-privilege credential that lets a script, agent, or assistant do only what you grant. The boundary for all automation.</div></div>
+        <div class="spec-row"><div class="spec-key">Status page</div><div class="spec-val">A public or private <a href="/product/status-pages">page</a> fed automatically from incidents, so customers stay informed without manual updates.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Best practices</div>
+        <h2 class="h2">The habits that make the pipeline sing.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Start narrow, widen deliberately</h3>
+          <p>
+            Do not try to onboard everything at once. Take the one surface that hurts most — the service that pages you,
+            the incident type that takes longest — and make its monitors, logs, and a detection or two genuinely
+            trustworthy before you expand. A handful of signals you believe is worth more than a hundred you have learned
+            to ignore, because the moment an alert becomes background noise it has stopped working. Let coverage
+            accumulate as confidence does. The <a href="/docs/quickstart">quickstart</a> sets the first ten minutes.
+          </p>
+          <h3>Favour sensitivity over silence</h3>
+          <p>
+            In a traditional tool, every noisy rule costs analyst time, so teams tune toward silence and lose coverage.
+            Here the analyst investigates and dispositions benign matches, so a slightly noisy detection costs seconds —
+            which means you can afford broad, sensitive coverage. Tune toward the behaviour you care about, not toward a
+            quiet dashboard, and let the investigation absorb the occasional benign hit.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Least privilege from the first token</h3>
+          <p>
+            Give every token, assistant, and integration the narrowest scope that lets it do its job, and mint a separate
+            one per purpose. It costs nothing to start right, the audit trail stays legible, and revoking or adjusting one
+            never disturbs the others. This is the single most important security habit on the platform, and it is far
+            easier to adopt on day one than to retrofit onto a sprawl of over-scoped credentials later.
+          </p>
+          <h3>Close the loop with corrections</h3>
+          <p>
+            When the analyst returns a verdict, your correction — confirm, downgrade, annotate — feeds future
+            investigations, so the system gets measurably better at reading your environment over time. Treat the early
+            weeks as teaching: every verdict you adjust and every threshold you tune is you shaping the platform around
+            your own systems. That investment compounds, and a platform you have shaped for a month is dramatically more
+            useful than one fresh out of the box.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where to go next</div>
+        <h2 class="h2">From the map to the territory.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          This page is the map; the rest of the docs are the territory. If you are just starting, the
+          <a href="/docs/quickstart">quickstart</a> walks the pipeline end to end in about ten minutes. The
+          <a href="/docs/guide">user guide</a> covers the day-to-day of operating it, and the
+          <a href="/docs/admin">admin guide</a> covers roles, tokens, and governance for a growing team. For the security
+          surface, <a href="/docs/detections">detection authoring</a> shows how to write and tune rules, and the
+          <a href="/product/siem">SIEM page</a> explains the broader model. For automation, the
+          <a href="/docs/agent-cookbook">agent cookbook</a> and <a href="/docs/mcp">MCP setup</a> show how to let scripts
+          and assistants drive the platform safely.
+        </p>
+        <p>
+          Whichever you read next, keep the one pipeline in mind — signal in, incident out, investigated — and place each
+          new concept on it. Almost everything in 24Observe is a refinement of that flow: a better way to get signal in, a
+          sharper way to watch it, a more thorough investigation, or a calmer way to route the result to a human. Once the
+          shape is clear, the depth is easy, because it all hangs off the same simple idea.
+        </p>
+        <p>
+          If you take one habit from this page, let it be the act of placing each new thing you encounter onto the
+          pipeline. When you read about a feature, a setting, or a capability, ask where it sits: is this about getting
+          signal in, about watching it, about the incident, about the investigation, or about routing the result to a
+          human? Almost everything resolves cleanly into one of those five, and the few things that do not — billing,
+          access control, data governance — are the supporting machinery that lets the pipeline run safely for a team.
+          That single orienting question will save you from experiencing 24Observe as a sprawling list of features and let
+          you experience it as what it is: one coherent flow, with a lot of depth available at each stage when you need
+          it, and none of it required before you are ready.
+        </p>
+        <p>
+          Keep this primer bookmarked as you go deeper; it is the kind of page worth returning to whenever a new concept
+          does not immediately slot into place. Nine times out of ten, the confusion clears the moment you ask which part
+          of the pipeline the thing belongs to — and the tenth time, it is one of the supporting concerns, which is its
+          own small, separate category. Master the flow first, and everything else is detail you can pick up exactly when
+          you need it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Concepts &amp; glossary — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Learn one pipeline. Understand the whole platform.</h2>
+      <p class="final-cta-sub">
+        Signal in, incident out, investigated. Hold that idea, place each concept on it, and 24Observe stops being a
+        feature list and becomes a single, coherent flow.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="/docs/quickstart" class="btn btn-primary btn-lg">Start the quickstart <span class="arr">→</span></a>
+        <a href="https://login.24observe.com/register" class="btn btn-ghost btn-lg">Create your account</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-06-22';
+---
+<Base
+  title="Security — 24Observe"
+  description="How 24observe protects your data: encryption, tenant isolation, least-privilege access, redaction, audit logging, and responsible disclosure."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Security · last updated {updated}</div>
+      <h1 class="h1">Security</h1>
+      <p class="lede" style="margin-top: 24px;">
+        You're trusting us with logs, alerts, and incident data — often from your most sensitive systems.
+        Here's plainly how we protect it. This describes our hosted service; if you need full control, the
+        same platform is self-hostable on your own infrastructure.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">Encryption</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>In transit:</b> TLS on every endpoint — the marketing site, dashboard, and ingest/API.</li>
+        <li><b>At rest:</b> alert-channel secrets, integration tokens, and other credentials are encrypted with AES-256 before storage, with support for key rotation.</li>
+        <li>We never store your payment-card numbers — card data is handled by our payment provider.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Tenant isolation &amp; access control</h2>
+      <ul style="line-height: 1.8;">
+        <li>Every request is scoped to your organization, derived from your authenticated session or token — never from client-supplied input — so one tenant can't reach another's data.</li>
+        <li><b>Role-based access</b> (owner / admin / member) gates privileged actions.</li>
+        <li><b>MFA (TOTP)</b> is available and can gate login.</li>
+        <li><b>Least-privilege API tokens:</b> scoped to specific resources/actions, with per-token daily mutation and log-volume caps to bound the blast radius of a leaked token. Every token-attributed action is recorded.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Data handling</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>Redaction:</b> a redaction engine strips common secret patterns (bearer/JWT, cloud keys, API keys) at ingest, and you can add your own org-level rules; the AI analyst only ever sees redacted inputs.</li>
+        <li><b>SSRF protection:</b> user-supplied URLs (webhooks, monitors) are checked to block requests to private, loopback, and cloud-metadata addresses.</li>
+        <li><b>Audit log:</b> every mutating action records the actor, token, agent/conversation attribution, IP, and target — exportable.</li>
+        <li><b>Bot protection</b> on account-creation endpoints; email verification on signup.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Retention &amp; deletion</h2>
+      <p>
+        You can export your data via the API at any time. When you delete your organization, we cancel any
+        active subscription and irreversibly purge your data from production within 30 days and from backups
+        within 90 days. See the <a href="/legal/privacy">Privacy Policy</a> for details.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Availability &amp; resilience</h2>
+      <p>
+        Continuous backups, health checks, and an external dead-man's-switch watchdog guard the platform. See
+        our <a href="/legal/sla">availability commitment</a> and live <a href="https://status.24observe.com">status page</a>.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Responsible disclosure</h2>
+      <p>
+        Found a vulnerability? We want to hear from you. Email
+        <a href="mailto:security@24observe.com">security@24observe.com</a> (see
+        <a href="/.well-known/security.txt">/.well-known/security.txt</a>). Please give us a reasonable
+        window to remediate before public disclosure; we won't pursue good-faith research that respects user
+        privacy and avoids service disruption.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Honest scope</h2>
+      <p>
+        We're a focused team, not a mega-vendor: we don't yet hold a formal SOC 2 / ISO 27001 certification.
+        We apply the controls above and are happy to walk security teams through our setup — and if your
+        compliance needs require data never leaving your boundary, self-host the identical platform.
+        Questions: <a href="mailto:security@24observe.com">security@24observe.com</a>.
+      </p>
+    </div>
+  </section>
+</Base>

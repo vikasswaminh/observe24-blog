@@ -1,0 +1,314 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What is a playbook here, and how is it different from a static runbook?',
+    a: 'A playbook is the agreed response to a class of incident — the steps to contain, investigate, and resolve a brute-force attempt, a disk filling, a certificate expiring. The difference from a static runbook in a wiki is that here the incident arrives already investigated: the analyst has gathered the evidence and proposed the next action, so the playbook starts from a conclusion rather than from "go find out what happened." The human work shifts from diagnosis to decision and execution.',
+  },
+  {
+    q: 'Does the analyst replace playbooks?',
+    a: 'No — it supercharges them. The analyst does the investigation and recommends an action, but the decision to act, and the action itself, remain a human responsibility, governed by your playbook. Think of the analyst as completing the first and hardest phase of every playbook (understand the incident) automatically, leaving your team to do the phases that need judgement and authority (decide and act). The playbook is still where your team\'s agreed response lives.',
+  },
+  {
+    q: 'Are recommended actions ever taken automatically?',
+    a: 'No. The analyst proposes the next action — block this source, force a reset, roll back, isolate a host — but it is presented for a human to approve, never executed automatically. That keeps a person in control of every consequential action while still removing the slow part, the investigation. If you want automation for routine, low-risk responses, you wire that yourself through the incident events, deliberately and on your terms.',
+  },
+  {
+    q: 'How do I turn a recommended action into an automated response?',
+    a: 'Through the incident and alert events. The platform emits signed webhook events — incident.opened, metric_alert.fired, correlation_rule.fired and more — that your own systems can subscribe to, so you can drive a runbook or hand an incident to an agent for the responses you have decided are safe to automate. The pattern is: let the analyst investigate, let a human approve anything consequential, and automate only the routine actions you have explicitly chosen to.',
+  },
+  {
+    q: 'What incident types should I have playbooks for first?',
+    a: 'Start with the ones that are both common and time-sensitive: credential attacks (brute-force, spray, account takeover), data-exfiltration signals, host-resource exhaustion (disk, memory), certificate expiry, and service outages. These cover the large majority of what a typical team faces, and having an agreed response for each — even a short one — is what turns a 3 a.m. incident from improvisation into execution.',
+  },
+  {
+    q: 'How does grouping change how I run a playbook?',
+    a: 'It means you run one playbook per root cause, not one per symptom. When a single failure trips many incidents, they are grouped into one case, so instead of running fifty overlapping responses you run the response for the actual cause. The playbook operates at the level of the real incident, which is both less work and less error-prone than reacting to each downstream alarm separately.',
+  },
+  {
+    q: 'Where do playbooks live?',
+    a: 'The agreed steps can live wherever your team keeps process — and the key insight is that the platform does the part that used to require the playbook to be long. Because each incident arrives with an investigation and a recommended action attached, your playbook can be short: the response and the approval criteria, not pages of "how to investigate." The investigation that used to be the bulk of a runbook is already done.',
+  },
+  {
+    q: 'Can playbook execution be reviewed afterward?',
+    a: 'Yes. Every incident leaves a complete record — what fired, the analyst\'s verdict and evidence, what was approved and done, when it resolved — and every action taken through the platform is in the audit trail. So a post-incident review starts from facts rather than reconstructed memory, and you can see whether the playbook was followed and whether it should change.',
+  },
+];
+---
+<Base
+  title="Response playbooks — when the incident arrives already investigated | 24Observe"
+  description="A library of response playbooks for common incidents — and how they change when the AI analyst has already done the investigation, so your team starts from a conclusion and a recommended action."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Playbooks</div>
+          <h1 class="h1">Playbooks that start from a conclusion, <em>not a blank page.</em></h1>
+          <p class="lede">
+            A response playbook is your team's agreed answer to a class of incident. The traditional version is mostly
+            instructions for investigating — and investigation is the slow, hard part. Here, the analyst has already done
+            that by the time you open the incident, so your playbooks get dramatically shorter and faster: they start from
+            a root-cause verdict and a recommended action, and your job is to decide and execute, not to discover. This
+            guide covers how playbooks work on the platform and offers a starting library for the most common incidents.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">About the analyst</a>
+          </div>
+          <div class="hero-meta">
+            <span>Investigation <b>pre-done</b></span>
+            <span>Action <b>recommended</b></span>
+            <span>Human <b>approves</b></span>
+            <span>Routine <b>automatable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/incidents/2471</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Incident #2471 · playbook ready</div>
+              <div class="con-meta">verdict attached</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Verdict: account takeover, confirmed</div>
+                <div class="con-sub"><span>6 citations</span><span class="tech">phase 1 done</span></div>
+              </div>
+              <span class="sev sev-crit">RCA</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Recommended: block source, force reset</div>
+                <div class="con-sub"><span>proposed</span><span class="tech">awaiting approval</span></div>
+              </div>
+              <span class="sev sev-high">ACT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Human approves → action taken → audited</div>
+                <div class="con-sub"><span>you decide</span><span class="tech">recorded</span></div>
+              </div>
+              <span class="sev sev-med">DONE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Decide and execute — the discovery is already finished</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The shift</div>
+        <h2 class="h2">The investigation used to be the playbook. Now it’s done for you.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Open a traditional incident runbook and most of it is investigation instructions: check these logs, look at
+          these metrics, correlate these events, determine whether it is real. That is because investigation has always
+          been the slow, skilled, error-prone heart of incident response — and a runbook is mostly an attempt to make it
+          repeatable across whoever happens to be on call.
+        </p>
+        <p>
+          That assumption changes here, because the <a href="/product/ai-analyst">analyst</a> performs the investigation
+          automatically the moment an incident opens. By the time a human looks, the evidence is gathered, the blast radius
+          is traced, the signal is corroborated, and a root-cause verdict is attached with citations. The first and
+          hardest phase of every playbook — understand what is happening — is already complete. What remains is the part
+          that genuinely needs a person: deciding what to do, given the conclusion, and carrying it out with the authority
+          to do so.
+        </p>
+        <p>
+          So playbooks get shorter and sharper. Instead of pages of "how to investigate a brute-force attempt," your
+          playbook becomes a few lines: given a confirmed credential attack, the approved responses are these, the
+          approval criteria are these, and here is who can authorise them. The investigation that used to be the bulk of
+          the document is handled by the platform, and the playbook focuses on the decision and the execution — which is
+          where your team's actual policy and judgement live.
+        </p>
+        <p>
+          This also makes playbooks far more consistent under pressure. A long investigative runbook is only as good as
+          the tired person following it at 3 a.m.; a short decision-and-action playbook, sitting on top of an
+          already-completed investigation, is something a stressed human can execute correctly every time. You have moved
+          the variable, error-prone work to the machine and kept the deterministic, policy-driven work for the human —
+          which is exactly the right division.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The structure</div>
+        <h2 class="h2">Three phases — and who owns each.</h2>
+        <p class="lede">
+          Every response, whatever the incident, moves through the same three phases. Knowing which the platform handles
+          and which you own is the key to writing good playbooks here.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">1 · Understand (platform)</div><p>The analyst gathers evidence, traces blast radius, corroborates the signal, and returns a verdict with citations. Done automatically — your playbook does not need to describe it.</p></div>
+        <div class="why-card"><div class="why-num">2 · Decide (human)</div><p>Given the verdict, choose the response per your policy and approve any consequential action. This is where judgement and authority live, and what your playbook should focus on.</p></div>
+        <div class="why-card"><div class="why-num">3 · Act (human, or chosen automation)</div><p>Execute — block, reset, roll back, isolate. The analyst proposes; a human approves; routine, low-risk actions you have explicitly chosen can be automated via events.</p></div>
+        <div class="why-card"><div class="why-num">Across all three · Record</div><p>Everything is captured — verdict, evidence, approval, action, resolution — so the response is auditable and the post-incident review starts from facts.</p></div>
+      </div>
+      <div class="prose" style="margin-top: 32px;">
+        <p>
+          The discipline a good playbook encodes is mostly in phase two and three: what are the approved responses for this
+          kind of incident, what are the criteria for choosing among them, who is allowed to authorise each, and which —
+          if any — are safe to automate. Because phase one is handled, you can spend all of your playbook's clarity on
+          getting the decision and the action right, which is where mistakes are most costly.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A starting library</div>
+        <h2 class="h2">Playbooks for the incidents you’ll actually face.</h2>
+        <p class="lede">
+          A short response for each of the most common incident types. Each assumes the analyst has already delivered a
+          verdict — so these are decision-and-action playbooks, not investigation guides.
+        </p>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Credential attack (brute-force, spray, takeover)</h3>
+          <p>
+            The analyst confirms whether failures were followed by a success, whether the source is flagged, and whether
+            the geography is impossible. <strong>If confirmed:</strong> block the source, force a password reset on the
+            affected accounts, and invalidate active sessions; if privileged access was involved, escalate to a security
+            lead. <strong>If benign</strong> (a user fat-fingering a password), close with the analyst's reason noted. The
+            decision hinges on the verdict, which is already attached.
+          </p>
+          <h3>Data-exfiltration signal</h3>
+          <p>
+            The analyst corroborates the volume, destination, and the sensitivity of what moved. <strong>If
+            confirmed:</strong> contain the account or host involved, preserve the evidence the analyst cited, and escalate
+            per your data-incident policy. <strong>If benign</strong> (a legitimate bulk job), record the exception so the
+            detection can be tuned. Speed matters here, which is why having the investigation pre-done is so valuable.
+          </p>
+          <h3>Host resource exhaustion (disk, memory)</h3>
+          <p>
+            The analyst typically returns the cause — a runaway log, a leak, a stuck process. <strong>Response:</strong>
+            apply the immediate relief (rotate or cap the offending source, restart the leaking process) and then address
+            the root cause the analyst identified. Because the cause is in the verdict, you are not guessing at what to
+            restart.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Certificate expiry</h3>
+          <p>
+            The most preventable outage on the internet, caught with lead time. <strong>Response:</strong> renew and deploy
+            the certificate before the expiry the alert flagged, and verify the TLS check returns to healthy. The playbook
+            is short because the alert gave you days, not minutes.
+          </p>
+          <h3>Service outage / failed check</h3>
+          <p>
+            The analyst correlates the failure with recent changes and dependency health. <strong>Response:</strong> if a
+            deploy is implicated, roll back; if a dependency is down, fail over or degrade gracefully; update the status
+            page (which may already reflect it automatically) and keep customers informed. The verdict points you at the
+            cause so you act on the right lever first.
+          </p>
+          <h3>Alert storm (cascading failure)</h3>
+          <p>
+            Grouping means you face one case, not fifty. <strong>Response:</strong> run the playbook for the root cause the
+            case is built around, communicate the broad impact the topology map shows, and let the downstream symptoms
+            clear as the root is fixed. One response for the real incident, not fifty for its echoes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Automating responsibly</div>
+        <h2 class="h2">Automate the routine, keep humans on the consequential.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          Once a playbook is well understood, parts of it can be automated — but the right boundary is important. The
+          analyst proposes consequential actions and a human approves them; that approval gate is deliberate and should
+          stay for anything with real blast radius, because a wrong automated action during an incident can be worse than
+          the incident. What you can and should automate are the routine, low-risk, high-frequency responses you have
+          explicitly decided are safe — and you do that on your own terms, through the platform's events.
+        </p>
+        <p>
+          The mechanism is the signed webhook events the platform emits: <em>incident.opened</em>,
+          <em>metric_alert.fired</em>, <em>correlation_rule.fired</em>, and others. Your own systems or an agent subscribe
+          to these and execute the response you have chosen for that case — open a ticket, post to a channel, trigger a
+          scaling action, run a contained remediation script. Because this is automation you build deliberately against
+          incidents that arrive already investigated, it is far safer than the usual fragile "if alert then act" wiring:
+          the action keys off a real, corroborated incident, not a raw alert that might be a false positive.
+        </p>
+        <p>
+          The principle to hold onto is the division of labour that runs through the whole platform: the machine does the
+          tireless work — investigating, and the routine actions you have sanctioned — and the human makes the calls that
+          need judgement and authority. A good playbook here encodes exactly that line: what the analyst will tell you,
+          what you will decide, what you have chosen to let a machine do, and what always needs a person. Get that line
+          right and incident response becomes faster and calmer without ever becoming reckless.
+        </p>
+        <p>
+          And whatever the mix of human and automated action, the whole response is recorded — the verdict, the approval,
+          the action, the resolution — so your post-incident reviews start from facts and your playbooks improve from real
+          evidence rather than from memory. The library above is a starting point; the playbooks you keep are the ones
+          your own incidents teach you to write.
+        </p>
+        <p>
+          A useful way to keep playbooks alive rather than letting them rot in a wiki is to revisit them after real
+          incidents. Each time you work an incident of a given type, ask whether the playbook matched what actually
+          happened: was the analyst's verdict the kind you expected, was the recommended action the right one, did the
+          approval gate sit in the right place? The answers turn a static document into a living one, refined by the
+          incidents it is meant to handle. Because every response leaves a complete record — verdict, approval, action,
+          resolution — you have the evidence to do this honestly, rather than relying on whoever happened to be on call to
+          remember it correctly.
+        </p>
+        <p>
+          The end state worth aiming for is a small set of short, trusted playbooks for the incident types you actually
+          face, each sitting on top of an investigation the platform performs for you, each refined by the incidents it
+          has handled. That is a world away from the binder of long, investigative runbooks that nobody reads under
+          pressure and that drift out of date the moment they are written. Keep the playbooks short, keep them honest to
+          real incidents, and let the analyst carry the investigative weight — and incident response becomes something your
+          team executes calmly and consistently rather than improvises differently every time.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Response playbooks — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Shorter playbooks. Faster responses.</h2>
+      <p class="final-cta-sub">
+        Let the analyst finish the investigation phase of every playbook automatically, so your team starts from a verdict
+        and a recommended action — and automates only the routine, on its own terms.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; incidents</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,220 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Heartbeat / cron-job monitors — 24Observe API"
+  description="Inverted check: your job pings us when it succeeds. We alert when the pings stop."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · heartbeats</div>
+      <h1 class="h1">Heartbeat / cron monitors.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        Inverted from the active checks: your job hits a URL on every successful
+        cycle. If we don't see a hit within <code>intervalSec + heartbeatGraceSec</code>,
+        an incident opens and your configured alert channels fire. The next
+        successful hit auto-resolves the incident.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Receive URL</h2>
+      <pre class="code-block">https://api.24observe.com/api/v1/heartbeats/&lt;TOKEN&gt;</pre>
+      <p>
+        Token is a <b>64-character lowercase hex string</b> (32 random bytes).
+        We generate it server-side when you create a heartbeat monitor — you
+        never choose it.
+      </p>
+
+      <h2 class="h2" style="margin-top: 32px;">Calling it</h2>
+      <ul style="line-height: 1.9;">
+        <li>Method: <code>POST</code> or <code>HEAD</code> (both work; <code>HEAD</code> is convenient for <code>curl --head</code>).</li>
+        <li>Body: none. We ignore any body you send.</li>
+        <li>Auth header: <b>none</b>. The URL itself is the secret. Treat it like a password.</li>
+        <li>Success: <code>204 No Content</code>. Anything else = treat as failure on your side.</li>
+        <li>Rate limit: 60 / minute / IP. Plenty for any sane cron cadence.</li>
+      </ul>
+      <pre class="code-block">{`# POST
+curl -fsS -X POST https://api.24observe.com/api/v1/heartbeats/<TOKEN>
+
+# HEAD (no body either way — both return 204)
+curl -fsS --head https://api.24observe.com/api/v1/heartbeats/<TOKEN>`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Two-step token retrieval (programmatic flow)</h2>
+      <p>
+        Heartbeat tokens are <b>encrypted at rest</b>. <code>POST /api/v1/monitors</code>
+        with <code>type: "heartbeat"</code> creates the monitor and returns the row,
+        but the <code>heartbeatToken</code> field in that response is the
+        encrypted ciphertext envelope — <b>not</b> what you POST to. To get the
+        plaintext token your job will use, follow up with the role-gated
+        secrets read.
+      </p>
+      <p>
+        This requires an <b>owner-or-admin PAT</b> with the <code>secrets:read</code>
+        scope (or wildcard <code>*</code>). If you mint a tightly-scoped PAT for
+        this flow:
+      </p>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/me/tokens \\
+  -H 'Authorization: Bearer obs_<admin>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "aeoniti-heartbeat-bootstrap",
+    "scopes": ["monitors:write", "secrets:read"]
+  }'`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Step 1 — create the monitor</h3>
+      <pre class="code-block">{`curl -X POST https://api.24observe.com/api/v1/monitors \\
+  -H 'Authorization: Bearer obs_...' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "name": "Aeoniti nightly job",
+    "url": "https://aeoniti.example/heartbeat-source",
+    "type": "heartbeat",
+    "intervalSec": 300,
+    "timeoutMs": 10000,
+    "heartbeatGraceSec": 60,
+    "alertEmail": "ops@aeoniti.example"
+  }'
+
+# Response (201) — note the encrypted heartbeatToken; do not POST to it.
+{
+  "id": 17,
+  "name": "Aeoniti nightly job",
+  "type": "heartbeat",
+  "intervalSec": 300,
+  "heartbeatToken": "{\\"v\\":2,\\"kid\\":\\"default\\",...}",
+  ...
+}`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Step 2 — fetch the plaintext token</h3>
+      <pre class="code-block">{`curl https://api.24observe.com/api/v1/monitors/17/secrets \\
+  -H 'Authorization: Bearer obs_<owner-or-admin>'
+
+# Response (200)
+{
+  "id": 17,
+  "heartbeatToken": "a1b2c3...<64 hex chars>",
+  ...
+}
+
+# Build the receive URL
+HEARTBEAT_URL="https://api.24observe.com/api/v1/heartbeats/a1b2c3..."`}</pre>
+      <p>
+        Every <code>/secrets</code> read is recorded in the audit log with
+        <code>action: READ_MONITOR_SECRETS</code> — useful when you want to
+        prove which integrations have ever fetched the token.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">End-to-end agent example</h2>
+
+      <h3 class="h3" style="margin-top: 24px;">TypeScript (Node 22)</h3>
+      <pre class="code-block">{`const PAT = process.env.OBSERVE24_PAT!; // owner-or-admin
+const BASE = 'https://api.24observe.com/api/v1';
+
+async function provisionHeartbeat(name: string, intervalSec: 60 | 300 | 900) {
+  // 1. Create the monitor
+  const create = await fetch(\`\${BASE}/monitors\`, {
+    method: 'POST',
+    headers: { authorization: \`Bearer \${PAT}\`, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      url: \`internal://\${name}\`, // url is required by schema; not used for heartbeats
+      type: 'heartbeat',
+      intervalSec,
+      timeoutMs: 10000,
+      heartbeatGraceSec: 60,
+      alertEmail: process.env.OPS_EMAIL,
+    }),
+  });
+  if (!create.ok) throw new Error(\`create: \${create.status} \${await create.text()}\`);
+  const monitor = await create.json();
+
+  // 2. Fetch the plaintext heartbeat token
+  const sec = await fetch(\`\${BASE}/monitors/\${monitor.id}/secrets\`, {
+    headers: { authorization: \`Bearer \${PAT}\` },
+  });
+  if (!sec.ok) throw new Error(\`secrets: \${sec.status}\`);
+  const { heartbeatToken } = await sec.json();
+
+  return {
+    monitorId: monitor.id,
+    heartbeatUrl: \`\${BASE}/heartbeats/\${heartbeatToken}\`,
+  };
+}
+
+// Use in your job loop
+async function ping(url: string) {
+  const r = await fetch(url, { method: 'POST' });
+  if (r.status !== 204) throw new Error(\`heartbeat: \${r.status}\`);
+}`}</pre>
+
+      <h3 class="h3" style="margin-top: 24px;">Python</h3>
+      <pre class="code-block">{`import os, httpx
+
+PAT = os.environ['OBSERVE24_PAT']  # owner-or-admin
+BASE = 'https://api.24observe.com/api/v1'
+H = {'authorization': f'Bearer {PAT}', 'content-type': 'application/json'}
+
+def provision_heartbeat(name: str, interval_sec: int) -> str:
+    create = httpx.post(f'{BASE}/monitors', headers=H, json={
+        'name': name,
+        'url': f'internal://{name}',
+        'type': 'heartbeat',
+        'intervalSec': interval_sec,
+        'timeoutMs': 10000,
+        'heartbeatGraceSec': 60,
+        'alertEmail': os.environ['OPS_EMAIL'],
+    })
+    create.raise_for_status()
+    monitor_id = create.json()['id']
+
+    sec = httpx.get(f'{BASE}/monitors/{monitor_id}/secrets',
+                    headers={'authorization': f'Bearer {PAT}'})
+    sec.raise_for_status()
+    token = sec.json()['heartbeatToken']
+    return f'{BASE}/heartbeats/{token}'
+
+# In your job loop
+def ping(url: str):
+    r = httpx.post(url, timeout=10)
+    if r.status_code != 204:
+        raise RuntimeError(f'heartbeat: {r.status_code}')`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">What happens when pings stop</h2>
+      <ol style="line-height: 1.9;">
+        <li>Last heartbeat was at <code>T</code>. Monitor's <code>intervalSec</code> + <code>heartbeatGraceSec</code> tells us when it should have arrived by.</li>
+        <li>The scheduler ticks every 15 seconds; on the first tick after <code>T + intervalSec + heartbeatGraceSec</code>, the monitor flips to <code>down</code>.</li>
+        <li>Once consecutive missed checks ≥ <code>alertThreshold</code> (default 1), an incident opens and the configured alert channels fire (email / webhook / Slack / Discord / Teams / Telegram).</li>
+        <li>The next successful POST automatically resolves the open incident — last_status flips back to <code>up</code>, <code>resolvedAt</code> is set, recovery email goes out to status-page subscribers if that monitor is on a public page.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Tuning</h2>
+      <ul style="line-height: 1.9;">
+        <li><code>intervalSec</code>: how often you ping. One of 30, 60, 300, 900, 1800, 3600. Plan tier sets the floor.</li>
+        <li><code>heartbeatGraceSec</code>: slack window (default 60s). Set higher than your worst-case job duration so a slow run isn't a false miss.</li>
+        <li><code>alertThreshold</code>: how many consecutive misses before paging (default 1). Raise it if your job is flaky-but-recovers.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Security</h2>
+      <ul style="line-height: 1.9;">
+        <li>The token is the only auth — anyone with the URL can mark the monitor up. Don't log it, don't commit it, don't put it in a public-facing config.</li>
+        <li>The DB stores only <code>sha256(token)</code> for the lookup. A DB dump does not yield live tokens.</li>
+        <li>A leaked token? Open the monitor in the dashboard → <b>Rotate</b>. Old URL invalidates immediately and a new plaintext is shown once.</li>
+        <li>Per-IP rate limit (60/min) makes brute-forcing the 64-hex space (16<sup>64</sup>) impractical even if an attacker guesses the URL prefix.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Troubleshooting</h2>
+      <p>
+        Heartbeat flapping or alerts not firing? See
+        <a href="/docs/runbook">the runbook</a> — sections "Heartbeat monitor flapping"
+        and "Alerts aren't reaching me".
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Confirming the alert channel works</h2>
+      <p>
+        Don't wait for a real outage to find out your channel is misconfigured.
+        Open the monitor in the dashboard and use <b>Send test alert to all
+        configured channels</b> — each channel reports per-channel pass/fail
+        with the exact error.
+      </p>
+    </div>
+  </section>
+</Base>

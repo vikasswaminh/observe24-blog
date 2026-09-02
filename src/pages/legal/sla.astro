@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+const updated = '2026-06-22';
+---
+<Base
+  title="Availability & SLA — 24Observe"
+  description="Our uptime target, what counts as downtime, exclusions, maintenance, and how to check live status."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · last updated {updated}</div>
+      <h1 class="h1">Availability &amp; SLA</h1>
+      <p class="lede" style="margin-top: 24px;">
+        We monitor other people's uptime for a living, so we hold ourselves to a clear, honest bar.
+        This page is the availability commitment for the hosted service.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">1. Uptime target</h2>
+      <p>
+        We target <b>99.9% monthly availability</b> for the core hosted service — the API/ingest endpoints
+        and the dashboard. "Availability" means the service is reachable and processing requests, measured
+        over a calendar month.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">2. What counts as downtime</h2>
+      <p>
+        A period where the core service returns errors or is unreachable for reasons within our control,
+        confirmed by our own monitoring. The following do <b>not</b> count against the target:
+      </p>
+      <ul style="line-height: 1.8;">
+        <li>Scheduled maintenance announced in advance (see below).</li>
+        <li>Force majeure and upstream-provider outages outside our control (network, cloud, or DNS provider failures).</li>
+        <li>Issues caused by your configuration, your integrations, or exceeding plan limits/rate limits.</li>
+        <li>Beta/early-access features, and the free plan, which are provided as-is.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">3. Maintenance</h2>
+      <p>
+        We deploy continuously with zero- or minimal-downtime rollouts. Where planned maintenance could be
+        disruptive, we announce it in advance on the <a href="https://status.24observe.com">status page</a>
+        and aim for low-traffic windows.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">4. Status &amp; incidents</h2>
+      <p>
+        Live status, current incidents, and history are at
+        <a href="https://status.24observe.com">status.24observe.com</a> — you can subscribe there to be
+        notified of incidents. We post updates during any significant incident and a follow-up afterward.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">5. Service credits</h2>
+      <p>
+        Standard plans (Free, Team, Business, Scale) do <b>not</b> include contractual SLA credits today —
+        the 99.9% figure is a target we operate to, not a financial guarantee. If you require a contractual
+        SLA with credits, we offer two paths: run the identical platform <a href="/self-host">self-hosted</a>
+        for full control, or <a href="/contact">contact us</a> about an enterprise arrangement. We'll update
+        this section if and when credits become part of a standard plan.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">6. Belt and suspenders</h2>
+      <p>
+        Whatever your provider's SLA, treat any single monitoring layer as a best-effort second pair of eyes,
+        not your only safety net. We design for resilience (backups, health checks, an external watchdog), but
+        critical systems deserve redundant alerting.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Contact</h2>
+      <p>Questions: <a href="mailto:support@24observe.com">support@24observe.com</a>.</p>
+    </div>
+  </section>
+</Base>

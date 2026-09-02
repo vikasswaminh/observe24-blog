@@ -1,0 +1,317 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'How much work is it to get a server reporting?',
+    a: 'One command. You generate an install command in the dashboard, run it on the host as root, and within a minute the server is shipping its system logs and host metrics, has self-enrolled, and appears in your fleet. There is no config file to write by hand, no credential to copy around, and no separate metrics agent to install alongside it. One command, logs and metrics flowing.',
+  },
+  {
+    q: 'What does the Sensor collect out of the box?',
+    a: 'System logs from the journal and core host metrics — CPU, memory, disk, and network — over open standards. That is enough to make a server a first-class citizen in the platform: searchable logs, chartable metrics, threshold alerts, and a node on the topology map. You can layer additional log sources on with profiles when you need them.',
+  },
+  {
+    q: 'What are profiles?',
+    a: 'Opt-in add-ons that pick up extra log sources beyond the base journald-and-metrics pipeline — container logs, web-server access and error logs, system audit events, and forwarded syslog among them. You enable the ones a given host needs with a flag or a dashboard checkbox, so a web server, a container host, and a database box each collect what is relevant to them without you hand-writing a pipeline for each.',
+  },
+  {
+    q: 'Is it safe to pipe an install script to root?',
+    a: 'The Sensor installs from a signed package rather than an unsigned binary dropped onto your box, so what runs is verified, and it is built on open standards under the hood — nothing proprietary or opaque. The enrollment token it uses can only enroll hosts; it cannot read your data. After enrolment the host holds a token scoped to ship logs and metrics and nothing more.',
+  },
+  {
+    q: 'How does enrolment and credential scoping work?',
+    a: 'You mint a scoped enrollment token in the dashboard — an owner-or-admin action — and one token can onboard your whole fleet because it can only do one thing: enroll hosts. When a host enrolls it exchanges that token for a per-host credential restricted to shipping logs and metrics, and re-running the installer rotates that credential automatically. A compromised host token cannot read your data or touch another host.',
+  },
+  {
+    q: 'Are secrets stripped before they leave the host?',
+    a: 'Yes. Edge redaction is on by default, so the Sensor matches and removes secrets — tokens, keys, credentials in URLs, key=value secrets — on the machine, before anything is sent. A credential that lands in a system log never crosses the wire, let alone reaches storage. The same patterns are applied again at ingest as a backstop.',
+  },
+  {
+    q: 'What does a fleet of Sensors give me beyond logs?',
+    a: 'Each reporting host becomes a node on the <a href="/product/context-graph">topology map</a> with a live health state, and the platform emits sensor.offline and sensor.online events — so a host that drops off is an incident, not a gap you notice days later. A fleet of Sensors is not just a pile of log sources; it is a live, health-aware inventory of your estate.',
+  },
+  {
+    q: 'When should I use the Sensor versus the OpenTelemetry collector?',
+    a: 'Use the Sensor when you want a server reporting in one command with sensible defaults and self-enrolment. Use the <a href="/docs/collector">OpenTelemetry collector</a> when you already run OpenTelemetry, need gRPC ingest, or have legacy sources to bridge. Both land in the same place; pick by how much you want to configure. <a href="/docs/sensor">Sensor docs →</a>',
+  },
+  {
+    q: 'Which systems are supported?',
+    a: 'Ubuntu and Debian with systemd today, with broader platform support on the roadmap. The install path, enrolment, redaction, and profiles all work the same across supported systems, so onboarding the tenth host is exactly as fast as the first.',
+  },
+];
+---
+<Base
+  title="Linux sensor — logs and metrics in one command | 24Observe"
+  description="Get any Linux server reporting in a single command. The Sensor ships system logs and host metrics over open standards, and redacts secrets before they leave."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> The Linux Sensor</div>
+          <h1 class="h1">One command, and the server is reporting. <em>Logs, metrics, and a place on the map.</em></h1>
+          <p class="lede">
+            Getting telemetry off a server is supposed to be the easy part and somehow never is — agents to install,
+            configs to write, credentials to manage, a separate tool for metrics and another for logs. The 24Observe
+            Sensor collapses all of that into a single command. Run it on a host and within a minute it is shipping system
+            logs and host metrics, has redacted its secrets at the edge, has self-enrolled with a scoped credential, and
+            has appeared as a live node on your topology map.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/docs/sensor" class="btn btn-ghost btn-lg">Read the docs</a>
+          </div>
+          <div class="hero-meta">
+            <span>One <b>command</b></span>
+            <span>Logs <b>+ metrics</b></span>
+            <span>Edge <b>redaction</b></span>
+            <span>Self-<b>enrolling</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> root@web-03 ~</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> sensor install</div>
+              <div class="con-meta">signed package</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">curl …/install.sh | sudo bash --enroll-token=•••</div>
+                <div class="con-sub"><span>verifying signature</span><span class="tech">ok</span></div>
+              </div>
+              <span class="sev sev-med">RUN</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">enrolled · per-host token (logs+metrics only)</div>
+                <div class="con-sub"><span>edge redaction on</span><span class="tech">shipping</span></div>
+              </div>
+              <span class="sev sev-med">OK</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">web-03 now on topology map</div>
+                <div class="con-sub"><span>health: healthy</span><span class="tech">sensor.online</span></div>
+              </div>
+              <span class="sev sev-med">LIVE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> A first-class, health-aware host in under a minute</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The onboarding problem</div>
+        <h2 class="h2">The fastest observability project is the one with nothing to maintain.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The reason so many servers go unmonitored is not that teams do not care. It is that the cost of onboarding each
+          one — install an agent, write a config, manage a credential, do it again for metrics — is just high enough to
+          keep getting deferred.
+        </p>
+        <p>
+          Every step in a typical agent setup is a small tax, and the taxes compound. You install a logging agent, then a
+          separate metrics agent, because the tooling treats them as different problems. You write a configuration file by
+          hand, which means you maintain a configuration file by hand, which means it drifts. You generate a credential and
+          copy it onto the box, which means you now have a long-lived secret sitting on a server with more access than it
+          should have. Multiply that by a fleet and onboarding becomes a project, so the marginal server — the one that is
+          "probably fine" — never gets instrumented, right up until it is the one that fails silently.
+        </p>
+        <p>
+          There is a security cost hiding in there too. The credential you copied onto the host can usually do far more
+          than ship telemetry, so a compromised box becomes a foothold. And the logs that agent ships often carry secrets
+          straight off the machine — tokens in stack traces, keys in environment dumps — into your log store, where they
+          sit waiting to be discovered in an audit. The convenience of "just ship everything" quietly becomes a liability.
+        </p>
+        <p>
+          The Sensor is built to make onboarding cheap enough that you stop deferring it, and safe enough that doing so
+          does not create new problems. One command installs a signed package that ships both logs and host metrics, so
+          there is no second agent. It writes its own configuration and self-enrolls, so there is nothing to hand-maintain.
+          It exchanges a fleet-wide enrollment token — which can only enroll, never read — for a per-host credential scoped
+          to telemetry alone, so a compromised host cannot become a foothold. And it strips secrets at the edge before
+          anything leaves the machine, so the convenience does not cost you your credentials. Onboarding the tenth server
+          is exactly as fast and exactly as safe as the first.
+        </p>
+        <p>
+          That low, flat cost changes behaviour. When instrumenting a host is a one-liner with no maintenance and no
+          security trade-off, you instrument the marginal server too — and the marginal server is usually the one whose
+          silent failure would otherwise have surprised you.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A server you did not bother to instrument is a server you will debug blind. The fix is to make instrumenting it
+        cost one command and nothing afterwards.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What it does</div>
+        <h2 class="h2">Logs, metrics, profiles, and a place on the map.</h2>
+        <p class="lede">
+          The Sensor is opinionated on purpose: it collects the things almost every host should be reporting, lets you
+          layer on the rest, and makes each host a health-aware node rather than just a log source.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">System logs</div><p>Journald logs ship out of the box, searchable in the same readable language as everything else and watched by the same detections. <a href="/product/logs">Logs →</a></p></div>
+        <div class="why-card"><div class="why-num">Host metrics</div><p>CPU, memory, disk, and network as first-class series — chartable and alertable beside your application metrics, no second agent. <a href="/product/metrics">Metrics →</a></p></div>
+        <div class="why-card"><div class="why-num">Profiles</div><p>Opt-in add-ons for container logs, web-server access and error logs, system audit events, and forwarded syslog — enabled per host with a flag or a checkbox.</p></div>
+        <div class="why-card"><div class="why-num">Edge redaction</div><p>Secrets are matched and stripped on the host, before anything is sent — so a credential in a log never crosses the wire or reaches storage.</p></div>
+        <div class="why-card"><div class="why-num">A node on the map</div><p>Each host joins the <a href="/product/context-graph">topology map</a> with a live health state, so it is part of your blast-radius picture, not an isolated stream.</p></div>
+        <div class="why-card"><div class="why-num">Offline detection</div><p>sensor.offline and sensor.online events mean a host dropping off becomes an incident you are told about, not a gap you find days later.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Safe by construction</div>
+        <h2 class="h2">Convenience that doesn’t cost you security.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Signed package</div><div class="spec-val">Installs from a <b>signed package</b>, not an unsigned binary — what runs on your host is verified, and it is built on open standards under the hood.</div></div>
+        <div class="spec-row"><div class="spec-key">Enroll-only token</div><div class="spec-val">The fleet-wide enrollment token <b>can only enroll hosts</b> — it cannot read your data — so one token safely onboards everything.</div></div>
+        <div class="spec-row"><div class="spec-key">Per-host scope</div><div class="spec-val">On enrolment the host gets a credential restricted to <b>shipping logs and metrics</b> and nothing else. A compromised host is not a foothold.</div></div>
+        <div class="spec-row"><div class="spec-key">Automatic rotation</div><div class="spec-val">Re-running the installer <b>rotates the host credential</b>, so refreshing a box's token is a one-liner, not a manual ceremony.</div></div>
+        <div class="spec-row"><div class="spec-key">Secrets stay home</div><div class="spec-val">Edge redaction strips tokens, keys, and embedded credentials <b>before they leave the machine</b>, with a second pass at ingest.</div></div>
+        <div class="spec-row"><div class="spec-key">Owner-controlled</div><div class="spec-val">Minting an enrollment token is an <b>owner-or-admin action</b>, so fleet onboarding is a deliberate, governed step.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">From a bare box to a watched host, in a minute.</h2>
+        <p class="lede">
+          What actually happens between running one command and having a server that is searchable, charted, and watched —
+          and why the fleet that follows is as easy as the first host.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          You have a new server — a web box, freshly provisioned, currently invisible. In the dashboard you generate an
+          install command, which mints a scoped enrollment token and drops it into a one-liner with the token already
+          filled in. You run that line on the host as root. The first thing it does is fetch and verify a signed package,
+          so you are not piping an anonymous binary into a root shell and hoping; what installs is what you expect.
+        </p>
+        <p>
+          The Sensor then does the setup you would otherwise do by hand. It exchanges the enrollment token for a per-host
+          credential that can only ship logs and metrics — the enrollment token itself could never read your data, and now
+          even the host's own token cannot — writes its configuration, turns on edge redaction, and starts as a managed
+          service. No config file authored by you, no long-lived broad credential copied onto the box, no second agent for
+          metrics. Within a minute, journald logs and host metrics are flowing.
+        </p>
+        <p>
+          Immediately the host stops being a blind spot. Its logs are searchable in the same language as the rest of your
+          estate and are already being evaluated by the security and reliability detections. Its CPU, memory, and disk are
+          chartable series you can put a threshold on. And it has appeared as a node on the topology map with a healthy
+          status — so it is part of your blast-radius picture from the first second, not an island.
+        </p>
+        <p>
+          Now scale it. The same enrollment token onboards the next host, and the next; one token can bring up your whole
+          fleet because all it can do is enroll. Each host you add becomes another health-aware node, and the platform
+          starts watching for their absence: if one drops off, a sensor.offline event opens an incident, so a dead box is
+          something you are paged about rather than something you discover during the next outage it was silently part of.
+        </p>
+        <p>
+          A month later, when a host genuinely fails, none of this is a scramble. The box was instrumented because
+          instrumenting it cost one line; its logs and metrics are there to explain the failure; its place on the map
+          shows what depended on it; and its going-offline was itself the alert. The boring discipline of "instrument
+          everything" became achievable precisely because the Sensor made the marginal host free to onboard and safe to
+          trust.
+        </p>
+        <h3>Day two: running a fleet, not just installing one</h3>
+        <p>
+          The first install is the demo; the hundredth host is the real test, and that is where the Sensor's design pays
+          off rather than its novelty. Because every host self-enrolled with a per-host credential, rotating a box's token
+          is the same one-liner you used to install it — there is no credential spreadsheet to reconcile, no shared secret
+          whose rotation means touching every server at once. Refreshing a token is a routine, low-stakes act rather than
+          a coordinated event you keep postponing because it is risky.
+        </p>
+        <p>
+          Decommissioning is just as clean. When a host is retired, its per-host credential is scoped to that host alone,
+          so revoking it closes that box's access without disturbing anything else, and its going-quiet is itself an event
+          the platform already understands. You are not left wondering whether a long-lived broad credential is still
+          floating around on a machine you turned off months ago — there was never a broad credential to worry about.
+        </p>
+        <p>
+          Profiles are what let one fleet hold many kinds of host without one sprawling configuration. A web server runs
+          the access-and-error-log profile; a container host runs the container profile; a box with compliance
+          requirements runs the audit profile; an appliance forwarding syslog runs the syslog profile. Each host collects
+          exactly what is relevant to its role, chosen with a flag or a checkbox, so you are not shipping irrelevant noise
+          from every machine or hand-authoring a bespoke pipeline per server. The fleet is heterogeneous; the operational
+          model is uniform.
+        </p>
+        <p>
+          And throughout, the security posture holds without anyone maintaining it. Edge redaction is on by default on
+          every host, so adding the fiftieth server does not add a fiftieth place for a credential to leak into your logs.
+          The enroll-only token cannot read data no matter how many hosts it brings up. The per-host scope means a single
+          compromised box is contained, not a pivot point. The properties that made the first install safe are the same
+          properties that keep a large fleet safe, because they are structural rather than procedural — you did not have to
+          remember to do anything to keep them true.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A hand-built agent setup vs the Sensor.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Hand-built agent setup</div><div class="us">24Observe Sensor</div></div>
+        <div class="cmp-row"><div class="cmp-k">Logs and metrics</div><div>Two separate agents.</div><div class="cmp-us">One install, both signals.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Configuration</div><div>Hand-written, then maintained.</div><div class="cmp-us">Self-written; nothing to maintain.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Credentials</div><div>A broad secret copied onto the box.</div><div class="cmp-us">Per-host, telemetry-only, auto-rotating.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Secrets in logs</div><div>Shipped, then found in an audit.</div><div class="cmp-us">Stripped at the edge before sending.</div></div>
+        <div class="cmp-row"><div class="cmp-k">A host going down</div><div>A silent gap.</div><div class="cmp-us">An offline event and an incident.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Onboarding the 10th host</div><div>As slow as the first.</div><div class="cmp-us">One command, same as the first.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">The Linux Sensor — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Instrument the server you keep meaning to.</h2>
+      <p class="final-cta-sub">
+        One command ships logs and host metrics, redacts secrets at the edge, self-enrolls with a scoped token, and puts
+        the host on your topology map — as fast and as safe on the hundredth server as on the first.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/context-graph" class="btn btn-ghost btn-lg">See the topology map</a>
+      </div>
+    </div>
+  </section>
+</Base>

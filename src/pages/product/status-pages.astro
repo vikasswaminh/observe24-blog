@@ -1,0 +1,331 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What is a status page for, really?',
+    a: 'It is how you tell your customers the truth before they have to ask. During an outage, the worst experience is silence — users hammering refresh, opening tickets, wondering if it is them or you. A status page turns that anxiety into information: here is what is affected, here is what we know, here is when we last updated. It protects your support queue and your credibility at the same moment, and the credibility is the part that compounds.',
+  },
+  {
+    q: 'How does it stay accurate during an incident?',
+    a: 'Because it is wired to the same incidents your team is already working. When a monitor fails and an incident opens, the affected component can reflect that automatically, and updates posted to the incident appear on the page — so the operator fixing the problem is not also moonlighting as the press office, hand-copying status into a separate tool. The page tells the truth because it is reading from the source of truth.',
+  },
+  {
+    q: 'Can I group monitors into components?',
+    a: 'Yes. Real systems are not up-or-down; they are "checkout is degraded but browsing is fine." You group your monitors into the components your customers actually think in — API, dashboard, checkout, email — so the page communicates impact in their language rather than dumping a list of raw checks. A partial outage reads as a partial outage, not a binary panic.',
+  },
+  {
+    q: 'Can customers subscribe to updates?',
+    a: 'Yes. Visitors can subscribe by email and be notified when an incident opens, updates, and resolves, so the people who depend on you do not have to sit on the page refreshing. Proactive communication to subscribers is what turns an outage from a trust-damaging surprise into a handled event — they heard it from you first.',
+  },
+  {
+    q: 'Can I keep a status page private?',
+    a: 'Yes. Pages can be password-protected, which is exactly what you want for an internal service or a status page meant only for a specific customer or partner. You get the same automatic, accurate communication without it being open to the whole internet — useful for internal platforms and for the kind of enterprise customer who wants a private view.',
+  },
+  {
+    q: 'Can I embed status elsewhere?',
+    a: 'Status badges let you surface current state wherever your users already are — a docs site, a dashboard, a footer — so the health signal is not trapped on one page they have to remember to visit. A small badge that quietly turns from green to degraded is often the first thing a user sees, and it sends them to the full page only when there is something to see.',
+  },
+  {
+    q: 'How is this different from a standalone status-page product?',
+    a: 'A standalone status-page product is disconnected from your monitoring, so keeping it accurate is manual work someone has to remember to do mid-crisis — which is exactly when it gets forgotten. Here the status page is part of the same platform that detected the outage and is holding the incident, so accuracy is the default rather than a chore. The page that tells customers is fed by the system that knows.',
+  },
+  {
+    q: 'Does publishing status expose anything sensitive?',
+    a: 'No. A status page communicates impact — which customer-facing components are affected and the human-readable updates you choose to post — not your internal topology, infrastructure, or telemetry. You decide what components exist and what each update says. It is a deliberate, curated external view, entirely separate from the detailed internal picture your team works from.',
+  },
+  {
+    q: 'Can I manage status pages and updates programmatically?',
+    a: 'Yes. Posting incident updates and managing maintenance is part of the agent-programmable API, so your incident automation can drive the public narrative as it drives the response. A bot or an agent that resolves an incident can post the resolution to the page in the same motion. See the <a href="/agents">API for agents</a>.',
+  },
+];
+---
+<Base
+  title="Status pages wired to your real incidents | 24Observe"
+  description="Public or private status pages with components, email subscribers, and badges — fed automatically by the same incidents your team is already working on."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Status pages</div>
+          <h1 class="h1">Tell your customers the truth — <em>without leaving the incident to do it.</em></h1>
+          <p class="lede">
+            During an outage your customers want one thing: to know. A standalone status-page tool makes telling them a
+            manual chore someone has to remember in the middle of a crisis, which is exactly when it gets forgotten.
+            24Observe wires the status page to the same incidents your team is working, so affected components reflect
+            reality and updates publish themselves — the operator fixes the problem instead of moonlighting as the press
+            office.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; incidents</a>
+          </div>
+          <div class="hero-meta">
+            <span>Auto-<b>updated</b></span>
+            <span><b>Components</b></span>
+            <span>Email <b>subscribers</b></span>
+            <span>Public or <b>private</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> status.example.com</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Service status</div>
+              <div class="con-meta">subscribers notified</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Checkout</div>
+                <div class="con-sub"><span>degraded performance</span><span class="tech">auto from incident #884</span></div>
+              </div>
+              <span class="sev sev-high">DEGRADED</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">API · Dashboard · Email</div>
+                <div class="con-sub"><span>all components</span><span class="tech">no issues</span></div>
+              </div>
+              <span class="sev sev-med">OK</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Update: rolled back, recovering</div>
+                <div class="con-sub"><span>posted from the incident</span><span class="tech">3m ago</span></div>
+              </div>
+              <span class="sev sev-med">LIVE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> The page reads from the incident — accuracy is the default</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The status problem</div>
+        <h2 class="h2">The status page is always wrong at the exact moment it matters.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          A status page is a promise to your customers that you will tell them the truth about outages. A standalone
+          status page quietly breaks that promise, because keeping it accurate depends on a human remembering to update it
+          during the one event when nobody has a spare hand.
+        </p>
+        <p>
+          The mechanics of the failure are mundane and universal. The outage starts, the team scrambles to fix it, and the
+          status page — which lives in a different product, behind a different login — sits there proclaiming "All systems
+          operational" while customers watch the thing fall over in real time. Eventually someone remembers it, logs in,
+          and posts an update that is already stale by the time they finish typing it. The gap between what is true and
+          what the page says is widest precisely when customers are looking hardest, and every minute of that gap erodes
+          the trust the page was supposed to protect.
+        </p>
+        <p>
+          So the page that was meant to reassure ends up doing the opposite. Customers learn that "All systems
+          operational" cannot be believed during an incident, which means it cannot really be believed at all, which means
+          the page stops doing its only job. Worse, the silence drives them to your support queue — tickets, chats, emails,
+          all asking the same question the status page should have answered — so an outage in your product becomes an
+          outage in your support team too.
+        </p>
+        <p>
+          24Observe removes the human-memory dependency that causes all of this. The status page is part of the same
+          platform that detected the outage and is holding the <a href="/product/incidents">incident</a>, so it reads from
+          the source of truth instead of waiting for someone to transcribe it. When a monitor fails, the affected component
+          can reflect it automatically; when your team posts an update to the incident, it appears on the page and goes out
+          to subscribers. Accuracy stops being a chore performed under pressure and becomes the default state of the page.
+        </p>
+        <p>
+          That changes what a status page is worth. A page that is reliably accurate during incidents is one customers
+          actually trust — and a trusted status page is one of the cheapest, highest-leverage pieces of customer goodwill
+          you can own, precisely because it works when everything else is on fire.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A status page that says “all operational” during an outage teaches customers to ignore it. The fix is to feed it
+        from the system that already knows the truth.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you can build</div>
+        <h2 class="h2">A page that speaks your customers’ language.</h2>
+        <p class="lede">
+          Real systems degrade in parts, customers think in services not checks, and not every audience is the public
+          internet. The status surface bends to all of that.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Components</div><p>Group your monitors into the services customers recognise — API, dashboard, checkout, email — so a partial outage reads as partial, in their language, not a raw list of checks.</p></div>
+        <div class="why-card"><div class="why-num">Automatic updates</div><p>Affected components reflect failing monitors, and updates posted to the incident publish to the page — no separate tool to remember mid-crisis.</p></div>
+        <div class="why-card"><div class="why-num">Email subscribers</div><p>Customers subscribe and hear about an incident the moment it opens, updates, and resolves — proactive communication, not a page they must refresh.</p></div>
+        <div class="why-card"><div class="why-num">Public or password-protected</div><p>Open it to the world, or lock it for an internal service, a single customer, or a partner — the same automatic accuracy, the audience you choose.</p></div>
+        <div class="why-card"><div class="why-num">Status badges</div><p>Embed current state in a docs site, dashboard, or footer, so the health signal lives where users already are and pulls them in only when there is news.</p></div>
+        <div class="why-card"><div class="why-num">Curated by design</div><p>A status page communicates impact and the updates you choose — never your internal topology or telemetry. A deliberate external view, separate from the internal picture.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Wired to the work</div>
+        <h2 class="h2">The page is downstream of the incident, not a parallel chore.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>One source of truth, two audiences</h3>
+          <p>
+            Your team works the incident; your customers read the status page; both are looking at the same underlying
+            reality, expressed at the right level of detail for each. The internal incident carries the logs, the
+            topology, and the analyst's verdict; the public page carries the human-readable impact and the updates you
+            choose to share. Because they are fed from one source, they cannot drift apart — the page is never telling
+            customers one story while the team lives another.
+          </p>
+          <h3>Updates that travel once</h3>
+          <p>
+            When a responder posts an update to the incident — "identified the cause, rolling back" — that update can flow
+            straight to the status page and out to subscribers. One message, written once, reaches the team's record, the
+            public page, and every customer who subscribed. The responder is not retyping the same sentence into three
+            places at the worst possible moment; they communicate once and the platform fans it out.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Recovery that announces itself</h3>
+          <p>
+            When the incident resolves, the page follows. The degraded component returns to operational, a resolution
+            update posts, and subscribers are told it is over — without anyone remembering to go close the loop in a
+            separate tool. The all-clear is as automatic as the alarm, which matters because a status page that never says
+            "resolved" leaves customers permanently unsure whether it is safe to come back.
+          </p>
+          <h3>Planned work, communicated calmly</h3>
+          <p>
+            Maintenance is the friendly cousin of an incident, and it belongs on the page too. Schedule a window, post what
+            you are doing and when, and the page sets expectations in advance — so planned downtime reads as competence
+            rather than a surprise. Drive it from the API alongside your <a href="/product/incidents">incident</a>
+            automation, and even routine maintenance communicates itself.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The outage your customers heard about from you first.</h2>
+        <p class="lede">
+          The same checkout failure, told from the customer's side of the glass — and why a connected status page turns a
+          trust-damaging silence into a handled event.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A lunchtime deploy quietly breaks checkout. A content check catches it and opens an incident, and the on-call
+          engineer is paged within seconds. In a world with a disconnected status page, here is what your customers
+          experience meanwhile: clicks that fail, a status page still cheerfully green, and a growing suspicion that the
+          problem is on your end and you either do not know or are not saying. They start opening tickets. They start
+          posting publicly. The outage becomes a story you are not part of.
+        </p>
+        <p>
+          With the status page wired to the incident, the story is different from the first minute. As the incident opens
+          against the checkout component, the page reflects it — checkout moves to degraded — and the customers who
+          subscribed get an email: we are aware of an issue affecting checkout, we are investigating. They did not have to
+          discover the problem and wonder about it; they heard it from you, immediately, which is the entire difference
+          between anxiety and patience.
+        </p>
+        <p>
+          The engineer identifies the bad deploy and posts a single update to the incident: "Identified — a recent deploy
+          broke the checkout confirmation; rolling back now." That sentence, written once, lands on the team's incident
+          record, on the public status page, and in subscribers' inboxes. The engineer never opened a second tool. The
+          customers watching the page see a team that knows what is wrong and is acting — which reads as competence, not
+          chaos.
+        </p>
+        <p>
+          The rollback completes, the content check goes green, and the incident resolves. The page follows automatically:
+          checkout returns to operational, a resolution update posts, and subscribers are told it is over and safe. Nobody
+          had to remember to close the loop, so the loop actually got closed — which is more than most status pages manage,
+          because the human who would have done it was busy fixing the actual problem.
+        </p>
+        <p>
+          Afterwards, what your customers remember is not that checkout broke for twenty minutes — software breaks — but
+          that you told them immediately, kept them informed, and confirmed when it was fixed. That memory is worth more
+          than the twenty minutes cost you, and it exists only because the page told the truth without a human having to
+          remember to make it.
+        </p>
+        <p>
+          It is worth being precise about why the automatic part matters so much, because "we have a status page" and "our
+          status page is trustworthy" are very different claims. Trust in a status page is built in the moments it is
+          accurate when it would have been easy to be wrong — and those moments are exactly when humans are least able to
+          maintain it. A page that depends on someone remembering to update it mid-incident will, statistically, be wrong
+          at the worst times, and a page that is sometimes wrong at the worst times is one customers quietly stop
+          believing. Automation is not a convenience here; it is the only way the page earns the trust that is its entire
+          reason to exist.
+        </p>
+        <p>
+          The same logic extends to the unglamorous incidents nobody writes home about — the brief blips, the partial
+          degradations, the maintenance windows. A disconnected status page tends to capture only the dramatic outages,
+          because those are the ones someone remembers to post; the small stuff goes unreported, which over time teaches
+          customers that the page only reflects catastrophes. A page fed automatically from incidents reflects the small
+          things too, accurately and without effort, and that consistency is what makes the page a habit your customers
+          come to rely on rather than a billboard they check only when something is obviously broken.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A standalone status page vs one wired to incidents.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A standalone status page</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Staying accurate</div><div>A manual update, remembered mid-crisis.</div><div class="cmp-us">Fed from the incident; accurate by default.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Posting an update</div><div>Retyped into a separate tool.</div><div class="cmp-us">Written once on the incident, fanned out.</div></div>
+        <div class="cmp-row"><div class="cmp-k">The all-clear</div><div>Often forgotten.</div><div class="cmp-us">Resolves automatically with the incident.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Customer comms</div><div>They find out, then ask.</div><div class="cmp-us">Subscribers hear it from you first.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Partial outages</div><div>Up or down.</div><div class="cmp-us">Components in the customer’s language.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Audience</div><div>Usually public only.</div><div class="cmp-us">Public or password-protected.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Status pages — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">A status page your customers can actually trust.</h2>
+      <p class="final-cta-sub">
+        Components in your customers' language, email subscribers, and embeddable badges — fed automatically by the
+        incidents your team is already working, so it tells the truth without anyone remembering to make it.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/uptime" class="btn btn-ghost btn-lg">Uptime monitoring</a>
+      </div>
+    </div>
+  </section>
+</Base>

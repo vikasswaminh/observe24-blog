@@ -1,0 +1,91 @@
+---
+import Base from '../../layouts/Base.astro';
+
+/**
+ * Interactive OpenAPI reference for the 24observe API.
+ *
+ * The spec itself is served by the API at https://api.24observe.com/openapi.json
+ * and is auto-generated from the route handlers. This page renders it via
+ * Scalar's API Reference component, which loads the spec at runtime — so any
+ * route added in the codebase appears here automatically with no doc edits.
+ *
+ * Rationale: keep the human-curated narrative pages (/docs/api, /docs/logs,
+ * /docs/heartbeats, /docs/collector) for "how do I use this?" guidance, and
+ * this page for "what is the exact contract of every endpoint?" — including
+ * request/response schemas, status codes, and a try-it-now button.
+ */
+---
+
+<Base
+  title="24Observe API reference — interactive OpenAPI spec"
+  description="Interactive reference for every 24observe API endpoint. Auto-generated from the OpenAPI spec served by the API itself — always in sync with what's actually deployed."
+>
+  <section style="padding: 32px 0 16px;">
+    <div class="container" style="max-width: 1200px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · OpenAPI reference</div>
+      <h1 class="h1" style="margin-top: 16px; font-size: 36px;">Interactive API reference</h1>
+      <p class="lede" style="margin-top: 16px; max-width: 760px;">
+        Every endpoint, every parameter, every response schema — pulled live from
+        the OpenAPI spec our API publishes at <code>/openapi.json</code>. If a
+        route lands in production, it shows up here automatically. For narrative
+        guides and quickstarts, see <a href="/docs/api">/docs/api</a>,
+        <a href="/docs/logs">/docs/logs</a>, and
+        <a href="/docs/heartbeats">/docs/heartbeats</a>.
+      </p>
+    </div>
+  </section>
+
+  {/*
+    Scalar API Reference — a modern, themable OpenAPI renderer that loads the
+    spec at runtime. We pin a specific CDN version so the page is reproducible;
+    bump the version periodically once a year, after smoke-testing in a PR.
+
+    Configuration is via the `data-configuration` attribute on the script tag.
+    Theme is set to a dark default that matches the rest of the marketing site.
+   */}
+  <div id="api-reference-wrap" style="min-height: 70vh;">
+    <script
+      id="api-reference"
+      data-url="https://api.24observe.com/openapi.json"
+      data-configuration={JSON.stringify({
+        theme: 'deepSpace',
+        layout: 'modern',
+        darkMode: true,
+        forceDarkModeState: 'dark',
+        hideDarkModeToggle: true,
+        hideDownloadButton: false,
+        hideTestRequestButton: false,
+        showSidebar: true,
+        defaultHttpClient: { targetKey: 'shell', clientKey: 'curl' },
+        metaData: {
+          title: '24observe API',
+          description: 'Programmatic access to monitors, incidents, status pages, logs, heartbeats, and OpenTelemetry ingest.',
+        },
+      })}
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.94"></script>
+  </div>
+
+  <style is:global>
+    /*
+      Scalar injects `body { background: white }` site-wide on this page,
+      which makes our transparent <nav> and <footer> chrome render invisibly
+      against the white. Force the body background back to our marketing
+      surface so the chrome stays readable. Scalar applies its own dark
+      surface to its internal panels, so this doesn't affect the reference UI.
+    */
+    html, body {
+      background: var(--bg) !important;
+    }
+
+    /*
+      Scalar mounts inline; cap its width to the container we use elsewhere on
+      the marketing site so it doesn't blow out to full viewport on wide
+      monitors. Inner content stays full-bleed within that cap.
+    */
+    #api-reference-wrap .scalar-api-reference {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+  </style>
+</Base>

@@ -1,0 +1,510 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import PageSchema from '../../components/PageSchema.astro';
+
+const faqs = [
+  {
+    q: 'What does the AI analyst actually do?',
+    a: 'It investigates incidents for you. When something opens an incident — a security detection, a failed check, a metric threshold, a host going quiet — the analyst picks it up, gathers evidence with read-only tools, and returns a written verdict: what is wrong, what it affects, the evidence behind the conclusion, and the most likely fix. It does the first hour of an investigation in seconds, so your responders start from an answer instead of a blank page.',
+  },
+  {
+    q: 'Is it for security teams or operations teams?',
+    a: 'Both, and that is the point. The same analyst classifies every incident as a security threat or an operational failure and investigates accordingly. A brute-force burst gets a threat verdict with the malicious indicators; a service falling over gets a root-cause verdict with the change that caused it. One analyst, one workflow, instead of a SOC tool and a separate NOC tool that never talk to each other.',
+  },
+  {
+    q: 'Does it take actions on my systems automatically?',
+    a: 'No. The analyst is read-only when it investigates, and any remediation it recommends — block this address, disable this account, roll back this change — is proposed for a human to approve, never executed on its own. You get the speed of automated investigation without handing an automated system the keys to your environment.',
+  },
+  {
+    q: 'How does it figure out root cause for an outage?',
+    a: 'It reasons over a live map of how your services, hosts, and devices depend on one another. When several things fail at once it looks for what they share — a common host, a common dependency, a recent change — and names that as the likely root cause, with the evidence that points to it. Most outages follow a change, so a configuration edit or deploy in the minutes before the incident is treated as the prime suspect and checked against the metrics.',
+  },
+  {
+    q: 'Will it invent answers when the evidence is thin?',
+    a: 'No. The analyst is built to refuse rather than guess. If the tools do not support a confident conclusion, it says so and routes the incident to a human instead of fabricating a cause. Every claim in a verdict is tied to a specific record you can open and check — a log line, a metric, a change, an entity in the graph.',
+  },
+  {
+    q: 'Do I have to configure anything for it to start working?',
+    a: 'No special wiring. The analyst triages the incidents your platform already opens — from monitors, detections, metric alerts, and the context graph — so the day you turn it on it begins working on real incidents. The more telemetry you send, the richer its evidence becomes, but it does not sit idle waiting for setup.',
+  },
+  {
+    q: 'Can I keep my team in control of which model it uses?',
+    a: 'Yes. The analyst is model-agnostic — you are not locked to a single vendor or a black box. You can run it on the default, bring your own model, and keep your investigation data on the terms you choose.',
+  },
+  {
+    q: 'Does it learn from my team’s corrections?',
+    a: 'Yes. When an analyst on your team overrides a verdict — marks a true positive as benign, or corrects a disposition — that correction feeds back as guidance, so the analyst aligns to how your organisation actually triages over time instead of repeating the same mistakes.',
+  },
+  {
+    q: 'How is this different from alert correlation or noise reduction tools?',
+    a: 'Correlation tools group alerts. The analyst explains them. Grouping tells you fifty alerts are related; the analyst tells you the switch that died, the services it took down, and what to do about it — with the evidence. It is the difference between a tidier queue and an actual answer.',
+  },
+  {
+    q: 'What kinds of incidents can it investigate?',
+    a: 'Anything that becomes an incident: authentication abuse and intrusion attempts, data-exfiltration signals, suspicious agent behaviour, host resource exhaustion, service crashes and restart loops, latency and error-rate spikes, network device and link failures, and failed availability checks. Security and operations, on one desk.',
+  },
+];
+---
+<Base
+  title="AI SOC analyst — root cause for every incident | 24Observe"
+  description="An autonomous analyst that investigates every incident — security or operational — and returns root cause, blast radius, cited evidence, and the fix."
+  activeNav={null}
+>
+  <PageSchema type="SoftwareApplication" name="24Observe AI NOC + SOC Analyst" path="/product/ai-analyst"
+    description="An autonomous analyst that investigates every incident and returns root cause, blast radius, cited evidence, and the fix in seconds."
+    features={["Autonomous incident triage", "Evidence-cited verdicts", "Root cause + blast radius", "Reasons over the operational knowledge graph", "Bring-your-own-model / self-hostable"]}
+  />
+  <!-- ───────────────── Hero ───────────────── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> AI NOC + SOC Analyst</div>
+          <h1 class="h1">The analyst that <em>investigates every incident</em> — and hands you the answer.</h1>
+          <p class="lede">
+            Most teams do not have an alerting problem. They have an investigation problem. Alerts arrive faster than
+            anyone can work them, and each one still needs a human to ask the same questions: what is this, what does it
+            touch, what changed, is it real, and what do I do now. The 24Observe analyst answers those questions for you —
+            on security incidents and operational ones alike — and returns a written verdict with the evidence and the fix.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/docs/build-an-agent" class="btn btn-ghost btn-lg">See how it works</a>
+          </div>
+          <div class="hero-meta">
+            <span>Security <b>+</b> operations</span>
+            <span>Evidence-cited <b>verdicts</b></span>
+            <span>Proposes, never <b>auto-runs</b></span>
+            <span>Your <b>model</b>, no lock-in</span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/incidents/2481</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Analyst verdict</div>
+              <div class="con-meta">operational · 4 tools · 9.3s</div>
+            </div>
+            <div style="padding: 16px;">
+              <div style="font-size: 13.5px; color: var(--ink); font-weight: 600; margin-bottom: 6px;">Root cause</div>
+              <p style="font-size: 13.5px; color: var(--ink-1); line-height: 1.55; margin: 0 0 16px;">
+                Checkout latency began climbing two minutes after a config change to the payments gateway. The new timeout
+                is shorter than the provider’s p99, so requests retry and queue. The common factor across all five
+                impacted services is the payments host.
+              </p>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Recent change · payments-gw timeout 8s → 2s</div>
+                <div class="con-sub"><span>14:02:11</span><span class="tech">prime suspect</span></div>
+              </div>
+              <span class="sev sev-high">CAUSE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Metric · payments host CPU 31% → 96%</div>
+                <div class="con-sub"><span>retry storm</span><span class="tech">confirmed</span></div>
+              </div>
+              <span class="sev sev-med">EVIDENCE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Blast radius · 5 services impact this host</div>
+                <div class="con-sub"><span>checkout · cart · orders · email · web</span></div>
+              </div>
+              <span class="sev sev-med">IMPACT</span>
+            </div>
+            <div class="con-foot">
+              <span class="arr">→</span> Recommended fix · roll back the timeout change, then re-tune against provider p99
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── The problem ───────────────── -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The investigation tax</div>
+        <h2 class="h2">The bottleneck was never the alert. It was everything after it.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Every monitoring tool ever built is good at the same thing: telling you something is wrong. None of them are
+          good at the part that actually costs you — the slow, manual work of finding out <em>why</em>.
+        </p>
+        <p>
+          Picture the queue on a bad afternoon. A detection fires for a burst of failed logins. A monitor flips a service
+          to degraded. A metric crosses a threshold. A host stops reporting. Each one is a notification, and each one is
+          the beginning of an investigation that a human has to run by hand. They open a logging tool in one tab, a
+          metrics dashboard in another, the change log in a third, and a topology diagram that is probably out of date in a
+          fourth. They reconstruct what the incident touches, line up timestamps, rule out the obvious, and slowly assemble
+          a story. By the time they have an answer, the next three alerts are already waiting.
+        </p>
+        <p>
+          This is the investigation tax, and it is paid on every single incident. It is why mean-time-to-resolution
+          stubbornly refuses to drop no matter how many alerting integrations you add. It is why alert fatigue is real:
+          not because the alerts are wrong, but because each one demands the same expensive ritual before anyone can act.
+          And it is why the most experienced engineers — the ones who can read a graph and know instantly where to look —
+          spend their days doing repetitive triage instead of the work only they can do.
+        </p>
+        <p>
+          Adding more alerts does not fix this. Routing them more cleverly does not fix this. Grouping them into tidier
+          clusters does not fix this. The only thing that fixes it is doing the investigation itself — automatically,
+          consistently, and with evidence you can trust. That is the entire purpose of the 24Observe analyst.
+        </p>
+      </div>
+      <blockquote class="quote">
+        An alert tells you the smoke alarm went off. An investigation tells you which room is on fire, what started it,
+        and where the exit is. We automated the second part.
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ───────────────── How it works ───────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> How it works</div>
+        <h2 class="h2">It runs the investigation the way your best responder would.</h2>
+        <p class="lede">
+          The analyst does not pattern-match a template. It plans, gathers evidence with read-only tools, reasons over
+          what it finds, and only commits to a conclusion the evidence supports. Here is the loop it runs on every
+          incident.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div>
+            <h3>Classify the incident</h3>
+            <p>
+              First it decides what kind of problem this is — a security threat or an operational failure — because the
+              two are investigated differently. A failed-login surge and a saturated database both deserve attention, but
+              the questions you ask about each are not the same. Getting this right up front is what lets one analyst serve
+              both your security desk and your operations desk.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div>
+            <h3>Map the blast radius</h3>
+            <p>
+              It walks the live map of how your environment fits together — which services call which, what runs on which
+              host, who owns what — to see everything the incident reaches. For an outage it looks for the common point
+              upstream of every failure: if a dozen services all break at once, what do they share? That shared component
+              is almost always where the real problem lives.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div>
+            <h3>Blame the change</h3>
+            <p>
+              Most operational incidents are self-inflicted: a deploy, a config edit, a rule update minutes before
+              everything went sideways. The analyst pulls the recent changes around the incident and treats anything that
+              landed just before it as the prime suspect — the single highest-value clue in root-cause analysis, and the
+              first thing a seasoned engineer checks.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div>
+            <h3>Confirm with the evidence</h3>
+            <p>
+              A suspicion is not a conclusion. The analyst reads the relevant metrics and logs to confirm or kill its
+              hypothesis — is the suspect host actually saturated, did the error the change would cause actually appear, is
+              the source address actually flagged as malicious. It cites the exact numbers and lines, so the verdict stands
+              on evidence you can open, not on a hunch.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">5</div>
+          <div>
+            <h3>Deliver the verdict</h3>
+            <p>
+              Finally it writes its conclusion in plain language: what happened, how confident it is, what it affects, the
+              evidence trail, and the recommended fix. If the evidence does not add up to a confident answer, it says so
+              and hands the incident to a human rather than guessing. The whole loop takes seconds.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── One analyst, both disciplines ───────────────── -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Security and operations, one desk</div>
+        <h2 class="h2">The first analyst that works your NOC and your SOC.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text">
+          <h3 class="h3" style="color: var(--accent);">When it’s a threat (SOC)</h3>
+          <p class="lede" style="margin-bottom: 16px;">
+            For a security incident, the analyst behaves like a tier-1 SOC analyst who never gets tired and never skips a
+            step.
+          </p>
+          <div class="prose">
+            <p>
+              It corroborates the signal across independent indicators before it calls anything real: a source address
+              that is known-bad or appears on a threat feed, a successful login that follows a wall of failures, access to
+              sensitive files, a privilege escalation, a sign of data leaving the building. It traces the incident outward
+              to the identities, hosts, and assets it touches, so you see who and what is exposed — not just the single
+              event that tripped the rule. And it is deliberately conservative: ambiguous, unsupported, or noisy signals
+              get a measured verdict and a route to a human, because escalating a false positive erodes trust as surely as
+              missing a real one.
+            </p>
+          </div>
+        </div>
+        <div class="split-media">
+          <h3 class="h3" style="color: var(--accent);">When it’s an outage (NOC)</h3>
+          <p class="lede" style="margin-bottom: 16px;">
+            For an operational incident, it behaves like a senior SRE doing root-cause analysis under pressure — calmly.
+          </p>
+          <div class="prose">
+            <p>
+              It finds the common dependency behind a wave of failures, identifies the change that triggered it, and
+              confirms the mechanism in the metrics — the saturated host, the climbing latency, the retry storm, the disk
+              filling up. Its verdict is not a disposition; it is a root cause and a fix: roll back the change, restart or
+              scale the service, fail over, free the disk. The same engine that surfaces an attacker also surfaces the
+              two-line config edit that took down checkout. One place to look when the pager goes off, whatever the reason.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Anatomy of a verdict ───────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you actually get</div>
+        <h2 class="h2">Anatomy of a verdict.</h2>
+        <p class="lede">
+          Every investigation produces the same structured, defensible result — not a paragraph of speculation, but a
+          decision a human can act on or audit. Here is what is in it.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row">
+          <div class="spec-key">Classification</div>
+          <div class="spec-val"><b>Security or operational.</b> So it routes to the right desk and is investigated with the right questions.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Root cause</div>
+          <div class="spec-val"><b>What actually happened,</b> in plain language — the failing component and the thing that triggered it, not a restatement of the symptom.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Blast radius</div>
+          <div class="spec-val"><b>What it touches</b> — the services, hosts, identities, and owners reachable from the incident, so you know who is affected before they tell you.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Evidence</div>
+          <div class="spec-val"><b>Cited records,</b> each a link you can open — the change, the metric, the log line, the flagged indicator. Nothing is asserted without proof.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Recommended fix</div>
+          <div class="spec-val"><b>The next action</b> — roll back, restart, scale, fail over, block, isolate — written to be approved and executed by a human.</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Confidence + disposition</div>
+          <div class="spec-val"><b>How sure it is,</b> and where it lands — confirmed, benign, transient, or needs-a-human — so you know how much weight to give the verdict at a glance.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── It learns ───────────────── -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> It gets sharper</div>
+        <h2 class="h2">It learns how your team triages — and stops making the same mistakes.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          A generic analyst is useful on day one and frustrating by week three, because it never adapts to your world. Ours
+          does. Every time someone on your team corrects a verdict — downgrades a true positive to benign, fixes a
+          disposition, adds context about why something was or was not a real problem — that correction is captured and fed
+          back as guidance for future investigations. Over time the analyst converges on how <em>your</em> organisation
+          actually reasons about incidents, not some industry average.
+        </p>
+        <p>
+          This matters because triage is contextual. The login pattern that is an attack in one company is a batch job in
+          another. The error rate that is a crisis for one service is background noise for its neighbour. By learning from
+          the people who know your environment, the analyst earns trust the way a new hire does: by being corrected, and
+          not repeating the mistake. The corrections become an asset — a record of how your team decides — that makes every
+          future verdict a little more like the one your best responder would have written.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Safety / control ───────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Speed without losing control</div>
+        <h2 class="h2">It investigates on its own. It never acts on its own.</h2>
+        <p class="lede">
+          Automated investigation is safe. Automated action is where teams get nervous — and they are right to. We drew the
+          line deliberately.
+        </p>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Read-only when it investigates</h3>
+          <p>
+            While the analyst gathers evidence it can only read — query logs, read metrics, walk the graph, pull recent
+            changes. It cannot modify your monitors, rewrite a detection, or touch a system. The worst an investigation can
+            do is read something it should not, which is why everything it sees runs through redaction first to strip
+            secrets and sensitive data before any of it reaches the model.
+          </p>
+          <h3>Proposes, you approve</h3>
+          <p>
+            When a verdict includes a remediation — block this address, disable this account, roll back this change — it is
+            proposed for a human to approve, queued and waiting, never executed automatically. You get the speed of an
+            analyst that works in seconds without handing an automated system standing permission to change your
+            environment. The judgement call stays with your team.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>It refuses rather than guesses</h3>
+          <p>
+            The most dangerous thing an automated analyst can do is sound confident while being wrong. Ours is built to do
+            the opposite: when the evidence does not support a conclusion, it returns a measured verdict and routes the
+            incident to a human instead of inventing a cause. Plausible-but-wrong is treated as a failure mode to be
+            engineered out, not a quirk to tolerate.
+          </p>
+          <h3>Your model, your terms</h3>
+          <p>
+            The analyst is model-agnostic. You are not married to one vendor or one opaque service — run it on the default,
+            bring your own model, and keep your investigation data on terms you control. The reasoning layer is ours; the
+            engine underneath is your choice, and it can change without changing your workflow.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Stat band ───────────────── -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What changes when you turn it on</div>
+        <h2 class="h2">Your responders start from an answer, not a blank page.</h2>
+      </div>
+      <div class="stat-band">
+        <div class="stat">
+          <b>Every incident</b>
+          <span>Security or operational, it gets investigated — not just the ones someone has time for.</span>
+        </div>
+        <div class="stat">
+          <b>Root cause + fix</b>
+          <span>A conclusion you can act on, with the recommended next action, not a tidier queue.</span>
+        </div>
+        <div class="stat">
+          <b>Evidence you can open</b>
+          <span>Every claim links to the record that proves it. Trust by verification, not by faith.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Comparison ───────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A tier-1 analyst seat, reframed.</h2>
+        <p class="lede">
+          The work the analyst does is the work a tier-1 responder does on the first pass of an incident. The difference is
+          consistency, speed, and that it never runs out of hours.
+        </p>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head">
+          <div>The job</div>
+          <div>A human first pass</div>
+          <div class="us">24Observe analyst</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-k">Coverage</div>
+          <div>The incidents there is time for; the rest wait in the queue.</div>
+          <div class="cmp-us">Every incident, the moment it opens.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-k">Time to a first answer</div>
+          <div>Tens of minutes of tab-hopping and timestamp-lining.</div>
+          <div class="cmp-us">Seconds, with the evidence already assembled.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-k">Consistency</div>
+          <div>Varies by who is on shift, how tired they are, how busy.</div>
+          <div class="cmp-us">The same disciplined loop on every incident.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-k">Scope</div>
+          <div>Usually a SOC analyst or an SRE — rarely both.</div>
+          <div class="cmp-us">Security and operations on one desk.</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-k">Memory</div>
+          <div>Walks out the door at the end of the shift.</div>
+          <div class="cmp-us">Learns from every correction and keeps it.</div>
+        </div>
+      </div>
+      <div class="prose" style="margin-top: 28px;">
+        <p>
+          This is not a replacement for your people — it is a force multiplier for them. The analyst takes the repetitive
+          first pass off their plate so the humans spend their judgement where it counts: on the hard calls, the genuine
+          unknowns, and the response itself. The best teams will not have fewer responders because of it. They will have
+          responders who are no longer drowning.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── FAQ ───────────────── -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">AI NOC + SOC analyst — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <!-- ───────────────── Final CTA ───────────────── -->
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stop working the queue. Start from the answer.</h2>
+      <p class="final-cta-sub">
+        Turn it on and the next incident — whatever kind it is — arrives already investigated, with root cause, blast
+        radius, evidence, and the fix. Your responders will wonder how they ever worked without it.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/pricing" class="btn btn-ghost btn-lg">See pricing</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,319 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+
+const SYSLOG = `# On the device, point syslog at the 24Observe ingest endpoint
+# (FortiGate example — concept is the same for Palo Alto, Cisco, etc.)
+config log syslogd setting
+  set status enable
+  set server "<your-ingest-endpoint>"
+  set port 514
+end`;
+
+const POLL = `Device:     core-switch-2
+Address:    10.0.0.2
+Profile:    switch (interfaces, throughput, errors, saturation)
+Interval:   60s
+Credentials: stored encrypted, scoped to read-only polling`;
+
+const faqs = [
+  {
+    q: 'What does onboarding a network device give me?',
+    a: 'Two streams of signal. Syslog from firewalls and network gear becomes searchable, normalised security events that the detection packs run over — so a firewall block or a config change is part of your SIEM. And SNMP polling turns the device into live metric series — interface status, throughput, errors, saturation — that you can chart and threshold-alert on. Together they make a device a first-class citizen of both your monitoring and your security.',
+  },
+  {
+    q: 'How do I send a device’s logs in?',
+    a: 'Point the device\'s syslog at the ingest endpoint. Firewalls and network operating systems — FortiGate, Palo Alto, Cisco, and others — all support forwarding syslog, and once configured, their events flow in and are normalised to a shared security schema so detections behave consistently regardless of vendor. It is a configuration change on the device, not an agent install.',
+  },
+  {
+    q: 'How does SNMP metric polling work?',
+    a: 'The collector polls the device over SNMP on an interval and turns the readings into metric series in the platform. You provide the device address and read-only SNMP credentials, choose a profile appropriate to the device type, and the relevant counters — interfaces, throughput, errors — start arriving as series you can alert on. The credentials are stored encrypted and scoped to read-only polling.',
+  },
+  {
+    q: 'Which vendors are supported?',
+    a: 'The syslog path works with any device that can forward syslog, which is effectively all enterprise network gear, and common vendors — FortiGate, Palo Alto, Cisco — are normalised to the shared schema so their events are consistent. SNMP polling works with standard device profiles. The approach is vendor-neutral by design: open protocols in, normalised data out.',
+  },
+  {
+    q: 'Do network events get detections and investigation?',
+    a: 'Yes. Normalised firewall and device events feed the same detection engine as everything else, including the infrastructure-and-network health pack, and any match opens an incident the analyst investigates. So a suspicious firewall pattern or a device health problem is not just a log line — it is a detection that becomes an investigated incident, alongside your application and host security.',
+  },
+  {
+    q: 'Can I alert when a device or interface is in trouble?',
+    a: 'Yes. Once a device is polled, its metrics are series like any other, so you set threshold alerts on them — a saturating interface, a rising error counter, a link going down — exactly as you would on a host\'s disk or a service\'s latency. See the metric &amp; SNMP alerting guide for the threshold setup.',
+  },
+  {
+    q: 'How does this show up on the topology map?',
+    a: 'Polled devices become nodes on the context graph with a live health state, so a switch or router is part of your blast-radius picture. When a device fails and takes downstream hosts with it, the platform can see that the resulting incidents share that device as a root and group them into one case — so a network failure that cascades pages you about the device, once, not about every symptom.',
+  },
+  {
+    q: 'Is this only for big network teams?',
+    a: 'No. Any team running their own network gear — a few switches and a firewall in a rack, or a full estate — benefits from having device logs and metrics in the same place as their applications and hosts. It is especially valuable for NOC and ops teams, but the setup is light enough that a small team can onboard a device in a few minutes. See the NOC solution for the broader picture.',
+  },
+];
+---
+<Base
+  title="Network device onboarding — firewalls & switches, syslog + SNMP | 24Observe"
+  description="Onboard FortiGate, Palo Alto, Cisco, and other network devices end to end: forward syslog for normalised security events, poll over SNMP for metrics, and get detections, alerts, and a place on the topology map."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Network onboarding</div>
+          <h1 class="h1">Make your firewalls and switches <em>first-class citizens.</em></h1>
+          <p class="lede">
+            Network gear is too often a blind spot — logs going to a box nobody reads, health invisible until a user
+            complains. This guide onboards a device end to end: forward its syslog for normalised, searchable security
+            events that feed detections, and poll it over SNMP for live metrics you can alert on. The result is a firewall
+            or switch that is part of your SIEM, your monitoring, and your topology map — not an island.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/network" class="btn btn-ghost btn-lg">About network monitoring</a>
+          </div>
+          <div class="hero-meta">
+            <span>Syslog → <b>security events</b></span>
+            <span>SNMP → <b>metrics</b></span>
+            <span>FortiGate · Palo · <b>Cisco</b></span>
+            <span>On the <b>topology map</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/network</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> core-switch-2 · onboarded</div>
+              <div class="con-meta">syslog + SNMP</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">firewall block · normalised event</div>
+                <div class="con-sub"><span>ECS schema</span><span class="tech">feeds detections</span></div>
+              </div>
+              <span class="sev sev-med">LOG</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">eth1 throughput · errors rising</div>
+                <div class="con-sub"><span>SNMP-polled</span><span class="tech">threshold alert</span></div>
+              </div>
+              <span class="sev sev-high">METRIC</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">device node on topology · healthy</div>
+                <div class="con-sub"><span>blast radius</span><span class="tech">storm-grouped</span></div>
+              </div>
+              <span class="sev sev-med">MAP</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Logs, metrics, detections, and topology — one device, one setup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The two streams</div>
+        <h2 class="h2">Logs for security, metrics for health.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          A network device produces two fundamentally different kinds of signal, and you want both. Its logs tell you what
+          it did — what it blocked, what changed, who connected. Its operational counters tell you how it is — how
+          saturated its links are, whether errors are climbing, whether an interface is flapping. Onboarding a device
+          means capturing both, and the platform treats each appropriately.
+        </p>
+        <p>
+          The <strong>log stream</strong> arrives by syslog and is normalised to a shared security schema, so a FortiGate
+          block, a Palo Alto session, and a Cisco config change all become consistent, searchable events regardless of how
+          each vendor phrases them. That normalisation is what lets the detection packs — including the infrastructure-and-
+          network health pack — run over network events the same way they run over application logs, so a suspicious
+          firewall pattern becomes a detection, and a detection becomes an investigated incident.
+        </p>
+        <p>
+          The <strong>metric stream</strong> arrives by SNMP polling. The collector queries the device on an interval and
+          turns its counters into metric series — interface status, throughput, errors, saturation — that behave exactly
+          like host or application metrics. That means you can chart them, watch trends, and set threshold alerts on them,
+          so a link nearing saturation or an error counter climbing becomes an incident before a user notices the slowness
+          it causes.
+        </p>
+        <p>
+          Together, the two streams turn a device from a blind spot into a fully-observed, fully-defended part of your
+          estate — present in your search, your detections, your alerts, and your topology map. The rest of this guide is
+          how to set up each stream.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Forward the device’s syslog.</h2>
+        <p class="lede">
+          A configuration change on the device, not an agent install — point its logs at the ingest endpoint and they
+          become normalised security events.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Every enterprise network device can forward syslog, and onboarding the log stream is a matter of telling it
+          where to send. The exact syntax differs by vendor, but the concept is identical everywhere — set the
+          destination to your ingest endpoint and enable forwarding. On a FortiGate, for example, it looks like this:
+        </p>
+        <pre class="code-block">{SYSLOG}</pre>
+        <p>
+          Palo Alto, Cisco, and other operating systems have their own equivalent of this, but the shape is the same: a
+          syslog server destination and an enable. Once events start flowing, they are normalised to the shared security
+          schema on arrival, so you do not have to write per-vendor parsers — a field means the same thing whether it came
+          from a FortiGate or a Cisco. Confirm the events are landing under Explore, filtered to the device, before moving
+          on.
+        </p>
+        <p>
+          From that moment the device's security-relevant activity is part of your platform. The detection packs evaluate
+          it, so a pattern worth worrying about opens an incident the analyst investigates; you can search it alongside
+          your application and host logs; and you can build your own detections over it in the same readable query
+          language you use everywhere else. The blind spot is now a watched surface.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Poll the device over SNMP.</h2>
+        <p class="lede">
+          Give the collector a device address, read-only credentials, and a profile, and its health counters start
+          arriving as metric series.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          To capture the health stream, configure SNMP polling for the device. You provide its address, read-only SNMP
+          credentials, a polling interval, and a profile that matches the device type — a switch profile collects
+          interface and throughput counters, a firewall profile collects its relevant health metrics, and so on:
+        </p>
+        <pre class="code-block">{POLL}</pre>
+        <p>
+          The collector queries the device on the interval and converts its counters into named metric series in the
+          platform. The credentials you provide are stored encrypted and scoped to read-only polling — the platform only
+          ever reads the device's counters, never changes anything on it. Within a polling cycle or two, the device's
+          metrics appear under Metrics, ready to chart and alert on.
+        </p>
+        <p>
+          With metrics flowing, set threshold alerts on the series that matter — a saturating interface, a rising error
+          rate, a link that goes down — exactly as you would on a host's disk or a service's latency. The
+          <a href="/docs/metric-alerts">metric and SNMP alerting guide</a> covers the threshold setup, including the
+          sustain duration that keeps a momentary blip from paging anyone. Now the device's health is not just visible but
+          watched: a problem opens an incident before the slowness it causes reaches a user.
+        </p>
+        <h3>Why network is so often the blind spot</h3>
+        <p>
+          It is worth understanding why network gear ends up unobserved so often, because the reasons explain why fixing
+          it pays off. Network devices predate the modern observability stack and speak their own protocols — syslog and
+          SNMP rather than the application-centric telemetry most tools are built around — so they tend to be handled by a
+          separate tool, or by no tool, sitting outside the platform where the rest of the signal lives. The result is a
+          structural gap: when an incident has a network cause, the evidence is in a system the application team never
+          looks at, and the network team is debugging from logs disconnected from the application impact. Each side sees
+          half the picture.
+        </p>
+        <p>
+          Bringing the device into the same platform closes that gap. The firewall's block and the application's failed
+          request are on one timeline; the switch's saturating interface and the service's rising latency are in one view.
+          When the analyst investigates an incident, it can reason across the network and application layers together,
+          because they are no longer in separate worlds. For the common case where a network problem is the root cause of
+          an application symptom, that unification is the difference between a fast diagnosis and a cross-team finger-
+          pointing exercise that burns an hour before anyone looks at the switch.
+        </p>
+        <h3>What good network onboarding looks like in practice</h3>
+        <p>
+          A sensible rollout does not try to onboard the entire estate at once. Start with the devices whose failure would
+          hurt most — the core switches, the perimeter firewalls, the links your critical services depend on — and get
+          both streams flowing for them: syslog into detections, SNMP into metrics and thresholds. Prove the value on
+          those, watch a real interface trend or a firewall pattern surface as an incident, and then widen to the rest of
+          the estate the same way. Because the setup is the same for every device, each additional one is fast once you
+          have done the first.
+        </p>
+        <p>
+          A couple of practical notes save time. Confirm each stream independently — check that syslog events are landing
+          under Explore before you worry about detections, and that the SNMP series appear under Metrics before you build
+          thresholds — so that if something is misconfigured you know which half to fix. Use read-only SNMP credentials
+          always; the platform never needs write access to a device, and giving it none is the right least-privilege
+          posture. And lean on the shared schema: because vendor events are normalised on arrival, a detection you write
+          for one firewall vendor generally works for another, so you are building portable coverage, not per-device
+          parsers.
+        </p>
+        <p>
+          Done this way, your network stops being the layer everyone forgets until it breaks and becomes a first-class,
+          watched, defended part of the same platform as everything else — which, for any team that runs its own gear, is
+          one of the highest-leverage pieces of coverage they can add. The NOC and ops teams who live closest to this feel
+          it most; the <a href="/solutions/noc">NOC solution</a> covers the broader picture of running network and ops on
+          one platform.
+        </p>
+        <p>
+          It is worth saying that this is one of the highest-leverage additions a team can make precisely because network
+          gear is so commonly neglected. The same organisation that meticulously instruments its applications will often
+          have firewalls logging to a file nobody reads and switches whose health is a mystery until something stops
+          working — not because the team does not care, but because the gear sits outside the platform where the rest of
+          the attention lives. Closing that gap does not require a network-monitoring specialist or a separate product; it
+          requires the two configuration steps above, done once per device. For the effort involved, few things expand
+          your coverage as much as bringing the network into the same platform as everything else.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The payoff</div>
+        <h2 class="h2">A device that’s watched, defended, and on the map.</h2>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Searchable events</div><div class="spec-val">Device logs are <b>normalised and searchable</b> alongside your application and host logs, in one query language.</div></div>
+        <div class="spec-row"><div class="spec-key">Detections &amp; investigation</div><div class="spec-val">Network events feed the <b>detection packs</b>, and any match opens an incident the analyst investigates.</div></div>
+        <div class="spec-row"><div class="spec-key">Health metrics &amp; alerts</div><div class="spec-val">SNMP counters become <b>series you threshold-alert on</b> — a problem opens an incident before users feel it.</div></div>
+        <div class="spec-row"><div class="spec-key">A node on the topology</div><div class="spec-val">The device joins the <b>context graph</b> with a live health state, part of your blast-radius picture.</div></div>
+        <div class="spec-row"><div class="spec-key">Storm grouping</div><div class="spec-val">When a device failure cascades, the resulting incidents <b>group by that shared root</b> — one page, not fifty.</div></div>
+        <div class="spec-row"><div class="spec-key">Vendor-neutral</div><div class="spec-val">Open protocols in (syslog, SNMP), <b>normalised data out</b> — no per-vendor lock-in, FortiGate to Cisco alike.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Network device onboarding — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Turn your network blind spot into a watched surface.</h2>
+      <p class="final-cta-sub">
+        Forward syslog for normalised security events, poll over SNMP for health metrics, and get detections, alerts, and
+        a place on the topology map — for every firewall and switch you run.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/solutions/noc" class="btn btn-ghost btn-lg">For NOC teams</a>
+      </div>
+    </div>
+  </section>
+</Base>

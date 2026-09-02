@@ -1,0 +1,341 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What does 24Observe give a security team that a SIEM does not?',
+    a: 'The investigation. A traditional SIEM is excellent at producing alerts and silent on the part that consumes your analysts: deciding whether each alert is real and what to do about it. Here every detection opens an incident an AI analyst immediately investigates — gathering the evidence, tracing the blast radius, corroborating against threat intelligence — and returns a verdict with citations. Your team triages conclusions, not a raw alert queue.',
+  },
+  {
+    q: 'How does this reduce analyst burnout and alert fatigue?',
+    a: 'Two ways. First, the analyst dispositions the obvious benign cases automatically, so the volume that reaches a human is weighted toward real signals. Second, related detections sharing a root collapse into a single case, so one intrusion does not generate fifty separate alerts to work. The result is fewer, higher-quality items in the queue — which is the only durable cure for the tuning-down-to-silence spiral that hollows out most SOCs.',
+  },
+  {
+    q: 'What threats are covered out of the box?',
+    a: 'Eighty-seven detections across fourteen packs: authentication abuse, data exfiltration, secret exposure, web attacks, threat-intel matches, AI-agent and tool-protocol threats, cloud control-plane tampering, Linux host security, and infrastructure and reliability signals. Most carry a recognised attack-technique mapping. You enable a pack with one action and tune it to your environment. See the <a href="/product/siem">SIEM</a>.',
+  },
+  {
+    q: 'Can my analysts write and tune their own detections?',
+    a: 'Yes, in a readable query language rather than a proprietary scripting dialect. A detection is a saved query with a window, a threshold, a severity, and an attack-technique tag, and the moment it matches it flows through the same incident pipeline and investigation as everything else. Authoring or tuning a rule is a one-line change an analyst makes between cases, not a project.',
+  },
+  {
+    q: 'How does threat intelligence work here?',
+    a: 'Every public address in your incoming events is checked against threat intelligence the instant it lands — known-bad indicators, anonymising networks, listings — and flagged inline. You can also bring your own private indicators: addresses, domains, and file fingerprints, scoped to your organisation. A match is both a one-line detection and a strong corroborating signal the analyst weighs in its verdicts.',
+  },
+  {
+    q: 'Does it cover AI-agent threats my current SIEM ignores?',
+    a: 'Yes — a category most security tooling has not reached. Dedicated detections watch for prompt injection, runaway tool loops, token and cost abuse, sensitive tool use, and tool-protocol manipulation, on telemetry that actually understands agents. If your organisation has shipped any AI features, those risks are watched alongside your traditional signals. See <a href="/product/ai-agent-security">AI-agent security</a>.',
+  },
+  {
+    q: 'Can I feed my existing SOC tooling and SOAR?',
+    a: 'Yes. Every detection can fire a signed webhook to your own systems, and a gap-free, cursor-paginated export streams your audit trail for any downstream SIEM, data lake, or SOAR to consume. 24Observe is happy to be the detection-and-investigation layer that feeds the tools you already run, rather than demanding you rip them out.',
+  },
+  {
+    q: 'How does it keep an audit trail and support compliance?',
+    a: 'Every meaningful action is recorded — who did it, when, from where, and whether it came from a person or an automated token — and the log is queryable and exportable. Combined with per-tenant data isolation, redaction, and configurable retention, that gives you the audit and governance posture a security function needs without bolting on a separate compliance tool.',
+  },
+  {
+    q: 'Is the security capability a separate, pricier tier?',
+    a: 'No. Detection, correlation, threat intelligence, enrichment, cases, and the analyst are part of the platform, not a security tier with its own per-gigabyte intelligence meter. Consolidating detection and investigation is the entire point; gating it behind a second product would defeat it.',
+  },
+];
+---
+<Base
+  title="SIEM for SOC teams — detections that investigate"
+  description="A SIEM where every detection opens an incident an AI analyst investigates and returns a verdict for — with correlation, threat intel, and a full audit trail."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> For SOC &amp; security teams</div>
+          <h1 class="h1">Your analysts don’t need more alerts. <em>They need the investigation done.</em></h1>
+          <p class="lede">
+            Every SOC drowns the same way: a detection engine produces thousands of alerts a day, there are never enough
+            analysts to work them, so the queue grows, the noisy rules get muted, and a real intrusion slips through a
+            fully-deployed SIEM. 24Observe breaks the cycle by doing the part that consumes your team — the investigation.
+            Every detection opens an incident an AI analyst immediately works, returning a verdict with the evidence
+            attached. Your analysts triage conclusions, not a firehose.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/siem" class="btn btn-ghost btn-lg">See the SIEM</a>
+          </div>
+          <div class="hero-meta">
+            <span><b>87</b> detections</span>
+            <span>Auto-<b>investigated</b></span>
+            <span>Threat intel <b>at ingest</b></span>
+            <span>AI-agent <b>coverage</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/cases</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Case #2471 · verdict ready</div>
+              <div class="con-meta">true positive</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Brute-force → success · flagged source</div>
+                <div class="con-sub"><span>T1110</span><span class="tech">6 citations</span></div>
+              </div>
+              <span class="sev sev-crit">CONFIRMED</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Impossible-travel · same account</div>
+                <div class="con-sub"><span>corroborated</span><span class="tech">grouped into case</span></div>
+              </div>
+              <span class="sev sev-high">EVIDENCE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Recommended: block source, force reset</div>
+                <div class="con-sub"><span>proposed</span><span class="tech">human approves</span></div>
+              </div>
+              <span class="sev sev-med">ACTION</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> A decision with proof — not a row in a queue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The SOC reality</div>
+        <h2 class="h2">The alert was never the hard part. The triage is.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Every security leader knows the dirty secret of the SIEM market: buying a powerful detection engine is easy, and
+          it will happily generate more alerts than any team on earth could investigate. The bottleneck was never
+          detection. It is the human hours to decide what is real.
+        </p>
+        <p>
+          That bottleneck produces a predictable, demoralising spiral. Alerts arrive faster than analysts can work them,
+          so the queue grows. Analysts cherry-pick the scary-looking ones and let the rest age out. The noisy rules — the
+          ones that fire too often because they are doing their job — become the first to be tuned down, because every
+          alert costs time the team does not have. And quietly, coverage shrinks: the detections that would have caught a
+          real intrusion get muted to keep the dashboard calm, which is exactly how breaches walk through fully-deployed,
+          fully-funded SIEMs. The tool worked. The team just could not afford to use all of it.
+        </p>
+        <p>
+          The cost lives in the investigation, and it is brutal per-alert economics. For each alert worth a second look,
+          someone pulls the related events, lines up the timestamps, checks the source against threat intelligence, sees
+          whether a failed-login burst was followed by a success, works out which account and host are involved, and
+          decides attacker-or-misconfiguration. That is twenty minutes of skilled work on a good day, and the maths never
+          closes: the alerts always outnumber the analyst-hours, so something always goes unworked.
+        </p>
+        <p>
+          24Observe is built on the conviction that detection and investigation are one product, not two. The detections
+          are strong — but their job is to open an incident, and the instant they do, the
+          <a href="/product/ai-analyst">analyst</a> investigates: gathering the evidence, tracing the blast radius,
+          corroborating against threat intelligence, and returning a verdict a human can act on or audit. Your analysts
+          stop being the investigation engine and become the decision-makers and approvers, which is where their judgement
+          actually belongs.
+        </p>
+        <p>
+          And here is the quiet second win: when investigation is automatic and consistent, the incentive to mute coverage
+          disappears. A rule that fires a little too often is no longer a burden — it is a few extra incidents the analyst
+          dispositions in seconds, most closed as benign before a human looks. So you keep coverage broad and sensitive
+          without drowning the team. Detection breadth and analyst sanity stop being a trade-off, which is the trade-off
+          that quietly hollows out most SOCs within a year of go-live.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A SIEM that hands your analysts ten thousand alerts has not reduced their work — it has relocated it onto people
+        you cannot hire fast enough. Doing the investigation is the only thing that actually scales.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What your team gets</div>
+        <h2 class="h2">A SOC platform that works the alerts with you.</h2>
+        <p class="lede">
+          Detection breadth is table stakes; what changes the job is everything that happens after a rule fires. These are
+          the pieces that turn a SIEM from an alert factory into an investigation partner.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Auto-investigation</div><p>Every detection opens an incident the analyst works — evidence gathered, blast radius traced, a verdict with citations returned. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">87 detections, 14 packs</div><p>Authentication, exfiltration, secrets, web attacks, cloud control-plane, identity & SaaS, endpoint & runtime (EDR), Linux host, AI-agent, and reliability — most attack-technique mapped, tuned to you. <a href="/product/siem">SIEM →</a></p></div>
+        <div class="why-card"><div class="why-num">Correlation</div><p>Sequence and cardinality rules catch the multi-step attacks a single event cannot express — spray, enumeration, failed-then-success.</p></div>
+        <div class="why-card"><div class="why-num">Threat intelligence</div><p>Public addresses checked against indicators at the moment of ingest; bring your own private indicators too.</p></div>
+        <div class="why-card"><div class="why-num">AI-agent threats</div><p>Prompt injection, tool loops, sensitive tool use, and tool-protocol manipulation — the coverage most SIEMs lack. <a href="/product/ai-agent-security">Agent security →</a></p></div>
+        <div class="why-card"><div class="why-num">Audit &amp; export</div><p>A complete, queryable audit trail and a gap-free export that feeds any downstream SIEM, lake, or SOAR. No lock-in.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> How the queue changes</div>
+        <h2 class="h2">From a firehose of alerts to a short list of decisions.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>The queue shrinks because the work moves</h3>
+          <p>
+            The reason a SOC queue is overwhelming is that every item in it represents unfinished investigation. Move the
+            investigation upstream — have the analyst do it the instant a detection fires — and the queue stops being a
+            backlog of work and becomes a list of decisions. The benign cases are dispositioned automatically and never
+            reach a human; the real ones arrive with the evidence already assembled. Your analysts spend their day
+            confirming, escalating, and acting, not gathering.
+          </p>
+          <h3>Coverage you can afford to keep on</h3>
+          <p>
+            Because false positives cost seconds instead of twenty minutes, you stop paying the tax that drives teams to
+            mute detections. You can run broad, sensitive coverage — including the noisy-but-valuable rules everyone else
+            turns off — and let the analyst absorb the volume. Breadth becomes free, which is the opposite of the usual
+            SOC dynamic where every additional detection is a future source of fatigue.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>One intrusion, one case</h3>
+          <p>
+            A real attack rarely trips one detection; it trips several across several systems. Instead of fragmenting that
+            into a dozen separate alerts your analysts have to mentally reassemble, the platform recognises the shared root
+            and collapses them into a single case. Your team investigates the intrusion, not its echoes — and the analyst's
+            verdict spans the whole case, so the picture is coherent from the first look.
+          </p>
+          <h3>It learns your environment</h3>
+          <p>
+            When an analyst reviews a verdict and corrects it — confirms, downgrades, annotates — that correction is
+            captured and feeds future investigations, so the analyst gets measurably better at reading <em>your</em>
+            environment over time. The institutional knowledge that usually lives only in your senior analysts' heads
+            starts accruing to the system, which is how a SOC gets more capable without simply hiring more people.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A brute-force that turned out to be real.</h2>
+        <p class="lede">
+          The kind of alert that, in an overwhelmed SOC, might have aged out unworked — and how auto-investigation turns it
+          into a confident, fast call.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A burst of failed logins hits one of your services. In most SOCs this is alert number four hundred for the day,
+          and it looks exactly like the misconfigured client and forgotten cron job that produced alerts three hundred and
+          one and three hundred and fifty. An overstretched analyst, reasonably, deprioritises it. That is precisely how a
+          real intrusion hides — in the camouflage of routine noise.
+        </p>
+        <p>
+          Here it does not get deprioritised, because no human had to triage it first. The brute-force detection opened an
+          incident, and the analyst immediately went to work — not taking the spike at face value, but corroborating.
+          Was there a successful login for that account right after the wall of failures? Yes. Is the source address
+          flagged by threat intelligence or coming from an anonymising network? Yes. Is the geography impossible for this
+          user given their last known location? Yes. Each question was answered against your real telemetry, and each
+          answer recorded as a citation.
+        </p>
+        <p>
+          The verdict that lands in the queue is a decision, not a description: a confident true positive, with the
+          failures, the success, the flagged source, and the impossible travel all linked so an analyst can verify the
+          call in seconds rather than reconstruct it over twenty minutes. The recommended actions — block the source,
+          force a password reset, isolate the affected session — are proposed for a human to approve, never executed
+          automatically.
+        </p>
+        <p>
+          Your analyst opens the case, reads the cited evidence, agrees, and approves the response — total human time,
+          perhaps two minutes, on an alert that in an overwhelmed queue might have sat untouched until it was a breach
+          notification. And because the same intrusion tripped a couple of related detections, those were grouped into the
+          one case, so the analyst dealt with a single coherent incident instead of three scattered alarms.
+        </p>
+        <p>
+          Afterwards the case is a complete record for the audit trail and the post-incident review, and if the analyst
+          adjusts anything about the verdict, that adjustment teaches the system. The catch that depended on a tired human
+          noticing the right alert among four hundred instead depended on an analyst that investigates every one — which
+          is the difference between a SOC that hopes nothing slips and one that can actually keep up.
+        </p>
+        <p>
+          Scale that single example across a day and the change is structural, not incremental. A SOC's effective capacity
+          is not the number of alerts it receives but the number it can actually investigate, and that number has always
+          been capped by analyst-hours. Moving the investigation upstream lifts the cap: the benign volume is dispositioned
+          without human time, the real incidents arrive pre-investigated, and your analysts' hours go entirely to judgement
+          and response. The same team, on the same headcount, covers far more — which for most security functions is the
+          difference between a backlog that grows and one that clears.
+        </p>
+        <p>
+          None of this asks you to trust a black box or surrender control. Every verdict is built from cited evidence a
+          human can verify in seconds, every recommended action is proposed for approval rather than executed, and every
+          step is recorded in the audit trail. The analyst is not replacing your analysts' authority; it is doing the
+          laborious gathering that stood between them and exercising it. That is the right division of labour for a SOC —
+          machines do the tireless evidence work, people make the calls — and it is the one that finally makes broad,
+          sensitive coverage affordable instead of aspirational.
+        </p>
+        <p>
+          It is also worth saying plainly what this is not: it is not a promise that the machine replaces your security
+          team. The judgement, the threat modelling, the decisions about what to block and whom to notify — those remain
+          human, and should. What changes is the ratio of judgement to drudgery. Today a SOC analyst spends the large
+          majority of their time gathering evidence and a sliver of it deciding; auto-investigation inverts that, so the
+          expensive human skill is spent on the calls that need it rather than on the assembly that does not. A SOC that
+          runs this way is not a smaller team — it is the same team, finally working at the level its training was for.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A classic SIEM vs a SOC platform that investigates.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A classic SIEM</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">After a detection fires</div><div>An alert in a queue.</div><div class="cmp-us">An investigated verdict with evidence.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Analyst time per alert</div><div>~20 minutes of gathering.</div><div class="cmp-us">~2 minutes of deciding.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Noisy rules</div><div>Muted to survive.</div><div class="cmp-us">Kept on; cheap to disposition.</div></div>
+        <div class="cmp-row"><div class="cmp-k">One intrusion</div><div>A dozen scattered alerts.</div><div class="cmp-us">One grouped case.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent threats</div><div>Not covered.</div><div class="cmp-us">A dedicated pack.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Pricing</div><div>Security tier + intelligence meter.</div><div class="cmp-us">Part of the platform.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">For SOC &amp; security teams — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stop relocating the work onto people you can’t hire.</h2>
+      <p class="final-cta-sub">
+        Turn on the packs and let every detection arrive as an investigated verdict — so your analysts triage conclusions,
+        keep coverage broad, and actually keep up.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

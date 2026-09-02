@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const SUB = [
+  {
+    name: 'Cloudflare, Inc.',
+    purpose: 'DNS, TLS termination + CDN (24observe.com, login.24observe.com, api.24observe.com), DDoS protection, cookieless Web Analytics, and transactional email delivery (Cloudflare Email Service, from no-reply@24observe.com)',
+    region: 'Global edge (300+ POPs)',
+    dpa: 'https://www.cloudflare.com/cloudflare-customer-dpa/',
+  },
+  {
+    name: 'Dodo Payments',
+    purpose: 'Payment processing + subscription billing for paid plans: hosted checkout, the customer billing portal, card processing, invoices, and the customer/subscription records needed to bill you (we never store card numbers ourselves)',
+    region: 'Global',
+    dpa: 'https://dodopayments.com',
+  },
+  {
+    name: 'OpenRouter (model gateway)',
+    purpose: 'AI features — the AI SOC analyst and AI-assisted ingest mapping. Redacted incident/log excerpts are sent at request time to generate assistive output; routes to upstream model providers (e.g. OpenAI). Customers may bring their own provider where supported',
+    region: 'United States',
+    dpa: 'https://openrouter.ai',
+  },
+];
+---
+<Base
+  title="Subprocessors — 24Observe"
+  description="Every third party that touches your data, listed. We notify ≥30 days before adding to this list."
+>
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="eyebrow"><span class="bar"></span> Legal · subprocessors</div>
+      <h1 class="h1">Subprocessors</h1>
+      <p class="lede" style="margin-top: 24px;">
+        These are the third parties that may process your data on our behalf. We commit to notifying account
+        owners ≥30 days before adding a new entry to this list — your subscription to that notice is implicit
+        in your account.
+      </p>
+
+      <div class="specs" style="margin-top: 48px;">
+        {SUB.map((s) => (
+          <div class="spec-row" style="grid-template-columns: 1fr; gap: 8px;">
+            <div class="spec-key" style="font-size: 1rem;">{s.name}</div>
+            <div class="spec-val">
+              <div><b>Purpose:</b> {s.purpose}</div>
+              <div><b>Region:</b> {s.region}</div>
+              <div><b>DPA:</b> <a href={s.dpa} target="_blank" rel="noopener">view</a></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 class="h2" style="margin-top: 56px;">Not on this list (for clarity)</h2>
+      <ul style="line-height: 1.8;">
+        <li>ClickHouse, Redis — your logs/metrics/traces and queues run on our own infrastructure, not a managed cloud service</li>
+        <li>The API, scheduler, worker, graph sidecar, Caddy/nginx — our own software on our own servers</li>
+        <li>We do not use advertising networks, data brokers, or cross-site trackers anywhere</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Contact</h2>
+      <p>
+        Questions: <a href="mailto:privacy@24observe.com">privacy@24observe.com</a>
+      </p>
+    </div>
+  </section>
+</Base>

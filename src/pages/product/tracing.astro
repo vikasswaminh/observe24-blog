@@ -1,0 +1,322 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'How do I send traces?',
+    a: 'Over OpenTelemetry, the open standard. Your services export spans via OTLP exactly as they already do for any OpenTelemetry-native backend — point the exporter at the endpoint and they land. There is no proprietary tracing SDK to adopt and no instrumentation rewrite. If your stack already emits OpenTelemetry traces, you are minutes from seeing them here.',
+  },
+  {
+    q: 'What happens to a span once it arrives?',
+    a: 'It becomes a first-class, searchable, structured event on the same timeline as your logs and metrics — not data locked in a separate tracing silo you context-switch into. Every span carries its trace id, parent, service, operation, duration, and attributes, so you query spans with the same readable language you use for everything else and read them right next to the log lines they were emitted alongside.',
+  },
+  {
+    q: 'Can I follow one request across services?',
+    a: 'Yes. Spans that belong to the same request share a trace id, so filtering to that id gathers every span the request produced across every service it touched, in order, with timings — and the logs emitted during those spans sit on the same timeline. You reconstruct the path of a single request without jumping between a tracing tool and a logging tool and lining up clocks by hand.',
+  },
+  {
+    q: 'Do traces build a service map?',
+    a: 'Yes, through the context graph. The caller-and-callee relationships in your spans are turned into service-to-service dependency edges in the operational <a href="/product/context-graph">context graph</a>, which renders as a live topology map with a health overlay. So tracing does more than answer "what did this one request do" — it continuously answers "what depends on what," which is exactly the picture you need when you are deciding blast radius during an incident.',
+  },
+  {
+    q: 'How do traces and logs work together?',
+    a: 'They live in one place, on one timeline, queried in one language. That is the whole reason to keep them together: during an incident you are not exporting a trace from one product and grepping logs in another and trying to align timestamps. You filter to a trace id and the spans and the logs are already side by side, so cause and effect are visible instead of inferred.',
+  },
+  {
+    q: 'What about traces from AI agents and LLM apps?',
+    a: 'They get special treatment. Spans from GenAI calls — model invocations, tool calls, agent steps — have their AI-specific attributes promoted so the prompt and response content is searchable and the token usage rolls up into cost. If you run AI agents in production, your traces are not just performance data; they are the substrate for <a href="/llm-observability">agent observability</a> and <a href="/product/ai-agent-security">agent security</a>. See those pages for the full picture.',
+  },
+  {
+    q: 'Is this a full APM with flame-graph waterfalls?',
+    a: 'We are deliberate about what we claim. 24Observe is OpenTelemetry-native and treats spans as searchable, correlated events that feed a live service topology — that is what powers fast cross-service investigation and blast-radius reasoning. If your single requirement is a pixel-perfect flame-graph profiler, pair us with a dedicated profiling tool; if your requirement is to understand what a request did, what depends on what, and why an incident is happening, traces here are built to answer exactly that, alongside your logs, metrics, and detections.',
+  },
+  {
+    q: 'Will traces blow up my bill?',
+    a: 'Traces share the same monthly volume allowance as your logs and metrics, so you reason about one number rather than a separate per-span trace meter. Compressed bodies are accepted natively, so a busy trace pipeline travels at a fraction of its raw size. The pricing does not punish you for instrumenting thoroughly.',
+  },
+  {
+    q: 'Do traces feed detections and the analyst?',
+    a: 'Yes. Because spans are first-class events, they are part of the same substrate the security and reliability engine runs on, and the service relationships they create help the <a href="/product/ai-analyst">AI analyst</a> reason about blast radius when it investigates an incident. A trace is not a dead-end performance artefact here — it is evidence the platform can use.',
+  },
+  {
+    q: 'What do I need to start?',
+    a: 'An OpenTelemetry trace exporter pointed at the endpoint. If you are already running the OpenTelemetry collector, it is a one-line destination change; the collector is the supported bridge for gRPC exporters. Within a minute your spans are searchable and your service relationships start appearing on the topology map. <a href="/docs/collector">Collector setup →</a>',
+  },
+];
+---
+<Base
+  title="OpenTelemetry-native distributed tracing | 24Observe"
+  description="Send traces over OpenTelemetry and get searchable spans on the same timeline as your logs, a live service topology, and GenAI-aware spans. No proprietary SDK."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Tracing · OpenTelemetry-native</div>
+          <h1 class="h1">Traces that don’t live in a silo. <em>They sit next to your logs.</em></h1>
+          <p class="lede">
+            Distributed tracing usually means a second tool, a second SDK, and a second place to look — so during an
+            incident you are exporting spans from one product and grepping logs in another, aligning clocks by eye.
+            24Observe is OpenTelemetry-native: spans arrive as first-class, searchable events on the same timeline as your
+            logs and metrics, the caller-callee relationships become a live service map, and AI-agent spans get
+            first-class treatment. One pipeline, one query language, one timeline.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/context-graph" class="btn btn-ghost btn-lg">See the topology map</a>
+          </div>
+          <div class="hero-meta">
+            <span>OTLP <b>traces</b></span>
+            <span>Searchable <b>spans</b></span>
+            <span>Live <b>service map</b></span>
+            <span>GenAI <b>aware</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/explore?trace=9f2c</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> trace 9f2c4a… · 5 spans</div>
+              <div class="con-meta">checkout request</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">POST /checkout · api-gateway</div>
+                <div class="con-sub"><span>root span</span><span class="tech">812ms</span></div>
+              </div>
+              <span class="sev sev-med">200</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">→ charge() · payments-svc</div>
+                <div class="con-sub"><span>child span</span><span class="tech">740ms ⟵ slow</span></div>
+              </div>
+              <span class="sev sev-high">SLOW</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">log: gateway timeout, retrying</div>
+                <div class="con-sub"><span>same timeline</span><span class="tech">emitted in span</span></div>
+              </div>
+              <span class="sev sev-crit">ERROR</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Spans and the logs they emitted, one trace id, one timeline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The tracing problem</div>
+        <h2 class="h2">The trace and the log line should never have been in different tools.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          A span tells you a request was slow. A log line tells you why. In most stacks those two facts live in two
+          different products, and the entire skill of debugging distributed systems becomes the chore of reuniting them.
+        </p>
+        <p>
+          The promise of distributed tracing was always seductive: see a request travel across every service, find the hop
+          that hurt. The reality, for most teams, is a tracing tool that is genuinely good at showing you <em>where</em>
+          the time went and completely silent on <em>what happened there</em> — because the logs that would explain the
+          slow span are in a separate system, under a separate login, on a separate clock. You find the slow hop in one
+          tab, copy the timestamp, switch tabs, guess at a filter, and try to find the log lines that were emitted during
+          that exact window. The trace narrowed the search; it did not end it.
+        </p>
+        <p>
+          There is a quieter tax, too. A second tool means a second SDK, a second sampling configuration, a second bill
+          with its own per-span meter, and a second integration to keep alive as your services change. Teams end up
+          rationing traces — sampling aggressively, instrumenting partially — for the same reason they ration logs: the
+          tool that was supposed to help them understand the system charges most at the moment they most need it.
+        </p>
+        <p>
+          24Observe takes the opposite position: traces are not a separate discipline requiring a separate product, they
+          are another signal that belongs on the same timeline as everything else. Spans arrive over OpenTelemetry and
+          become first-class, searchable events, queried in the same readable language as your logs, sitting beside the
+          very log lines they emitted. Follow a trace id and you get the spans <em>and</em> the logs, in order, without
+          ever leaving the page. The trace tells you where; the logs right next to it tell you why; and you never had to
+          reunite them because they were never apart.
+        </p>
+      </div>
+      <blockquote class="quote">
+        Tracing that lives in its own silo answers “where did the time go” and leaves “why” in another tool. We keep the
+        span and the log line on the same timeline, because that is where you actually debug.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What you get</div>
+        <h2 class="h2">Open standards in. Searchable spans and a live map out.</h2>
+        <p class="lede">
+          We are precise about what tracing here is and is not. It is OpenTelemetry-native ingest, span search, request
+          reconstruction, and a continuously-updated service topology. It is built to make investigation fast, not to be
+          a standalone profiler.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">OpenTelemetry-native</div><p>Spans arrive over OTLP — the open standard. No proprietary SDK, no instrumentation rewrite, no lock-in. Point your existing exporter at the endpoint.</p></div>
+        <div class="why-card"><div class="why-num">Spans as first-class events</div><p>Each span is searchable and structured — trace id, parent, service, operation, duration, attributes — queried in the same readable language as your logs.</p></div>
+        <div class="why-card"><div class="why-num">Follow a request end to end</div><p>Filter to a trace id and gather every span the request produced across every service it touched, in order, with timings — and the logs alongside them.</p></div>
+        <div class="why-card"><div class="why-num">A live service topology</div><p>Caller-callee relationships become dependency edges in the <a href="/product/context-graph">context graph</a>, rendered as a topology map with a health overlay. Blast radius at a glance.</p></div>
+        <div class="why-card"><div class="why-num">GenAI-aware spans</div><p>Spans from model calls, tool calls, and agent steps have their AI attributes promoted — content searchable, tokens rolled into cost. <a href="/llm-observability">Agent observability →</a></p></div>
+        <div class="why-card"><div class="why-num">One allowance, no span meter</div><p>Traces share the same monthly volume allowance as logs and metrics, accepted compressed. Instrument thoroughly without a separate per-span bill.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Span plus log</div>
+        <h2 class="h2">Where the time went, and what happened there.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Reconstruct the request, not just the span</h3>
+          <p>
+            A trace id is the thread that ties a request together. Pull on it and every span the request created unspools
+            in order — the gateway that received it, the service that called the database, the dependency that timed out —
+            each with its duration, so the slow hop is obvious. That much, any tracing tool offers. The difference here is
+            what sits beside those spans: the actual log lines your code emitted while each span was open, on the same
+            timeline, in the same view. You see that the payment service took seven hundred milliseconds <em>and</em> the
+            log line where it logged "gateway timeout, retrying" — cause and effect, together.
+          </p>
+          <h3>One query language for spans and logs</h3>
+          <p>
+            You do not learn a tracing query syntax and a logging query syntax. Spans are events, logs are events, and you
+            filter both with the same readable language — by service, by attribute, by duration, by anything they carry.
+            The skill you build searching logs is the skill you use reading traces, and a single query can span both.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Topology is the long-lived value</h3>
+          <p>
+            Any one trace is a snapshot of one request. The more durable thing tracing gives you is the shape of your
+            system: which services call which, continuously discovered from real traffic and turned into a live
+            dependency map. When an incident hits, that map is what tells you what is downstream of the failing component —
+            the difference between "the database is slow" and "the database is slow and here are the six services your
+            customers will notice it through." The <a href="/product/context-graph">context graph</a> keeps that picture
+            current from your spans without you drawing a single diagram.
+          </p>
+          <h3>Evidence the analyst can use</h3>
+          <p>
+            Because spans and service relationships are first-class, the <a href="/product/ai-analyst">AI analyst</a> can
+            reason over them when it investigates an incident — using the dependency map to scope blast radius and the
+            spans as part of the evidence behind a verdict. Your traces are not a performance artefact gathering dust;
+            they are part of how the platform explains what is going wrong.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">Chasing a slow checkout across four services.</h2>
+        <p class="lede">
+          The everyday case distributed tracing exists for — and how it resolves when the spans and the logs are never in
+          different tools.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Customers report that checkout feels sluggish. The metric confirms it — p95 latency on the checkout endpoint has
+          crept past its budget — and the threshold alert has opened an incident. The question now is the hard one:
+          checkout is not one service, it is a chain of them, so where is the time actually going?
+        </p>
+        <p>
+          You take a slow request's trace id and filter to it. Every span the request produced lays out in order: the API
+          gateway received it and held it for eight hundred milliseconds, and almost all of that was spent waiting on a
+          single child span — a call into the payments service. The gateway is not slow; it is patiently waiting on
+          something downstream. In a tracing-only tool, that is where you would stop and switch tabs to go find out why.
+        </p>
+        <p>
+          Here you do not switch tabs. Sitting on the same timeline, inside that slow payment span, is the log line the
+          service emitted: "gateway timeout, retrying." The payments service is itself waiting on an external payment
+          gateway that has started timing out, and retrying — which is exactly why the span is slow and why customers feel
+          it. The trace told you where; the log line right beside it told you why; the whole diagnosis took one filter and
+          one read.
+        </p>
+        <p>
+          Now you want blast radius. The topology map, built continuously from these very traces, shows everything
+          downstream of the payments service — which other flows route through it and will be feeling the same pain. You
+          are not guessing at the scope of the incident; you are reading it. And because the slow dependency is implicated
+          in an open incident, it is highlighted on the map, so the next person who looks sees the problem without being
+          told where to look.
+        </p>
+        <p>
+          You hand the incident to the analyst to confirm, and its verdict lines up with what you found: the external
+          payment gateway is the root cause, the retries are amplifying the latency, and the affected services are these.
+          You flip to a fallback provider, the latency recovers, and you resolve the incident — having spent your time
+          deciding what to do rather than reuniting spans and logs that should never have been separated.
+        </p>
+        <p>
+          It is worth noticing what did <em>not</em> happen in that walk-through. You never exported a trace and imported
+          it somewhere else. You never copied a timestamp from a tracing tool into a log search and hoped the clocks
+          agreed. You never had to remember which of your services depended on the payments path, because the map built
+          from your own traces already knew. Each of those missing steps is a place where, in a two-tool world, an
+          investigation stalls or takes a wrong turn — and removing them is most of what separates a five-minute diagnosis
+          from a forty-minute one. The trace did not just show you where the time went; the system around it removed the
+          friction between that fact and the fix.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">A separate tracing silo vs traces on your timeline.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>A standalone tracing tool</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">Span and its logs</div><div>Two tools, two logins, aligned by eye.</div><div class="cmp-us">One timeline, one trace id, side by side.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Query language</div><div>A tracing-specific syntax.</div><div class="cmp-us">The same readable language as your logs.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Service map</div><div>A static diagram, or none.</div><div class="cmp-us">A live topology with a health overlay.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent spans</div><div>Generic, undecorated.</div><div class="cmp-us">AI attributes promoted; content and cost.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Pricing</div><div>A separate per-span meter.</div><div class="cmp-us">One shared volume allowance.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Standard</div><div>Often a proprietary SDK.</div><div class="cmp-us">OpenTelemetry-native, no lock-in.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Tracing — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Put your spans where your logs already are.</h2>
+      <p class="final-cta-sub">
+        Send traces over OpenTelemetry and get searchable spans on one timeline with your logs, a live service topology,
+        and GenAI-aware spans — no proprietary SDK, no separate silo, no per-span meter.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/collector" class="btn btn-ghost btn-lg">Collector setup</a>
+      </div>
+    </div>
+  </section>
+</Base>

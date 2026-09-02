@@ -1,0 +1,335 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'How do I get metrics in?',
+    a: 'Over OpenTelemetry — the open standard. Your applications and runtimes export metrics via OTLP and they land; the one-line Linux Sensor reports host metrics like CPU, memory, disk, and network for any server; and network devices contribute interface, throughput, and error counters through device polling. There is no proprietary metrics agent to install and maintain. If it speaks OTLP, it works.',
+  },
+  {
+    q: 'Which metric types are supported?',
+    a: 'Gauges and counters (sums) are ingested and queryable by name and series. Distribution metrics — histograms and summaries — are decomposed into their count and sum series so you can chart and alert on rate and average without losing the data point, and oversized attributes are truncated rather than dropped so a noisy label never costs you the metric. You query any of them by name with label filters.',
+  },
+  {
+    q: 'What is metric-threshold alerting?',
+    a: 'A metric alert watches a series and fires when it crosses a line you define — CPU above 90% for five minutes, free disk under 10%, request latency over a budget, a queue depth that will not drain. It is the metric sibling of a log alert: same incident pipeline, same routing, same on-call. When it fires it opens a first-class incident and emits a metric_alert.fired event your own systems and agents can subscribe to.',
+  },
+  {
+    q: 'Does a metric breach just send an email, or actually do something?',
+    a: 'It opens an incident. A threshold crossing is treated like any other incident the platform handles — it routes through your escalation policy and on-call schedule, it appears on the topology health map against the host or device it concerns, and if it shares a root cause with other open incidents it is grouped into a single case rather than paging you repeatedly. A metric breach is a first-class event, not a dead-end notification.',
+  },
+  {
+    q: 'Can metrics and logs work together?',
+    a: 'That is the point of having them in one platform. Any saved log query can be promoted to a chartable time-series, so a question you asked in logs — checkout failures per minute, errors from one region — becomes a metric you watch and alert on next to your infrastructure series. During an incident you are not flipping between a metrics tool and a logs tool and lining up timestamps by eye; they live on the same timeline.',
+  },
+  {
+    q: 'How do network and device metrics fit in?',
+    a: 'Network devices are polled for interface status, throughput, errors, and saturation, and those readings flow in as metrics alongside your application and host series. So a switch interface saturating, a host running hot, and an application latency budget breaching are all the same kind of signal in the same place. See <a href="/product/network">network monitoring</a> for the device side.',
+  },
+  {
+    q: 'Will a metric breach get investigated, or just reported?',
+    a: 'Investigated. Like every incident on the platform, a metric breach can be picked up by the <a href="/product/ai-analyst">AI analyst</a>, which correlates it with the logs, events, and topology around it and returns a root-cause verdict — "disk filled because this service started writing a runaway log," not just "disk is full." You get the cause, not only the symptom.',
+  },
+  {
+    q: 'Is there a separate per-metric or per-series bill?',
+    a: 'No. Metrics share the same monthly volume allowance as your logs and traces, so you reason about one number instead of a cardinality meter that punishes you for adding a useful label. The pricing does not fight your instrumentation.',
+  },
+  {
+    q: 'Can an agent or script manage metric alerts?',
+    a: 'Yes. Metric alerts are part of the agent-programmable surface: a least-privilege token can create, update, and test them through the same REST API a human uses, and subscribe to the metric_alert.fired event. You can manage your alerting as code, or let an automated agent tune thresholds based on what it learns. See the <a href="/agents">API for agents</a>.',
+  },
+  {
+    q: 'What do I actually need to start?',
+    a: 'Point an OpenTelemetry exporter at the endpoint, or install the one-line Sensor on a host, and metrics begin flowing within a minute. Add a threshold alert on the series that matters most to you, wire it to a channel, and you have closed the loop from signal to notification to investigated incident — without standing up a separate metrics stack.',
+  },
+];
+---
+<Base
+  title="Metrics and threshold alerts that open incidents | 24Observe"
+  description="Ingest metrics over OpenTelemetry, chart them next to your logs, and set thresholds that open investigated incidents — host, app, and network series in one."
+  activeNav="monitors"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Metrics &amp; alerting</div>
+          <h1 class="h1">A number crossing a line should <em>open a case, not send an email.</em></h1>
+          <p class="lede">
+            Metrics are easy to collect and hard to act on. Most tools give you beautiful dashboards and then leave the
+            judgement entirely to you: was that spike a problem, and what caused it? 24Observe ingests your metrics over
+            open standards, charts them on the same timeline as your logs, and turns a threshold breach into a first-class
+            incident that routes to on-call and gets investigated — so a saturated disk or a latency budget blown becomes
+            a root cause, not a red square you have to interpret.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/product/network" class="btn btn-ghost btn-lg">Network monitoring</a>
+          </div>
+          <div class="hero-meta">
+            <span>OpenTelemetry <b>metrics</b></span>
+            <span>Host · app · <b>device</b></span>
+            <span>Threshold <b>alerts</b></span>
+            <span>Breaches <b>get investigated</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> app.24observe.com/metrics</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Threshold alerts</div>
+              <div class="con-meta">host · app · network</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">disk.free &lt; 10% · db-primary</div>
+                <div class="con-sub"><span>5m sustained</span><span class="tech">→ incident #5102</span></div>
+              </div>
+              <span class="sev sev-crit">CRIT</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">http.latency.p95 &gt; 800ms · checkout</div>
+                <div class="con-sub"><span>budget breached</span><span class="tech">→ analyst triaging</span></div>
+              </div>
+              <span class="sev sev-high">HIGH</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">if.errors rising · core-switch-2 eth1</div>
+                <div class="con-sub"><span>device poll</span><span class="tech">saturation</span></div>
+              </div>
+              <span class="sev sev-med">MED</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Every breach opens an incident, routes to on-call, and can be investigated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The metrics problem</div>
+        <h2 class="h2">Dashboards are not the same thing as answers.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          The metrics industry has perfected the art of the chart and almost entirely ignored the question that follows
+          it: so what?
+        </p>
+        <p>
+          A wall of dashboards feels like control. In practice it is a wall of homework. Every panel is a question you
+          have to remember to ask, interpret correctly, and act on in time — and nobody is watching all of them at three
+          in the morning. The graphs were always green right up until the outage, because a graph does not raise its hand;
+          it just sits there being accurate while you are asleep. The information was present. The judgement was missing.
+        </p>
+        <p>
+          When teams do wire up alerting, the second trap springs. Metric alerts in most tools are fire-and-forget
+          notifications: a threshold trips, an email or a chat message goes out, and that is the end of the system's
+          involvement. The human on the other end still has to figure out whether it matters, what else is affected, and
+          what caused it — starting from a one-line message and a link to the same dashboard they would have had to read
+          anyway. The alert relocated the work to a worse time of day; it did not reduce it.
+        </p>
+        <p>
+          24Observe treats a metric the way it treats every other signal: collecting it is the easy part, and the product
+          is what happens after it crosses a line. A threshold breach opens a first-class incident — the same kind a
+          failed health check or a security detection opens — which means it routes through your
+          <a href="/product/incidents">escalation policy and on-call schedule</a>, lands on the
+          <a href="/product/context-graph">topology map</a> against the resource it concerns, groups with related
+          incidents that share a root cause, and can be handed to the <a href="/product/ai-analyst">analyst</a> for a
+          verdict. The number stops being a square you interpret and becomes a case the platform helps you close.
+        </p>
+        <p>
+          That difference compounds. Because a breach carries context and gets investigated, you can afford to alert on
+          the things that actually matter without drowning your team — and because metrics live beside your logs, the
+          cause is usually one timeline away rather than three tools away.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A dashboard that is green until it isn’t has not protected you — it has documented your outage in real time. An
+        alert that opens an investigated incident is the difference.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Getting metrics in</div>
+        <h2 class="h2">One open standard, three kinds of signal.</h2>
+        <p class="lede">
+          Host, application, and network metrics arrive the same way and live in the same place — so the resource that is
+          struggling is visible whether it is a server, a service, or a switch.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Application metrics</div><p>Your services export over OpenTelemetry — request rates, latencies, queue depths, business counters. The open standard means no proprietary agent and no lock-in.</p></div>
+        <div class="why-card"><div class="why-num">Host metrics</div><p>The one-line Linux Sensor reports CPU, memory, disk, and network for any server, so infrastructure health shows up beside application health. <a href="/product/sensor">The Sensor →</a></p></div>
+        <div class="why-card"><div class="why-num">Network &amp; device metrics</div><p>Switches, routers, and firewalls are polled for interface status, throughput, errors, and saturation — device health as first-class series. <a href="/product/network">Network monitoring →</a></p></div>
+        <div class="why-card"><div class="why-num">Gauges &amp; counters</div><p>Point-in-time values and ever-rising counters are ingested and queryable by name with label filters — the everyday backbone of any metrics practice.</p></div>
+        <div class="why-card"><div class="why-num">Distributions, kept</div><p>Histograms and summaries are decomposed into their count and sum series so you can chart rate and average; oversized labels are truncated, not dropped, so noise never costs you the data point.</p></div>
+        <div class="why-card"><div class="why-num">Logs become metrics</div><p>Promote any saved log query to a chartable series, so "checkout failures per minute" sits on the board next to CPU and latency — one timeline for everything.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Thresholds that mean it</div>
+        <h2 class="h2">Set a line. Cross it, and a case opens.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>The metric sibling of a log alert</h3>
+          <p>
+            A metric alert is a series, a comparison, and a duration: CPU above ninety percent for five minutes, free disk
+            under ten percent, p95 latency over your budget, a queue that is not draining. The moment the condition holds,
+            it opens an incident through the exact same pipeline as a failed check or a fired detection — same severity
+            model, same routing, same on-call. There is no separate, weaker "metrics alerting" lane with its own quirks;
+            a metric breach is a first-class incident from the first second.
+          </p>
+          <h3>Sustained, not twitchy</h3>
+          <p>
+            Thresholds carry a duration so a single noisy sample does not page anyone. The condition has to hold for the
+            window you set, which is the difference between catching a disk that is genuinely filling and being woken by a
+            momentary blip that healed itself before you reached the laptop. You tune for the real problem, not the
+            transient.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>It routes, groups, and surfaces</h3>
+          <p>
+            Because the breach is a real incident, it flows through your escalation policy and on-call schedule, appears on
+            the <a href="/product/context-graph">topology health map</a> against the host or device it concerns, and — when
+            one root cause trips several thresholds at once — collapses with the others into a single case rather than a
+            storm of pages. One failing dependency does not get to wake you ten times.
+          </p>
+          <h3>It emits an event you can build on</h3>
+          <p>
+            Every metric alert fires a structured <em>metric_alert.fired</em> event your own systems and automated agents
+            can subscribe to over a signed webhook. So a breach can do more than notify a human — it can trigger a runbook,
+            feed a dashboard you own, or hand the incident to an agent that takes the first remediation step. The alert is
+            a building block, not a terminus.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> From symptom to cause</div>
+        <h2 class="h2">A breach is a symptom. The platform finds the cause.</h2>
+        <p class="lede">
+          The reason metrics live next to logs, events, and topology here is so a threshold crossing can be explained, not
+          merely reported. This is where most metrics tools stop and 24Observe keeps going.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">It opens</div><div class="spec-val">A sustained breach <b>opens an incident</b> — the same first-class incident a failed check or a detection would.</div></div>
+        <div class="spec-row"><div class="spec-key">It locates</div><div class="spec-val">The incident lands on the <b>topology map</b> against the exact host, service, or device, so you see what is downstream of it.</div></div>
+        <div class="spec-row"><div class="spec-key">It correlates</div><div class="spec-val">The <a href="/product/ai-analyst">analyst</a> reads the logs and events around the breach and returns a <b>root-cause verdict</b> — why the disk filled, not just that it did.</div></div>
+        <div class="spec-row"><div class="spec-key">It groups</div><div class="spec-val">When one root cause trips many thresholds, related incidents <b>collapse into one case</b> with a single notification.</div></div>
+        <div class="spec-row"><div class="spec-key">It routes</div><div class="spec-val">Escalation policy, on-call rotation, and your <b>ten alert channels</b> all apply — a metric breach is treated exactly like everything else.</div></div>
+        <div class="spec-row"><div class="spec-key">It programs</div><div class="spec-val">A <em>metric_alert.fired</em> event and full API access let <b>agents and scripts</b> react automatically.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">The disk that filled at 2 a.m.</h2>
+        <p class="lede">
+          A concrete walk from a single series crossing a line to a closed root cause — the path that, in a dashboard-only
+          world, would have been a pager, a bleary login, and a half-hour of guessing.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A database host's free disk has been trending down for hours. No human is watching that particular panel — nobody
+          watches every panel — but a metric alert is: free space under ten percent, sustained for five minutes. At two in
+          the morning the line holds long enough and the alert fires. It does not send a lonely email into an inbox nobody
+          will read until morning; it opens an incident.
+        </p>
+        <p>
+          Because it is a real incident, it immediately does three things a notification never could. It routes through the
+          on-call schedule and finds whoever is actually holding the pager tonight, stepping up the escalation chain if they
+          do not acknowledge. It lands on the topology map against <em>db-primary</em>, so the blast radius — every service
+          that depends on that database — is visible at a glance. And it becomes a candidate for investigation.
+        </p>
+        <p>
+          The analyst picks it up. A dashboard would have told the on-call engineer that the disk is full and left them to
+          discover why; the analyst reads the logs and events around the host and finds the cause — a service began writing
+          a runaway log after a recent change, and the volume has been climbing ever since. The verdict that arrives is not
+          "disk is full" but "disk is filling because this service is writing this log at this rate, starting around this
+          time," with the supporting evidence linked.
+        </p>
+        <p>
+          That turns a 2 a.m. investigation into a 2 a.m. decision. The engineer does not have to reconstruct the story
+          half-asleep; they confirm the cause, rotate or cap the offending log, and resolve the incident — and because the
+          breach also tripped a couple of related thresholds downstream, those were grouped into the same case, so the
+          night was one page and one fix, not five pages and a confusion.
+        </p>
+        <p>
+          In the morning the whole episode is on the timeline beside the logs that explained it, ready for the look-back —
+          and if it is the kind of thing worth catching earlier next time, the threshold and the runaway-log detection are
+          a one-line change away. The metric did its job: it crossed a line, and the platform turned that into an answer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">Dashboards-and-emails vs metrics that act.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>Dashboards + email alerts</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">When a threshold trips</div><div>An email; the human starts from scratch.</div><div class="cmp-us">A first-class incident, routed and investigable.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Finding the cause</div><div>Flip between metrics and logs, line up by eye.</div><div class="cmp-us">Same timeline; the analyst returns a root cause.</div></div>
+        <div class="cmp-row"><div class="cmp-k">One root, many breaches</div><div>A storm of separate alerts.</div><div class="cmp-us">One case, root grouped, one notification.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Host, app, and network</div><div>Often three different tools.</div><div class="cmp-us">One place, one kind of signal.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Pricing</div><div>A per-series cardinality meter.</div><div class="cmp-us">One shared volume allowance — label freely.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Automation</div><div>Alerts you can mostly only read.</div><div class="cmp-us">An event and an API agents can act on.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Metrics &amp; alerting — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Make your metrics do something when they cross the line.</h2>
+      <p class="final-cta-sub">
+        Send metrics over open standards, chart them beside your logs, and set thresholds that open investigated incidents
+        and route to on-call — host, application, and network, all in one place.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

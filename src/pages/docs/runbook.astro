@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Incident response runbook — 24Observe"
+  description="What to do when something breaks. Customer-facing playbook for self-hosters; mirror of what we use ourselves."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · runbook</div>
+      <h1 class="h1">Incident response runbook.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        What to check, in what order, when something is wrong. Skim it once now so you remember
+        where to look at 3am.
+      </p>
+
+      <h2 class="h2" style="margin-top: 56px;">Status page reads "incident"</h2>
+      <p>
+        Your dashboard or our public status page shows a monitor as <code>down</code> or <code>degraded</code>.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Open the affected monitor's detail page. Look at "Recent checks" — are all recent checks failing the same way? Same status code? Same error?</li>
+        <li>If so, the issue is likely on the target service, not on our checking. Verify the URL responds correctly from your own machine.</li>
+        <li>If verification from your own machine succeeds, your service may be partitioned away from our checking infrastructure. Try reaching it from a different network.</li>
+        <li>Acknowledge the incident in the dashboard so other team members know it's being looked at. Post an update with what you've found.</li>
+        <li>Resolve the incident when the service is back. The next check tick will mark the monitor as up automatically.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Alerts aren't reaching me</h2>
+      <p>
+        You have an alert webhook / Slack / Discord configured but no message arrived for a known-down monitor.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Open the monitor → "Send test alert to all configured channels". Each channel reports per-channel pass/fail with the exact error.</li>
+        <li>If a channel is "not configured", check the monitor's edit page — the URL field may be blank.</li>
+        <li>If a channel reports "failed: HTTP 401" (or similar), the URL/token is wrong or revoked. Re-copy from the upstream provider (Slack/Discord/etc) and save.</li>
+        <li>If all channels are configured AND test passes BUT real alerts don't arrive: check your alert threshold (default 1, but if you've raised it, the monitor needs that many consecutive failures before paging).</li>
+        <li>Check our public status page — if our alert pipeline itself is degraded, you'll see it there.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Heartbeat monitor flapping</h2>
+      <p>
+        Your cron job runs but the heartbeat monitor still goes <code>down</code> intermittently.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li>Check the timing: if your job takes &gt; (intervalSec + heartbeatGraceSec), every late completion looks like a miss. Increase the grace seconds on the monitor.</li>
+        <li>Check the receive URL is correct — log it from your job and compare to the dashboard.</li>
+        <li>Verify the POST returns 204 (use <code>curl -fsS -X POST &lt;url&gt;</code>). 4xx means the token is rotated or invalid.</li>
+        <li>Heartbeat URL leaked? Open the monitor → "Rotate". The old URL is invalidated immediately.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Self-host: container won't start</h2>
+      <p>
+        You ran <code>docker compose up -d</code> and one or more services are crashlooping.
+      </p>
+      <ol style="line-height: 1.9;">
+        <li><code>docker compose logs &lt;service&gt;</code> — read the last error.</li>
+        <li>The most common cause: missing or weak env vars. JWT_SECRET must be ≥64 chars, ENCRYPTION_KEY must be ≥32 chars. Check your <code>.env</code>.</li>
+        <li>If the API can't reach Postgres: check Postgres is healthy with <code>docker compose ps</code>. The API depends on it.</li>
+        <li>If migrations haven't run, the API will crash on first DB call. Run <code>docker compose run --rm --entrypoint "" -w /app/packages/db api node dist/migrate.js</code>.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Self-host: ran out of disk</h2>
+      <ol style="line-height: 1.9;">
+        <li>The check-results table grows over time. Check disk usage with <code>docker system df -v</code>.</li>
+        <li>The 90-day TTL on the time-series table prunes automatically. If you need it shorter, edit the TTL in the migration and re-apply.</li>
+        <li>Log volume can also grow. Loki retention can be tightened in <code>infra/loki/config.yaml</code>.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Database has been compromised / token leak</h2>
+      <p>Treat as a security incident. Time matters.</p>
+      <ol style="line-height: 1.9;">
+        <li>If a personal access token leaked: Settings → API tokens → Revoke. Anything using it stops working immediately.</li>
+        <li>If your webhook signing secret leaked: Settings → Webhook signing secret → Rotate. Future webhooks signed with the new secret; receivers must update.</li>
+        <li>If a heartbeat URL leaked: open the monitor → Rotate. Old URL is invalidated.</li>
+        <li>If your password leaked: Settings → Change password (proves you have the current one).</li>
+        <li>If the entire DB is suspected compromised: rotate ENCRYPTION_KEY (re-encrypts headers on next monitor PATCH), rotate JWT_SECRET (invalidates all sessions), rotate every PAT.</li>
+        <li>Email <a href="mailto:security@24observe.com">security@24observe.com</a> if you suspect the issue is in our software.</li>
+      </ol>
+
+      <h2 class="h2" style="margin-top: 48px;">Where to ask</h2>
+      <ul style="line-height: 1.9;">
+        <li><a href="https://github.com/vikasswaminh/observe24/issues">GitHub Issues</a> — bugs, feature requests, public discussion</li>
+        <li><a href="mailto:support@24observe.com">support@24observe.com</a> — hosted-account questions</li>
+        <li><a href="mailto:security@24observe.com">security@24observe.com</a> — vulnerability disclosures (preferred PGP available on request)</li>
+      </ul>
+    </div>
+  </section>
+</Base>

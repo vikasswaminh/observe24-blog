@@ -1,0 +1,319 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Faq from '../../../components/Faq.astro';
+
+
+const RULE = `// A Splunk correlation search like:
+//   index=auth action=failure | stats count by user | where count > 10
+// becomes a 24Observe detection:
+service:auth event:login_failed
+| stats count() by user
+| where count > 10 within 5m
+// severity: high · technique: T1110 · on match → investigated incident`;
+
+const faqs = [
+  {
+    q: 'Do I have to replace Splunk all at once?',
+    a: 'No. The safe path is a front-of-Splunk deployment: point your sources, or a copy of them, at 24Observe while Splunk keeps running, and keep Splunk fed by a gap-free export so nothing downstream loses data. You recreate your most important detections here, compare the investigation experience on live data, and retire Splunk for a surface only when you are satisfied. It is a parallel run, not a cutover.',
+  },
+  {
+    q: 'How do I get my data into 24Observe?',
+    a: 'The same sources that feed Splunk can feed 24Observe: forwarders and shippers can send over open standards and HTTP, syslog sources point at the ingest endpoint, and OpenTelemetry flows in directly. Common formats are normalised to a shared schema on arrival, so you are not rebuilding ingestion from scratch. The goal is to mirror your inputs, not re-engineer them.',
+  },
+  {
+    q: 'Will I have to rewrite all my SPL?',
+    a: 'You will translate your most important detections, not rewrite a library overnight — and the translation is gentler than it sounds. The concepts are the same (a query, a window, a threshold, a severity, a technique tag); the dialect here is simply more readable. Most teams find their key correlation searches port in an afternoon, and you only need the ones that matter for the parallel run, not every saved search you ever wrote.',
+  },
+  {
+    q: 'What replaces Splunk Enterprise Security?',
+    a: 'A SIEM with investigation built in. The detection content, correlation, and threat intelligence map across, but the big change is that every detection here opens an incident the AI analyst investigates — gathering evidence, tracing blast radius, returning a verdict — rather than producing an alert a human must work. Notable events become investigated cases. See the SIEM and the analyst pages.',
+  },
+  {
+    q: 'How do dashboards and saved searches carry over?',
+    a: 'Saved searches become either everyday searches (in the readable query language) or detections (when they should fire and open incidents). Dashboards map to search, charts from saved queries, and the topology health map. We are honest that Splunk\'s dashboarding and bespoke analytics are deep; recreate the views you actually use and judge whether you miss the rest, which for many teams is less than they expect.',
+  },
+  {
+    q: 'What about ingestion cost and data rationing?',
+    a: 'A common reason teams migrate is that high-volume ingestion in Splunk leads them to drop or sample data. 24Observe uses one consolidated volume allowance designed so you keep the data security needs. We will not quote competitor prices, but running in parallel lets you see your real volumes and behaviour here before committing, which is the honest way to assess the difference.',
+  },
+  {
+    q: 'What do I gain over Splunk?',
+    a: 'Primarily investigation — alerts arrive as investigated verdicts rather than starting points for a manual hunt — plus a readable query language with a low learning curve, ingestion that does not force rationing, first-class AI-agent threat coverage, and the option to self-host. The comparison page is candid about both sides, including where Splunk still leads.',
+  },
+  {
+    q: 'Is there anything I’ll miss?',
+    a: 'Possibly. Splunk at full strength, in expert hands, can do bespoke analytical things a younger, more opinionated platform will not match, and its app ecosystem is deep. If you depend on highly customised SPL analytics or specific Splunk apps, weigh that honestly — and use the parallel run to find out whether the gap matters for your team before you retire anything.',
+  },
+  {
+    q: 'How long does a SIEM migration like this take?',
+    a: 'There is no fixed number, because the safe approach is paced by confidence rather than a calendar. Mirroring sources and translating your key detections is usually a matter of days; the parallel run that follows should last long enough to live through a representative set of real incidents on both platforms, which for a busy environment might be a few weeks. The retirement of Splunk surfaces and downstream consumers then happens gradually after that, one at a time, with no single high-stakes cutover. Plan for weeks, not a weekend — and treat that as a feature, since it is what makes the move low-risk.',
+  },
+];
+---
+<Base
+  title="Migrate from Splunk to 24Observe — front-of-Splunk, no cutover | 24Observe"
+  description="A practical guide to moving from Splunk: mirror your sources, translate key correlation searches into a readable language, keep Splunk fed during the run, and gain investigation on every detection."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Docs · Migrate from Splunk</div>
+          <h1 class="h1">Move off Splunk <em>without ripping out your SIEM.</em></h1>
+          <p class="lede">
+            A SIEM accumulates sources, parsers, detection content, and years of muscle memory — so you migrate it
+            carefully, in parallel, not in a weekend. This guide takes the front-of-Splunk path: mirror your sources into
+            24Observe, translate your key detections into a readable query language, keep Splunk fed by a gap-free export,
+            and compare the investigation experience on live data before you retire anything. Honest about what ports
+            easily and what to weigh.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare/splunk" class="btn btn-ghost btn-lg">The honest comparison</a>
+          </div>
+          <div class="hero-meta">
+            <span>Front-of-<b>Splunk</b></span>
+            <span>Keep Splunk <b>fed</b></span>
+            <span>Readable <b>detections</b></span>
+            <span>Investigated <b>incidents</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> migration · front-of-splunk</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Sources mirrored</div>
+              <div class="con-meta">splunk + 24observe</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">correlation search → detection</div>
+                <div class="con-sub"><span>readable language</span><span class="tech">opens incident</span></div>
+              </div>
+              <span class="sev sev-high">T1110</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">notable event → investigated case</div>
+                <div class="con-sub"><span>analyst verdict</span><span class="tech">evidence cited</span></div>
+              </div>
+              <span class="sev sev-crit">RCA</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">splunk still fed by export</div>
+                <div class="con-sub"><span>nothing lost</span><span class="tech">retire when ready</span></div>
+              </div>
+              <span class="sev sev-med">SAFE</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Alerts become verdicts; the cutover stays reversible</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The principle</div>
+        <h2 class="h2">Front-of-Splunk, then retire — never a weekend cutover.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Migrating a SIEM frightens people for good reason: so much accrues around it that a clean break feels
+          impossible. The answer is not a braver cutover — it is to not cut over at all until you are ready. Run 24Observe
+          in front of Splunk, keep Splunk alive and fed, and retire it surface by surface as confidence grows.
+        </p>
+        <p>
+          The front-of-Splunk pattern works because your sources can feed two destinations. Forwarders and shippers send
+          over open standards and HTTP, syslog sources point at the ingest endpoint, and OpenTelemetry flows in directly —
+          the same inputs that feed Splunk, mirrored into 24Observe. Crucially, you keep Splunk receiving data throughout,
+          via a gap-free export from 24Observe if needed, so nothing downstream of Splunk loses its feed while you
+          evaluate. You are adding a parallel brain, not unplugging the existing one.
+        </p>
+        <p>
+          With both running, you translate your most important detections into 24Observe and compare on identical, live
+          data. This is where the real difference shows: in Splunk a correlation search produces a notable event that an
+          analyst then investigates by hand; in 24Observe the equivalent detection opens an incident the analyst
+          investigates automatically, returning a verdict with evidence. Watching the same alert resolve both ways, on
+          your own data, is the most honest evaluation you can run.
+        </p>
+        <p>
+          When a surface clearly works better here, retire Splunk for it; when it does not, you have lost nothing and kept
+          Splunk intact. Because the move is incremental and reversible, and because the schema concepts carry over, the
+          dread that keeps teams on an expensive or unloved SIEM for years simply does not apply. The rest of this guide is
+          the practical version — mirror sources, translate detections, compare, cut over — and it is honest about what is
+          easy and what to weigh.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 1</div>
+        <h2 class="h2">Mirror your sources.</h2>
+        <p class="lede">
+          Feed 24Observe the same inputs Splunk receives, without taking them away from Splunk.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Inventory what currently feeds Splunk — application logs, syslog from network and security devices, cloud and
+          platform logs, host telemetry — and point a copy of each at 24Observe. Syslog sources add the ingest endpoint as
+          a destination; HTTP and forwarder-based inputs send over open standards; OpenTelemetry flows in directly; and
+          hosts can run the one-line Sensor. Common formats — authentication logs, web access logs, firewall and cloud
+          events — are normalised to a shared schema on arrival, so a field means the same thing here as it does in your
+          mental model, without you rebuilding parsers.
+        </p>
+        <p>
+          The aim of this step is parity of input: whatever Splunk sees, 24Observe should see too, so the comparison that
+          follows is fair. You do not have to mirror every last source on day one — start with the sources behind your
+          most important detections, the ones you would test the parallel run against — but the more complete the mirror,
+          the more representative your evaluation. Confirm the events are landing under Explore before moving on to
+          translating detections.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 2</div>
+        <h2 class="h2">Translate your key detections.</h2>
+        <p class="lede">
+          Your correlation searches become detections in a readable language — same concepts, gentler dialect, and now
+          they open investigated incidents.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          A Splunk correlation search and a 24Observe detection are the same idea: a query over events, an aggregation, a
+          threshold, and a window, with a severity and a technique tag. The translation is mostly a change of dialect to
+          something more readable:
+        </p>
+        <pre class="code-block">{RULE}</pre>
+        <p>
+          The difference you will feel is not in writing the rule but in what happens when it matches. In Splunk it
+          produces a notable event for an analyst to triage; here it opens an incident the analyst investigates
+          immediately, corroborating the signal and returning a verdict with citations. So translating a detection is not
+          a like-for-like port — it is an upgrade from "produces an alert" to "produces an investigated incident," for the
+          same logic you already trust.
+        </p>
+        <p>
+          Translate the detections that matter most first — your highest-fidelity, most-relied-on correlation searches —
+          rather than your whole library. The parallel run is about building confidence on real coverage, and a dozen
+          well-chosen detections firing as investigated incidents tell you far more about whether the platform fits than a
+          wholesale migration of every saved search, many of which you may find you no longer need once investigation is
+          automatic.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Step 3</div>
+        <h2 class="h2">Compare on a real alert, then retire surface by surface.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          With sources mirrored and key detections translated, compare where it counts: on a genuine alert. When one of
+          your translated detections fires in 24Observe, watch the analyst investigate it — gather the related events,
+          check the indicators, trace the blast radius — and deliver a verdict, then compare that against the same notable
+          event in Splunk, where the investigation is yours to perform. That contrast, on your own data, is the substance
+          of the decision: do your analysts prefer arriving at a conclusion or arriving at a search bar?
+        </p>
+        <p>
+          Involve the people who work the alerts. Have your SOC analysts handle a few incidents in 24Observe during the
+          parallel run and tell you whether the investigated-incident model genuinely reduces their load — because their
+          daily experience, not a feature comparison, determines whether the platform is adopted or resented. Their
+          verdict on the verdicts should weigh heavily in yours.
+        </p>
+        <p>
+          When a surface clearly works better here — the analysts keep up, the coverage is broad without drowning them,
+          the ingestion is not forcing you to drop data — retire Splunk for that surface and move to the next. Keep Splunk
+          fed and running for anything still under evaluation; there is no forced cutover date. And because 24Observe
+          exports cleanly, the move is reversible at every step, so you are never trapped by the decision in either
+          direction.
+        </p>
+        <p>
+          Stay honest about the trade as you go. Splunk's analytical depth and app ecosystem are real, and if you depend
+          on highly bespoke SPL or specific apps, the parallel run is exactly how you find out whether that dependency
+          survives the move. For most teams, though, the binding constraints were analyst-hours and ingestion cost, not
+          analytical ceiling — and for them, a SIEM that investigates and does not force rationing is the better fit,
+          proven on their own alerts rather than asserted on a page.
+        </p>
+        <h3>Keeping downstream consumers whole during the run</h3>
+        <p>
+          One detail worth planning carefully in a SIEM migration is everything that consumes Splunk's output — the
+          dashboards leadership watches, the reports compliance needs, the tickets that get created, the data lake that
+          ingests from it. These downstream dependencies are often why a SIEM feels impossible to leave, because unplugging
+          it would break things far from the security team. The front-of-Splunk pattern is designed around exactly this:
+          Splunk keeps running and keeps feeding those consumers throughout, and 24Observe can feed them too, via signed
+          webhooks for events and a gap-free export for the full stream. So you never have to choose between evaluating the
+          new platform and keeping the reports flowing.
+        </p>
+        <p>
+          As confidence grows, you migrate those consumers one at a time as well — point a dashboard or a downstream lake
+          at 24Observe's export, confirm it gets what it needs, and only then stop feeding it from Splunk. Because each
+          consumer moves independently, there is never a single moment where everything depends on the cutover going
+          perfectly. The migration becomes a series of small, verifiable hand-offs rather than one high-stakes switch, which
+          is the only sane way to move something as load-bearing as a SIEM.
+        </p>
+        <p>
+          And treat the move as a chance to retire dead weight. Long-lived Splunk deployments accumulate correlation
+          searches that no longer fire usefully, dashboards nobody opens, and inputs for systems long since
+          decommissioned. Rather than porting all of it, bring across what genuinely earns its place and let the rest stay
+          behind. Most teams find their effective detection coverage rests on a surprisingly small core of high-fidelity
+          rules, and that migrating is as much an act of pruning as of moving — leaving them with a leaner, more legible
+          security posture that, crucially, now investigates every alert for them.
+        </p>
+        <p>
+          A word on the human side of a SIEM migration, because it is where these efforts most often stall. The team that
+          knows your Splunk deployment best is also the team with the most invested in it — the searches they wrote, the
+          dashboards they tuned, the expertise they built. A migration framed as "replacing your work" meets
+          understandable resistance. Frame it instead as what it is: removing the most tedious part of their job, the
+          manual investigation, while keeping their judgement central. The analyst does the gathering they find
+          repetitive; they keep making the calls that need their experience. Run the parallel period with them, not at
+          them, and let them feel investigation-done-for-them on their own alerts — that is what turns the people most
+          attached to the old tool into the strongest advocates for the new one.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Migrating from Splunk — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Turn notable events into investigated cases.</h2>
+      <p class="final-cta-sub">
+        Mirror your sources, translate the detections that matter into a readable language, keep Splunk fed during the
+        run, and retire it surface by surface once the investigation proves itself on your own alerts.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/compare/splunk" class="btn btn-ghost btn-lg">vs Splunk, honestly</a>
+      </div>
+    </div>
+  </section>
+</Base>

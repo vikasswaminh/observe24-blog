@@ -1,0 +1,328 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is 24Observe a replacement for PagerDuty?',
+    a: 'It can be, for teams who want on-call and incident response in the same platform that detects the problem and holds the evidence. We are honest that PagerDuty is the category leader in incident response, with deep routing maturity and a vast integration catalogue. The difference is that PagerDuty is a router sitting between your tools and your people, while 24Observe\'s on-call lives inside the platform that found the issue — so the page arrives with the investigation already attached.',
+  },
+  {
+    q: 'What is the core difference?',
+    a: 'PagerDuty takes alerts from your other tools and orchestrates the human response — who to wake, how to escalate, how to coordinate. It does that superbly, but it does not detect the problem or hold the telemetry, so the page it sends is necessarily thin: a title and a link back to the tool you must then go interpret. In 24Observe, on-call is part of the platform that detected the incident and investigated it, so the page carries a root-cause verdict and the evidence, not just a pointer.',
+  },
+  {
+    q: 'Does 24Observe do escalation and rotations as well?',
+    a: 'Yes — on-call schedules with rotations and overrides that resolve to one responsible person, and escalation chains that climb until someone acknowledges. We do not claim the breadth of PagerDuty\'s most advanced response orchestration, but for the core of on-call — get the right person, escalate if they miss it, group a storm into one page — the capability is there and it is wired into detection and investigation. See <a href="/product/incidents">on-call &amp; incidents</a>.',
+  },
+  {
+    q: 'How does alert-storm handling compare?',
+    a: 'Both aim to reduce noise; the mechanism differs. 24Observe groups incidents by their shared root in the context graph — a switch dies, fifty hosts go unreachable, and it recognises one impacted entity and collapses them into a single case. Because the grouping happens in the platform that holds the topology, it is precise grouping by cause, not a heuristic applied to alerts arriving from elsewhere. See <a href="/product/context-graph">the context graph</a>.',
+  },
+  {
+    q: 'Can 24Observe send to PagerDuty if we keep it?',
+    a: 'Yes. PagerDuty is one of the ten alert channels, so you can keep PagerDuty as your response orchestration layer and use 24Observe as the detection-and-investigation platform feeding it richer, already-investigated incidents. Many teams adopt it this way first — better signal into the router they already trust. See <a href="/product/alerting">alerting</a>.',
+  },
+  {
+    q: 'What does consolidation add here?',
+    a: 'PagerDuty is, by design, a layer you add on top of a separate observability and security stack. 24Observe folds detection, investigation, on-call, and status into one platform, so you are not paying for and integrating a standalone router plus everything that feeds it. For teams who want fewer moving parts, that consolidation — and one bill — is a meaningful difference.',
+  },
+  {
+    q: 'When is PagerDuty the better choice?',
+    a: 'When incident-response orchestration across a large, heterogeneous toolchain is your central need — when you have many alert sources to unify, complex on-call and response workflows, and you want the most mature, integration-rich response platform available. PagerDuty is the leader in that category for good reasons, and if response orchestration across many tools is the problem you are solving, it is a strong choice.',
+  },
+  {
+    q: 'When is 24Observe the better choice?',
+    a: 'When you want the page to arrive with the investigation already done, and you would rather consolidate detection, investigation, and on-call than run a separate router on top of a separate stack. Teams who are tired of being paged with a thin alert and a link — and then starting the investigation cold — feel the difference most.',
+  },
+];
+---
+<Base
+  title="24Observe vs PagerDuty — alerts that investigate"
+  description="PagerDuty is the leading incident-response router. 24Observe puts on-call inside the platform that detects and investigates — so the page carries a verdict."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare · 24Observe vs PagerDuty</div>
+          <h1 class="h1">PagerDuty routes the alert. <em>24Observe routes a verdict.</em></h1>
+          <p class="lede">
+            PagerDuty is the category leader in incident response, and this is an honest comparison. It excels at taking
+            alerts from your tools and orchestrating the human response — who to wake, how to escalate, how to coordinate.
+            But it is a router that sits between your tools and your people; it does not detect the problem or hold the
+            evidence. 24Observe puts on-call inside the platform that found the incident and investigated it, so the page
+            arrives with a root-cause verdict attached, not just a title and a link.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare" class="btn btn-ghost btn-lg">All comparisons</a>
+          </div>
+          <div class="hero-meta">
+            <span>Page with a <b>verdict</b></span>
+            <span>Detection + <b>on-call</b></span>
+            <span>Root-cause <b>grouping</b></span>
+            <span>One <b>platform</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe vs pagerduty</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Where they differ</div>
+              <div class="con-meta">honest take</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">What the page contains</div>
+                <div class="con-sub"><span>PD: title + link</span><span class="tech">24o: verdict + evidence</span></div>
+              </div>
+              <span class="sev sev-high">KEY</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Response orchestration breadth</div>
+                <div class="con-sub"><span>PagerDuty leads</span><span class="tech">fair</span></div>
+              </div>
+              <span class="sev sev-med">FAIR</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Detection + evidence</div>
+                <div class="con-sub"><span>elsewhere</span><span class="tech">same platform</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> A router on top of your stack vs on-call inside it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest take</div>
+        <h2 class="h2">PagerDuty is the best router in the business. A router has a ceiling.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          PagerDuty defined modern incident response and still leads it. Its routing and escalation are mature, its
+          integration catalogue is vast, and a great many teams rely on it to make sure the right person hears about the
+          right problem at the right time. This comparison takes all of that as given.
+        </p>
+        <p>
+          The structural thing to understand is what PagerDuty is: a response-orchestration layer that sits on top of your
+          other tools. Your observability and security products detect problems and emit alerts; PagerDuty ingests those
+          alerts and decides who to wake, how to escalate, and how to coordinate the humans. It is exceptionally good at
+          that job. But because it sits above the tools that actually hold your telemetry, the page it can send is
+          necessarily thin — a title, a severity, and a link back to the system you must then open and interpret yourself.
+          The router knows that something fired; it does not know what your logs said, what depends on the failing
+          component, or why.
+        </p>
+        <p>
+          That thinness is where the real cost of an incident hides. The hard, slow part of being paged is not being
+          woken — it is the cold-start investigation that follows: opening the linked tool, gathering the related events,
+          working out the blast radius, finding the cause. A router, by its nature, cannot shorten that, because it does
+          not have the data. It got you to the starting line of the investigation faster; it could not run any of it.
+        </p>
+        <p>
+          24Observe makes on-call part of the platform that detected the incident and holds the evidence — so it can do
+          what a router structurally cannot. The page arrives carrying the blast radius from the
+          <a href="/product/context-graph">topology map</a> and a root-cause verdict from the
+          <a href="/product/ai-analyst">analyst</a>, with the supporting logs, metrics, and traces cited. The most common
+          experience is acknowledging a page and finding the investigation already done. On-call stops being a handoff to
+          a cold investigation and becomes a handoff to a decision.
+        </p>
+        <p>
+          This does not make PagerDuty the wrong tool — for orchestrating response across a large, diverse toolchain it is
+          the leader, and if that is your central problem it is a strong, defensible choice. It makes 24Observe a
+          different proposition: not a better router, but the elimination of the gap a router leaves, by putting the
+          paging inside the system that already knows the answer.
+        </p>
+      </div>
+      <blockquote class="quote">
+        A router can only forward what its sources give it — and a thin alert with a link is all most sources give. Put
+        on-call where the detection and the evidence live, and the page can carry the answer.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where 24Observe differs</div>
+        <h2 class="h2">On-call that knows what it’s paging you about.</h2>
+        <p class="lede">
+          The differences flow from one structural fact: the paging lives in the same platform as the detection and the
+          evidence.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">A page with a verdict</div><p>The incident arrives with a root-cause verdict and cited evidence, not a title and a link to a tool you must open. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">Blast radius attached</div><p>The page carries the topology of what depends on the failing thing, so you size impact immediately. <a href="/product/context-graph">Context graph →</a></p></div>
+        <div class="why-card"><div class="why-num">Root-cause grouping</div><p>A cascade is collapsed by shared cause in the graph — precise grouping in the platform that holds the topology, not a heuristic on foreign alerts.</p></div>
+        <div class="why-card"><div class="why-num">Detection to resolution, one place</div><p>Detect, investigate, page, update the status page, resolve — one platform, one record, no handoffs between products.</p></div>
+        <div class="why-card"><div class="why-num">Consolidated</div><p>On-call is not a separate router you pay for on top of a separate stack — it is part of the platform and the one bill.</p></div>
+        <div class="why-card"><div class="why-num">Feeds PagerDuty if you keep it</div><p>PagerDuty is one of ten channels, so you can send it richer, already-investigated incidents. <a href="/product/alerting">Alerting →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where PagerDuty leads</div>
+        <h2 class="h2">The honest other side of the ledger.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Response orchestration and integrations</h3>
+          <p>
+            PagerDuty's depth in incident-response workflow — advanced escalation logic, stakeholder communication,
+            response automation, and a vast catalogue of integrations that let it sit on top of almost any toolchain — is
+            real and ahead of what we claim. If your central problem is unifying alerts from many disparate sources and
+            orchestrating sophisticated human response across a large organisation, that maturity is a genuine advantage
+            built over many years. 24Observe covers the core of on-call well and wires it into detection, but it is not
+            trying to out-orchestrate the category leader at its own game.
+          </p>
+          <h3>The tool-agnostic router has a place</h3>
+          <p>
+            Precisely because PagerDuty does not detect or store telemetry, it is neutral — it sits above whatever stack
+            you run and unifies it. For a large enterprise with many teams and many tools that are not going to consolidate
+            onto one platform, that vendor-neutral routing layer is valuable, and an integrated platform does not replace
+            it cleanly. If your reality is irreducible toolchain diversity, that is a fair point in PagerDuty's favour.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Why the trade favours many teams</h3>
+          <p>
+            But the thin-page problem is universal and daily: most pages, from most tools, are a title and a link, and the
+            investigation always starts cold. For teams whose stack can consolidate, putting on-call inside the platform
+            that detected and investigated the incident removes that gap entirely — and that is worth more, day to day,
+            than orchestration breadth they may not need. The trade — give up some routing sophistication and tool-agnostic
+            neutrality, gain a page that arrives with the answer — is favourable for many teams.
+          </p>
+          <h3>You can have both for a while</h3>
+          <p>
+            You do not have to rip PagerDuty out to benefit. Use 24Observe as the detection-and-investigation platform and
+            keep PagerDuty as your response layer; it is one of the ten channels, so the incidents it receives are already
+            investigated and grouped. That gives PagerDuty richer input immediately, and lets you decide later whether the
+            integrated on-call is enough to consolidate onto — an honest, low-risk path rather than a forced switch.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Side by side</div>
+        <h2 class="h2">The comparison, laid out plainly.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>Dimension</div><div>PagerDuty</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">What the page contains</div><div>A title and a link to another tool.</div><div class="cmp-us">A verdict, evidence, and blast radius.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Relationship to telemetry</div><div>A router on top of your stack.</div><div class="cmp-us">On-call inside the platform that detected it.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Alert-storm handling</div><div>Heuristics on incoming alerts.</div><div class="cmp-us">Grouping by shared root in the graph.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Response orchestration</div><div>Deepest in the category (a strength).</div><div class="cmp-us">Core on-call, wired into detection.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Toolchain neutrality</div><div>Vendor-agnostic, unifies many tools.</div><div class="cmp-us">Integrated; consolidates the stack.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Coexistence</div><div>—</div><div class="cmp-us">Can feed PagerDuty richer incidents.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Choosing honestly</div>
+        <h2 class="h2">Which one is right for you.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Choose PagerDuty if</strong> incident-response orchestration across a large, diverse toolchain is your
+          central need — many alert sources to unify, sophisticated escalation and stakeholder workflows, and a
+          requirement for a vendor-neutral router that sits above a stack that is not going to consolidate. It leads that
+          category for good reasons, and for that problem it is an excellent choice.
+        </p>
+        <p>
+          <strong>Choose 24Observe if</strong> you want the page to arrive with the investigation already done, and you
+          would rather consolidate detection, investigation, on-call, and status into one platform than maintain a
+          standalone router on top of a separate stack. If the daily pain is being paged with a thin alert and then
+          starting the investigation cold, putting on-call where the evidence lives is the fix.
+        </p>
+        <p>
+          And the two are not mutually exclusive today. Run 24Observe for detection and investigation, keep PagerDuty as
+          your response layer receiving already-investigated incidents, and decide from experience whether the integrated
+          on-call is enough to consolidate onto. That is the honest, low-risk way to find out which model fits your team.
+        </p>
+        <h3>What adopting, alongside or instead, takes</h3>
+        <p>
+          Because PagerDuty is a router and 24Observe is a platform, they layer rather than collide, which makes adoption
+          unusually gentle. Add 24Observe for detection and investigation, and configure it to send incidents to PagerDuty
+          as one of its ten channels. Overnight, the pages PagerDuty delivers stop being thin titles-and-links and start
+          carrying a root-cause verdict, the blast radius, and grouped context — better input to the router you already
+          trust, with nothing ripped out. That alone is often worth the move, regardless of whether you ever consolidate
+          further.
+        </p>
+        <p>
+          From there the decision about on-call itself is yours to make on evidence. Run a team or a service on 24Observe's
+          built-in rotations and escalation for a while and see whether the integrated on-call — paging the right person,
+          climbing until acknowledged, grouping a storm into one page — covers what you actually use PagerDuty for. Many
+          teams find it does; some, with sophisticated cross-organisation response workflows, find PagerDuty's depth still
+          earns its place. Either outcome is fine, and you reached it by trying rather than by guessing.
+        </p>
+        <p>
+          The honest caveat: PagerDuty has spent years building response-orchestration depth and an integration catalogue
+          that a younger platform does not match, and for a large enterprise unifying many irreducibly separate tools,
+          that neutral router has real value. We are not claiming to replace it for everyone. We are claiming that the
+          thin-page problem is real and daily, that putting on-call where the evidence lives fixes it, and that you can
+          have the richer page immediately without giving anything up — which is the kind of low-risk improvement worth
+          taking even if you keep PagerDuty for years.
+        </p>
+        <p>
+          The deeper question each team has to answer is where they want the intelligence to live. A router's design
+          assumes the intelligence stays in the tools beneath it and its job is purely to move alerts to people; that is a
+          clean separation, and for a sprawling enterprise it is the right one. But it also means the smartest thing in
+          your incident pipeline is a routing rule. When the detection, the topology, the evidence, and the investigation
+          live in one place, the paging can be intelligent — it can group by real cause, carry a verdict, and know the
+          blast radius — because the thing doing the paging is also the thing that understands the incident. Whether that
+          consolidation suits you depends on your toolchain, but it is the substantive choice underneath the feature
+          comparison, and worth deciding deliberately rather than by inertia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe vs PagerDuty — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Be paged with the answer, not just the alarm.</h2>
+      <p class="final-cta-sub">
+        Put on-call inside the platform that detects and investigates, so every page arrives with a root-cause verdict and
+        the blast radius attached — and feed PagerDuty richer incidents if you keep it.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/incidents" class="btn btn-ghost btn-lg">On-call &amp; incidents</a>
+      </div>
+    </div>
+  </section>
+</Base>

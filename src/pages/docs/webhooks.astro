@@ -1,0 +1,172 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Webhook signature verification — 24Observe"
+  description="Verify the alert webhook came from us, not a spoofer. HMAC-SHA256 examples in Node, Python, Go, and curl."
+>
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="eyebrow"><span class="bar"></span> Docs · webhooks</div>
+      <h1 class="h1">Verify the webhook came from us.</h1>
+      <p class="lede" style="margin-top: 24px;">
+        When we POST to a URL you configured, we sign it. Your receiver verifies the signature to
+        be certain the request originated here and wasn't tampered with in transit. Same signing
+        scheme covers both kinds of outbound webhook below.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Two kinds of outbound webhook</h2>
+      <p>
+        We ship two distinct webhook surfaces. They use the same signing scheme, so the verification
+        code below works for both — but they're configured in different places.
+      </p>
+      <ul style="line-height: 1.8;">
+        <li>
+          <b>Per-monitor alert webhook</b> — one URL stored on the monitor row. Fires when that
+          specific monitor goes down. Payload is flat: <code>{`{monitor, url, status, error, timestamp}`}</code>.
+          Configure via the monitor edit form's "Webhook URL" field, or PATCH
+          <code>/api/v1/monitors/:id {`{"alertWebhookUrl": "..."}`}</code>.
+        </li>
+        <li>
+          <b>Event subscriptions</b> — register a URL for one or more event types
+          (<code>incident.opened</code>, <code>incident.acknowledged</code>, <code>incident.resolved</code>,
+          <code>monitor.status_changed</code>, <code>log_alert.fired</code>). Payload is a structured
+          envelope: <code>{`{id, type, created, data: {...}}`}</code>. Configure under Settings →
+          Event webhooks, or POST <code>/api/v1/webhook-subscriptions</code>. Full walkthrough at
+          <a href="/docs/webhook-subscriptions/">/docs/webhook-subscriptions/</a> — covers CRUD,
+          retry behaviour, auto-disable threshold, and per-subscription delivery log.
+        </li>
+      </ul>
+      <p>
+        Both ship from <code>User-Agent: 24observe-webhooks/1.0</code>. Event subscriptions also send
+        <code>X-24Observe-Event</code> and <code>X-24Observe-Delivery-Id</code> headers so your handler
+        can branch on event type and dedupe retries.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Headers we send</h2>
+      <pre class="code-block">X-24Observe-Timestamp: 1777200000
+X-24Observe-Signature: t=1777200000,v1=&lt;64-char-hex&gt;</pre>
+
+      <h2 class="h2" style="margin-top: 32px;">Verification recipe</h2>
+      <ol style="line-height: 1.8;">
+        <li>Read the <code>t=</code> value from the signature header.</li>
+        <li>Reject if it's older than your tolerance window (we recommend 5 minutes — replay protection).</li>
+        <li>Compute <code>HMAC-SHA256(secret, "{`{t}.{rawBody}`}").hex()</code></li>
+        <li>Compare with the <code>v1=</code> value using a constant-time comparison.</li>
+      </ol>
+      <p>
+        The <b>secret</b> is the per-organization webhook signing secret you can read and rotate from
+        Settings → Webhook signing secret in your dashboard.
+      </p>
+
+      <h2 class="h2" style="margin-top: 48px;">Node.js (Express)</h2>
+      <pre class="code-block">{`import { createHmac, timingSafeEqual } from 'crypto';
+import express from 'express';
+
+const SECRET = process.env.OBSERVE24_WEBHOOK_SECRET; // from your dashboard
+const app = express();
+
+// IMPORTANT: use the raw body, not parsed JSON.
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sigHeader = req.header('x-24observe-signature') || '';
+  const parts = Object.fromEntries(sigHeader.split(',').map(p => p.split('=')));
+  const t = Number(parts.t);
+  const v1 = parts.v1;
+
+  // Replay defense: reject if timestamp is more than 5 minutes off.
+  if (!t || Math.abs(Date.now() / 1000 - t) > 300) return res.sendStatus(400);
+
+  const expected = createHmac('sha256', SECRET)
+    .update(\`\${t}.\${req.body.toString('utf8')}\`)
+    .digest();
+  const actual = Buffer.from(v1, 'hex');
+  if (actual.length !== expected.length) return res.sendStatus(400);
+  if (!timingSafeEqual(expected, actual)) return res.sendStatus(401);
+
+  // Trusted! Parse and process.
+  const payload = JSON.parse(req.body.toString('utf8'));
+  console.log('alert:', payload);
+  res.sendStatus(204);
+});`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Python (FastAPI)</h2>
+      <pre class="code-block">{`import hmac, hashlib, time, os
+from fastapi import FastAPI, Request, HTTPException
+
+SECRET = os.environ['OBSERVE24_WEBHOOK_SECRET'].encode()
+app = FastAPI()
+
+@app.post('/webhook')
+async def webhook(request: Request):
+    raw = await request.body()
+    sig_header = request.headers.get('x-24observe-signature', '')
+    parts = dict(p.split('=', 1) for p in sig_header.split(','))
+    t = int(parts.get('t', 0))
+    v1 = parts.get('v1', '')
+
+    if abs(time.time() - t) > 300:
+        raise HTTPException(400, 'timestamp out of tolerance')
+
+    expected = hmac.new(SECRET, f'{t}.{raw.decode()}'.encode(), hashlib.sha256).digest()
+    actual = bytes.fromhex(v1)
+    if not hmac.compare_digest(expected, actual):
+        raise HTTPException(401, 'bad signature')
+
+    return {'ok': True}`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Go</h2>
+      <pre class="code-block">{`package main
+
+import (
+  "crypto/hmac"
+  "crypto/sha256"
+  "encoding/hex"
+  "fmt"
+  "io"
+  "net/http"
+  "os"
+  "strconv"
+  "strings"
+  "time"
+)
+
+var secret = []byte(os.Getenv("OBSERVE24_WEBHOOK_SECRET"))
+
+func handler(w http.ResponseWriter, r *http.Request) {
+  body, _ := io.ReadAll(r.Body)
+  sigHeader := r.Header.Get("X-24Observe-Signature")
+  parts := map[string]string{}
+  for _, p := range strings.Split(sigHeader, ",") {
+    kv := strings.SplitN(p, "=", 2)
+    if len(kv) == 2 { parts[kv[0]] = kv[1] }
+  }
+  t, _ := strconv.ParseInt(parts["t"], 10, 64)
+  if abs(time.Now().Unix() - t) > 300 { http.Error(w, "stale", 400); return }
+
+  mac := hmac.New(sha256.New, secret)
+  fmt.Fprintf(mac, "%d.%s", t, body)
+  expected := mac.Sum(nil)
+  actual, _ := hex.DecodeString(parts["v1"])
+  if !hmac.Equal(expected, actual) { http.Error(w, "bad sig", 401); return }
+  w.WriteHeader(204)
+}
+
+func abs(x int64) int64 { if x < 0 { return -x }; return x }`}</pre>
+
+      <h2 class="h2" style="margin-top: 48px;">Common mistakes</h2>
+      <ul style="line-height: 1.8;">
+        <li><b>Parsing the body before verifying.</b> JSON.parse may reorder keys; you must hash the exact bytes we sent.</li>
+        <li><b>Non-constant-time comparison.</b> Use <code>timingSafeEqual</code> / <code>hmac.compare_digest</code> / <code>hmac.Equal</code> — never <code>==</code>.</li>
+        <li><b>Missing replay defense.</b> Without the 5-minute timestamp check, a captured request can be replayed indefinitely.</li>
+        <li><b>Confusing the signing secret with your PAT.</b> The signing secret is per-org (Settings → Webhook signing secret); your PAT is per-user (Settings → API tokens). Different things.</li>
+      </ul>
+
+      <h2 class="h2" style="margin-top: 48px;">Want to test before going live?</h2>
+      <p>
+        Open any monitor → "Send test alert to all configured channels" — we POST a sample
+        payload to your webhook URL with a real signature. Verify locally; you've got the
+        recipe right when your endpoint returns 2xx.
+      </p>
+    </div>
+  </section>
+</Base>

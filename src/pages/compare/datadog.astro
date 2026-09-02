@@ -1,0 +1,327 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is 24Observe a drop-in replacement for Datadog?',
+    a: 'For many teams it covers the core they actually use — uptime, logs, metrics, traces, on-call, status, and a real SIEM — in one place. But we are honest that Datadog is a vast, mature product with a breadth of integrations and depth of APM that we do not claim to match feature-for-feature. The right question is not "which has more features" but "which fits how your team works and what you are willing to pay" — and for teams who want investigation built in and predictable pricing, that is where we differ.',
+  },
+  {
+    q: 'What is the core difference in approach?',
+    a: 'Datadog is exceptional at collecting telemetry and presenting it — dashboards, alerts, and analytics across an enormous surface. The investigation, though, is still largely yours to perform. 24Observe is built around doing that investigation: every incident is investigated by an AI analyst that returns a root-cause verdict with evidence. One platform optimises for showing you everything; the other optimises for handing you conclusions.',
+  },
+  {
+    q: 'How does pricing compare?',
+    a: 'Datadog\'s pricing is powerful but famously composed of many separate products and usage dimensions, which can make the bill hard to predict as you grow. 24Observe uses a flat, consolidated model with one shared volume allowance across logs, metrics, and traces, so you reason about one number rather than a matrix of SKUs. We will not quote competitor prices here because they change; the structural difference is consolidation versus a broad menu of separately-metered products.',
+  },
+  {
+    q: 'Does 24Observe match Datadog’s integration catalogue?',
+    a: 'No, and we will not pretend otherwise — Datadog\'s integration breadth is one of its genuine strengths, built over many years. 24Observe leans on open standards instead: OpenTelemetry for logs, metrics, and traces, plus webhook and HTTP ingest for security and cloud sources. If your stack already speaks OpenTelemetry, you are well covered; if you depend on a long tail of proprietary Datadog integrations, weigh that honestly.',
+  },
+  {
+    q: 'What about AI-agent observability and security?',
+    a: 'This is a genuine 24Observe strength. We treat AI agents as a first-class workload — cost and behaviour by model and agent, plus dedicated security detections for prompt injection, tool-loop abuse, and tool-protocol attacks, all investigated by the analyst. It is a fast-moving area for everyone, but observing and securing agents from one stream of telemetry is something we built around rather than added late. See <a href="/llm-observability">agent observability</a> and <a href="/product/ai-agent-security">agent security</a>.',
+  },
+  {
+    q: 'Can I self-host? Datadog is SaaS-only.',
+    a: 'Yes. 24Observe is open source and self-hostable with an identical contract, so teams with data-residency, air-gap, or privacy requirements can run the full platform inside their own perimeter — including the AI analyst pointed at a model endpoint they control. Datadog is a hosted service. If keeping data in your boundary is a hard requirement, that is a categorical difference. See the <a href="/solutions/self-host">self-host solution</a>.',
+  },
+  {
+    q: 'When is Datadog the better choice?',
+    a: 'When you need the deepest, broadest commercial observability available and budget is not the deciding factor — Datadog\'s maturity, integration catalogue, and APM depth are real and hard-won. If your priority is the widest possible coverage of a complex, heterogeneous estate and you have the team and budget to operate it, Datadog is a strong, defensible choice, and we will say so plainly.',
+  },
+  {
+    q: 'When is 24Observe the better choice?',
+    a: 'When you want investigation built in rather than performed by hand, predictable consolidated pricing, first-class AI-agent coverage, the option to self-host, and an agent-programmable platform — and when the core signals (uptime, logs, metrics, traces, on-call, SIEM) cover what you actually use. Teams drowning in alerts they cannot investigate, or wary of an unpredictable bill, tend to feel the difference most.',
+  },
+];
+---
+<Base
+  title="24Observe vs Datadog — investigation built in"
+  description="Datadog is a broad, mature observability suite. 24Observe adds an AI analyst that investigates every incident, consolidated pricing, and self-hosting."
+  activeNav={null}
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Compare · 24Observe vs Datadog</div>
+          <h1 class="h1">Datadog shows you everything. <em>24Observe hands you the conclusion.</em></h1>
+          <p class="lede">
+            Datadog is a genuinely impressive, mature observability suite — broad, deep, and well integrated. This page is
+            an honest comparison, not a hit piece. The real difference is philosophy: Datadog optimises for collecting and
+            displaying telemetry across an enormous surface, and leaves the investigation to you; 24Observe optimises for
+            doing the investigation, with an AI analyst that turns every incident into a verdict — plus consolidated
+            pricing, first-class AI-agent coverage, and the option to self-host.
+          </p>
+          <div class="hero-ctas">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+            <a href="/compare" class="btn btn-ghost btn-lg">All comparisons</a>
+          </div>
+          <div class="hero-meta">
+            <span>Investigation <b>built in</b></span>
+            <span>One <b>predictable bill</b></span>
+            <span>AI-agent <b>native</b></span>
+            <span>Self-<b>hostable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> 24observe vs datadog</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Where they differ</div>
+              <div class="con-meta">honest take</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">After an alert fires</div>
+                <div class="con-sub"><span>Datadog: you investigate</span><span class="tech">24o: analyst does</span></div>
+              </div>
+              <span class="sev sev-high">KEY</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Pricing shape</div>
+                <div class="con-sub"><span>many SKUs</span><span class="tech">one allowance</span></div>
+              </div>
+              <span class="sev sev-med">DIFF</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">Integration breadth</div>
+                <div class="con-sub"><span>Datadog leads</span><span class="tech">open standards</span></div>
+              </div>
+              <span class="sev sev-med">FAIR</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> Different philosophies — pick the one that fits your team</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest take</div>
+        <h2 class="h2">Datadog is excellent. The question is what you’re optimising for.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Let us start where an honest comparison should: Datadog earned its position. It is one of the most complete
+          observability platforms ever built, with a breadth of integrations, depth of application performance monitoring,
+          and polish that a great deal of engineering and time went into. If this page tried to tell you otherwise, you
+          should not trust the rest of it.
+        </p>
+        <p>
+          But "more complete" is not the same as "right for you," and Datadog's design centre creates two well-known
+          tensions. The first is investigation. Datadog is superb at collecting telemetry and presenting it — the
+          dashboards, the alerts, the analytics are extensive — but when an alert fires, the work of figuring out whether
+          it matters and what caused it is still yours. You get magnificent tools for an investigation you perform by
+          hand. For a team that is short on people rather than dashboards, that is the bottleneck the product does not
+          remove.
+        </p>
+        <p>
+          The second is cost. Datadog's pricing reflects its breadth: many separate products, each with its own usage
+          dimensions, which combine into a bill that is powerful but genuinely hard to predict as your data grows. The
+          stories of surprising Datadog invoices are common enough to be a category of their own, and they come from the
+          same place as the product's strength — a broad menu, separately metered. That model rewards large, well-funded
+          teams and punishes the ones watching their spend.
+        </p>
+        <p>
+          24Observe makes different choices on exactly these two axes. It is built around the investigation: every
+          incident is investigated by an <a href="/product/ai-analyst">AI analyst</a> that gathers the evidence, traces
+          the blast radius, and returns a verdict you can act on or audit — so you are handed conclusions, not just
+          dashboards. And it uses a consolidated, predictable pricing model with one shared volume allowance across logs,
+          metrics, and traces, so the number does not surprise you. Add first-class AI-agent observability and security,
+          an agent-programmable API, and the option to self-host, and you have a platform optimised for a different set of
+          priorities than the broadest-possible-collection one Datadog is built around.
+        </p>
+        <p>
+          Neither philosophy is universally correct. If you want the widest commercial coverage of a sprawling estate and
+          budget is not the constraint, Datadog's maturity is a real and defensible advantage. If you want investigation
+          done for you, a bill you can predict, AI-agent coverage built in, and the freedom to run it yourself, that is
+          the gap 24Observe was built to fill — and the rest of this page lays out the trade-offs plainly so you can
+          decide.
+        </p>
+      </div>
+      <blockquote class="quote">
+        This is not “Datadog is bad.” It’s “Datadog optimises for breadth and display; we optimise for investigation and
+        predictability.” Pick the one that matches your constraints.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where 24Observe differs</div>
+        <h2 class="h2">Four differences that actually change the day-to-day.</h2>
+        <p class="lede">
+          Not a feature-count contest — the specific places where the two platforms' priorities diverge in ways you will
+          feel.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Investigation, not just display</div><p>Every incident arrives investigated, with a root-cause verdict and cited evidence — rather than a dashboard you interpret yourself. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">One predictable bill</div><p>A consolidated model with one shared volume allowance, not a menu of separately-metered products that compound into a surprise.</p></div>
+        <div class="why-card"><div class="why-num">AI-agent native</div><p>Cost, behaviour, and dedicated security detections for agents from one stream of telemetry — built around, not bolted on. <a href="/product/ai-agent-security">Agent security →</a></p></div>
+        <div class="why-card"><div class="why-num">Open and self-hostable</div><p>Open source with an identical-contract self-host, including the analyst in-network — a categorical option a hosted-only suite cannot offer. <a href="/solutions/self-host">Self-host →</a></p></div>
+        <div class="why-card"><div class="why-num">Security in the platform</div><p>A real SIEM with 87 detections and investigation is part of the platform, not a separately-priced security product line.</p></div>
+        <div class="why-card"><div class="why-num">Agent-programmable</div><p>A pure-REST API with pre-converted tool definitions and an MCP surface, so agents can drive the platform — not just read from it. <a href="/agents">API for agents →</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Where Datadog leads</div>
+        <h2 class="h2">The honest other side of the ledger.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Integration breadth and maturity</h3>
+          <p>
+            Datadog's catalogue of integrations is enormous and has been refined over many years, and its application
+            performance monitoring is deep and battle-tested at very large scale. If your environment is a sprawling,
+            heterogeneous mix with a long tail of systems that each have a dedicated Datadog integration, that breadth is a
+            genuine advantage, and replacing it with open-standards ingest may mean some work. We would rather you know
+            that going in than discover it later. 24Observe leans on OpenTelemetry and webhook ingest, which covers a great
+            deal — but it is a different model from a vast proprietary integration library, and for some estates that
+            distinction matters.
+          </p>
+          <h3>Proven at the largest scale</h3>
+          <p>
+            Datadog operates some of the largest observability deployments in the world, and that track record is real.
+            24Observe's capabilities are real and deployed, but the platform is younger, and we describe what it does
+            rather than implying a scale of adoption we have not yet earned. If your decision hinges on a long public
+            reference list at extreme scale, that is an honest point in Datadog's favour today.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Why we still think the trade favours many teams</h3>
+          <p>
+            Breadth and maturity are worth a lot — but most teams use a fraction of Datadog's surface and pay for the
+            whole menu, and almost all of them still investigate by hand. The places 24Observe is strong — automatic
+            investigation, predictable cost, AI-agent coverage, self-hosting — are precisely the places that bite teams in
+            practice, day after day, regardless of how broad the catalogue is. So for a large set of teams the trade is
+            favourable: you give up some integration breadth and a longer reference list, and you gain conclusions instead
+            of dashboards, a bill you can forecast, and the freedom to run it yourself.
+          </p>
+          <h3>You don’t have to choose all at once</h3>
+          <p>
+            Because 24Observe ingests open standards and exports cleanly, you can run it alongside an existing Datadog
+            deployment, move one painful surface over, and see whether the investigation and the pricing change your
+            day-to-day before committing further. An honest comparison should also offer an honest, low-risk way to test
+            the claim — and that is it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Side by side</div>
+        <h2 class="h2">The comparison, laid out plainly.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>Dimension</div><div>Datadog</div><div class="us">24Observe</div></div>
+        <div class="cmp-row"><div class="cmp-k">After an alert fires</div><div>You investigate, with great tools.</div><div class="cmp-us">The analyst investigates and returns a verdict.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Pricing shape</div><div>Many products, many usage dimensions.</div><div class="cmp-us">Consolidated, one shared allowance.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Integration breadth</div><div>Vast proprietary catalogue (a strength).</div><div class="cmp-us">Open standards + webhook ingest.</div></div>
+        <div class="cmp-row"><div class="cmp-k">SIEM &amp; security</div><div>A separate product line.</div><div class="cmp-us">Part of the platform, investigated.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI-agent coverage</div><div>Emerging.</div><div class="cmp-us">First-class: cost, behaviour, security.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Deployment</div><div>Hosted SaaS.</div><div class="cmp-us">Hosted or self-hosted, identical contract.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Maturity / breadth</div><div>Industry-leading.</div><div class="cmp-us">Younger; focused; honestly described.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Choosing honestly</div>
+        <h2 class="h2">Which one is right for you.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Choose Datadog if</strong> your priority is the deepest, broadest commercial observability available,
+          you have a sprawling estate that benefits from its huge integration catalogue and mature APM, and budget is not
+          your binding constraint. Its maturity and scale are real, hard-won advantages, and for the right team they
+          justify the price and the complexity. We are comfortable telling you that, because a comparison that pretends the
+          incumbent has no strengths is not worth reading.
+        </p>
+        <p>
+          <strong>Choose 24Observe if</strong> the bottleneck you actually feel is investigation rather than data
+          collection — if your team is short on people to work alerts, not short on dashboards. Choose it if a predictable,
+          consolidated bill matters more than the longest possible integration list; if you are running AI agents and want
+          their cost, behaviour, and security covered as a first-class concern; if you need or value the ability to
+          self-host; or if you want a platform agents can drive through a clean API. For a large and growing set of teams,
+          those are the things that determine whether the tooling helps or merely impresses.
+        </p>
+        <p>
+          And if you are unsure, the low-risk path is real: 24Observe speaks open standards in and exports cleanly out, so
+          you can run it next to what you have, move your most painful surface across, and judge the difference from your
+          own incidents rather than from a comparison page — even one that tries as hard as this one to be fair.
+        </p>
+        <h3>What switching, or coexisting, actually takes</h3>
+        <p>
+          The practical worry with leaving any entrenched suite is the migration, and it is a fair one — a rip-and-replace
+          of a deeply-integrated observability platform is a project nobody undertakes lightly. The good news is that you
+          do not have to. Because 24Observe ingests OpenTelemetry, the same instrumentation already feeding Datadog can
+          fan out to both at once; you change a destination, not your application code. That makes coexistence the default
+          starting point rather than a special case, and it means the comparison can be run on live, identical data
+          instead of a contrived trial.
+        </p>
+        <p>
+          From there, most teams move one surface at a time. Pick the area that hurts most — often the alerts you cannot
+          keep up with, or the part of the bill that grows fastest — and route it through 24Observe while everything else
+          stays where it is. If arriving at an investigated verdict genuinely changes how that surface feels, you widen;
+          if it does not, you have lost nothing and learned something. The clean export means even a full migration later
+          is not a trap door: your data remains yours to take wherever you go next.
+        </p>
+        <p>
+          A last word on honesty, because it is the whole point of a page like this. We are not going to tell you that a
+          younger, more focused platform out-features one of the most mature suites in the industry — it does not, and
+          claiming so would discredit everything else here. What we will tell you is that breadth is not the same as
+          fit, and that for a great many teams the things 24Observe does differently — investigate for you, price
+          predictably, cover agents, run anywhere — matter more day to day than the features they will never switch on.
+          Decide on fit, test it on your own data, and trust what you see over what either vendor says.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">24Observe vs Datadog — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">See the difference on your own incidents.</h2>
+      <p class="final-cta-sub">
+        Run 24Observe alongside what you have, move one painful surface over, and judge investigation and pricing for
+        yourself — open standards in, clean export out, no lock-in.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

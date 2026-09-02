@@ -1,0 +1,293 @@
+---
+/**
+ * SEO-NATIVE BLOG TEMPLATE FOR 24OBSERVE
+ * 
+ * This template ENFORCES SEO best practices:
+ * - Mandatory keyword research validation
+ * - Author credentials required
+ * - Schema auto-injection (Article, FAQ, Organization)
+ * - Original research/data section required
+ * - Case study/proof section required
+ * - Featured snippet optimization built-in
+ * - Topical cluster linking included
+ * - Search intent declaration required
+ * 
+ * BEFORE USING:
+ * 1. Run keyword research (see BLOG_KEYWORD_RESEARCH.md)
+ * 2. Fill ARTICLE_META with validated data
+ * 3. Follow BLOG_WRITER_WORKFLOW.md
+ * 4. Run BLOG_SEO_CHECKLIST.md before publish
+ * 
+ * NO KEYWORDS? NO AUTHOR CREDENTIALS? TEMPLATE WILL WARN YOU.
+ */
+
+import Base from '../../layouts/Base.astro';
+
+// ============================================
+// STEP 1: KEYWORD RESEARCH VALIDATION
+// ============================================
+// This data MUST come from keyword research tool
+// (Ahrefs, SEMrush, Google Search Console)
+const ARTICLE_META = {
+  // ===== CONTENT BASICS =====
+  title: 'Blog Post Title: Include Primary Keyword Here',
+  author: 'Author Full Name',
+  date: new Date().toISOString().split('T')[0],
+  readTime: '8 min read',
+  category: 'Best Practices',
+  description: 'Meta description for search engines (155 chars max). Include keyword naturally.',
+  
+  // ===== SEO REQUIRED: KEYWORD DATA =====
+  // Source: Ahrefs, SEMrush, or Google Search Console
+  keyword: {
+    phrase: 'Primary keyword phrase here',
+    searchVolume: 0, // Monthly searches (e.g., 420)
+    keywordDifficulty: 0, // KD score 0-100 (e.g., 28)
+    intent: 'tutorial', // tutorial | comparison | problem-solving | news | definition
+    relatedKeywords: [
+      'Secondary keyword 1',
+      'Secondary keyword 2',
+      'Long-tail variation'
+    ]
+  },
+  
+  // ===== SEO REQUIRED: AUTHOR CREDENTIALS =====
+  // E-A-T Signal: Experience, Expertise, Authority, Trustworthiness
+  author_credentials: {
+    jobTitle: 'Senior SRE',
+    company: '24Observe',
+    yearsExperience: 8,
+    expertise: 'TLS/SSL, certificate management, infrastructure',
+    previousCompanies: ['Netflix', 'Stripe', 'Amazon'],
+    certifications: ['CKAD', 'AWS Solutions Architect'],
+    linkedinUrl: 'https://linkedin.com/in/author',
+    twitterHandle: '@handle',
+    bio: 'Short bio: 2-3 sentences about expertise and credibility.'
+  },
+  
+  // ===== SEO REQUIRED: TOPICAL CLUSTER =====
+  // Maps this post to topic cluster (builds authority compound)
+  topicalCluster: {
+    pillowKeyword: 'Main pillar topic (e.g., SSL/TLS Certificate Monitoring)',
+    clusterPosts: [
+      {
+        title: 'Related Post 1 Title',
+        url: '/blog/related-post-1',
+        keyword: 'Related keyword 1'
+      },
+      {
+        title: 'Related Post 2 Title',
+        url: '/blog/related-post-2',
+        keyword: 'Related keyword 2'
+      },
+      {
+        title: 'Related Post 3 Title',
+        url: '/blog/related-post-3',
+        keyword: 'Related keyword 3'
+      }
+    ],
+    internalLinkAnchorTexts: [
+      'anchor text with keyword 1',
+      'anchor text with keyword 2',
+      'anchor text with keyword 3'
+    ]
+  },
+  
+  // ===== SEO REQUIRED: ORIGINAL RESEARCH =====
+  // No generic stats. Must be original/cited data.
+  originalResearch: {
+    type: 'case-study', // case-study | survey | benchmark | data-analysis | customer-story
+    title: 'Research Title',
+    description: 'What was researched? How many samples? What did you find?',
+    dataPoints: [
+      '73% of surveyed engineers reported...',
+      '12,000 certificates analyzed across...',
+      'Real cost impact: $X savings annually'
+    ],
+    source: '24Observe research database / customer interviews / public data',
+    citationUrl: 'https://link-to-source.com'
+  },
+  
+  // ===== SEO REQUIRED: CASE STUDY / PROOF =====
+  // Real customer story or internal case showing ROI
+  caseStudy: {
+    customerName: 'Customer Name (or "Internal Case Study")',
+    industry: 'Industry/Vertical',
+    challenge: 'What problem did they face?',
+    solution: 'How was it solved?',
+    results: 'Quantifiable results (time saved, money saved, incidents prevented)',
+    metrics: {
+      timeToResolution: 'e.g., 4 hours → 5 minutes',
+      costSavings: 'e.g., $500K/year prevented',
+      incidentsPrevented: 'e.g., 12 outages prevented'
+    }
+  },
+  
+  // ===== FEATURED SNIPPET OPTIMIZATION =====
+  // Tell the template what snippet targets to create
+  featuredSnippetTargets: [
+    {
+      type: 'list', // list | table | definition | steps
+      topic: 'e.g., "5 reasons TLS monitoring matters"',
+      position: 'early' // early | mid | late section
+    },
+    {
+      type: 'table',
+      topic: 'e.g., "Comparison of monitoring tools"',
+      position: 'mid'
+    },
+    {
+      type: 'definition',
+      topic: 'e.g., "What is TLS termination?"',
+      position: 'early'
+    }
+  ],
+  
+  // ===== FAQ FOR FEATURED SNIPPETS =====
+  // Used to populate "People Also Ask" boxes
+  faqSections: [
+    {
+      question: 'Who should read this article?',
+      answer: 'SREs, DevOps engineers, infrastructure teams.'
+    },
+    {
+      question: 'How long do I need to implement this?',
+      answer: 'Setup takes 15 minutes, full integration 2-4 hours.'
+    },
+    {
+      question: 'What tools do you recommend?',
+      answer: 'See the comparison section below.'
+    }
+  ]
+};
+
+const FEATURED_GUIDES = [
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+  { title: "Observability vs Monitoring: Key Differences", link: "/blog/observability-vs-monitoring-key-differences" },
+  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
+  { title: "Best Uptime Monitoring Tools in 2026", link: "/blog/best-uptime-monitoring-tools-2026" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+// VALIDATION (Template will warn if these are missing)
+if (!ARTICLE_META.keyword.phrase || ARTICLE_META.keyword.searchVolume === 0) {
+  console.warn('⚠️ KEYWORD DATA MISSING: Fill keyword.phrase and searchVolume from Ahrefs/SEMrush');
+}
+if (!ARTICLE_META.author_credentials.jobTitle) {
+  console.warn('⚠️ AUTHOR CREDENTIALS MISSING: Add credentials to build E-A-T signals');
+}
+if (!ARTICLE_META.originalResearch.type || !ARTICLE_META.originalResearch.description) {
+  console.warn('⚠️ ORIGINAL RESEARCH MISSING: Add unique data/research, not generic stats');
+}
+
+// ============================================
+// TOC: OPTIMIZE FOR FEATURED SNIPPETS
+// ============================================
+const TOC = [
+  { id: 'definition', label: 'What is [Your Topic]?', featured_snippet: true },
+  { id: 'why', label: 'Why [Topic] Matters (Real Data)' },
+  { id: 'methods', label: '[Topic] Methods: Compared (Table)' },
+  { id: 'setup', label: 'Step-by-Step Setup' },
+  { id: 'tools', label: 'Tools Comparison' },
+  { id: 'research', label: 'Original Research Findings' },
+  { id: 'case-study', label: 'Real Customer Case Study' },
+  { id: 'best-practices', label: 'Best Practices' },
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    
+    {/* DESKTOP 3-COLUMN LAYOUT MATCHING BLOG.ASTRO EXACTLY */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES (EXACT MATCH FOR BLOG.ASTRO) */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        
+
+        
+
+        
+
+        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+
+</div>
+
+        
+
+        
+      </main>
+
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL (EXACT MATCH FOR BLOG.ASTRO) */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>

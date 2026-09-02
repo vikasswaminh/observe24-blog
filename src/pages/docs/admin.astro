@@ -1,0 +1,311 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'What roles exist, and what can each do?',
+    a: 'Three: owner, admin, and member. Owners have full control including billing and deleting the organisation. Admins manage the team, tokens, detections, and settings but cannot touch billing or delete the org. Members do the day-to-day operational work — monitors, incidents, investigations — without administrative reach. The model is deliberately small so it is easy to reason about who can do what.',
+  },
+  {
+    q: 'How do I add and remove teammates?',
+    a: 'Invite people by email and assign a role at the same time; they set their own password (or sign in with a linked identity) when they accept. Remove someone and their access ends immediately, while the audit trail of what they did stays intact. Re-assigning a role takes effect right away. There is no per-seat scramble — manage the team as the org grows or changes.',
+  },
+  {
+    q: 'How do API tokens and scopes work?',
+    a: 'You mint personal access tokens scoped to exactly the actions they need — read-only, write to a specific area, or any narrow combination from the full scope list. A token only ever shows once at creation; afterwards only its prefix is visible. Pair a token with daily caps so a leaked one is bounded to a day of limited activity, and revoke it instantly if it is ever exposed. This is how you give a script or an AI agent least-privilege access safely.',
+  },
+  {
+    q: 'Can I limit what an automated agent can do with a token?',
+    a: 'Yes, and you should. Give an agent a token with only the scopes its job requires and a daily mutation and data cap, so even a buggy loop or a compromised key can do only bounded, recoverable damage. Agents cannot disable detections, delete data, or read secrets regardless of scope — those are guarded by design. And every action a token takes is attributed in the audit log, so "what did the agent actually do?" is one query. See the <a href="/docs/agent-cookbook">agent cookbook</a>.',
+  },
+  {
+    q: 'What authentication options are available?',
+    a: 'Password sign-in with multi-factor authentication (time-based one-time codes) that you can require for the organisation, plus linked sign-in identities. New accounts verify their email before they are active. Sessions are protected against cross-site abuse, and credentials are stored as one-way hashes that are never recoverable — only resettable.',
+  },
+  {
+    q: 'How long is my data kept, and can I control it?',
+    a: 'Data is retained on a rolling window appropriate to its type, and the controls are exposed so you can align retention with your own policy. Sensitive data can be redacted before it is ever stored — both at the edge, before it leaves your environment, and again on the way in — so secrets do not land in your logs in the first place.',
+  },
+  {
+    q: 'Can I delete an organisation and everything in it?',
+    a: 'Yes — right-to-erasure is first-class. An owner can delete the organisation, and the purge removes its data across every store, including archived copies, not just the rows in the primary database. Tenant data is isolated end to end, so a delete affects only that organisation and nothing else.',
+  },
+  {
+    q: 'How does billing work, and who controls it?',
+    a: 'Only owners see and manage billing. Plans are flat and predictable with clear entitlements rather than a tangle of per-feature meters, and you can move between them as you grow. The security and investigation capabilities are part of the platform, not a separate tier you have to upgrade into.',
+  },
+  {
+    q: 'How do I deprovision a host or a network device?',
+    a: 'Remove it from the fleet and its credential is revoked immediately, so it can no longer send data — the inventory record and the audit trail remain for your records. On the host itself you run the collector’s uninstall to stop collection. Tokens, members, and hosts can all be deprovisioned independently and instantly.',
+  },
+  {
+    q: 'Is there an audit trail of administrative actions?',
+    a: 'Yes. Every change — a role assignment, a token mint or revoke, a settings change, a detection edit — is recorded with who did it, when, from where, and whether it came from a person or an automated token. The audit log is queryable and exportable, so compliance and incident-review are a search, not an archaeology project.',
+  },
+];
+---
+<Base
+  title="Admin Guide — roles, tokens, data governance & billing | 24Observe"
+  description="The administrator’s guide to 24Observe: roles and permissions, team management, API tokens and scopes, authentication and MFA, data retention and erasure, billing, and safe deprovisioning."
+  activeNav="docs"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-text">
+        <div class="eyebrow"><span class="bar"></span> Admin Guide</div>
+        <h1 class="h1">Run a tidy, secure organisation — <em>without the busywork.</em></h1>
+        <p class="lede">
+          Administering an observability and security platform should not be a second job. This guide covers everything an
+          owner or admin needs: who can do what, how to manage your team and their access, how to mint safe tokens for
+          scripts and AI agents, how to govern your data and meet your retention and privacy obligations, and how to
+          deprovision cleanly when people, hosts, or whole organisations move on. The defaults are sensible; this is how
+          to make them yours.
+        </p>
+        <div class="hero-ctas">
+          <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+          <a href="/docs/guide" class="btn btn-ghost btn-lg">User guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Roles &amp; permissions</div>
+        <h2 class="h2">Three roles, chosen so you can actually reason about access.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          Permission models fail when they are too clever to hold in your head. 24Observe keeps it to three roles, each a
+          clean superset of the last, so you always know exactly what a given person can and cannot do.
+        </p>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><div class="spec-key">Owner</div><div class="spec-val"><b>Full control.</b> Everything an admin can do, plus billing and the ability to delete the organisation. Reserve it for the people who genuinely need the keys.</div></div>
+        <div class="spec-row"><div class="spec-key">Admin</div><div class="spec-val"><b>Runs the platform.</b> Manages the team, tokens, detections, integrations, and settings — but cannot touch billing or delete the org. The right role for most operators-of-the-operators.</div></div>
+        <div class="spec-row"><div class="spec-key">Member</div><div class="spec-val"><b>Does the work.</b> Monitors, incidents, investigations, logs, dashboards — the day-to-day, without administrative reach. The default for most of the team.</div></div>
+        <div class="spec-row"><div class="spec-key">Guardrails</div><div class="spec-val"><b>Some things no role can do casually.</b> Detections cannot be silently disabled, data cannot be deleted on a whim, and stored secrets are never readable — protections that hold regardless of role.</div></div>
+      </div>
+      <div class="prose" style="margin-top: 36px;">
+        <p>
+          Because the roles nest cleanly, onboarding is a one-decision exercise: does this person need to administer the
+          platform (admin), own the account and its billing (owner), or simply operate it (member)? You can change a
+          role at any time and it takes effect immediately. There is no sprawling permission matrix to audit, which is
+          precisely the point — a model you cannot fully understand is a model you cannot trust.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Team &amp; tokens</div>
+        <h2 class="h2">Manage people and programs with the same care.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Inviting and removing teammates</h3>
+          <p>
+            Invite people by email and pick their role as you do. They set their own credentials when they accept, so you
+            never handle anyone’s password. Remove someone and their access ends instantly — but everything they did
+            stays in the audit trail, because access ending and history disappearing are two very different things. As the
+            team changes, role re-assignment is immediate, with no seat-juggling.
+          </p>
+          <h3>Tokens for scripts and agents</h3>
+          <p>
+            When a script, a CI job, or an AI agent needs to talk to the platform, mint it a personal access token scoped
+            to exactly what it needs — and nothing more. The full scope list lets you grant narrow, specific capabilities:
+            read this, write that, and no further. A token is shown once at creation and only by its prefix afterward, so
+            it cannot be re-read off a screen later.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Bounding a token’s blast radius</h3>
+          <p>
+            Scope is the first guardrail; caps are the second. Attach a daily mutation and data limit to a token so that
+            even if it leaks, the damage is bounded to a day of limited, recoverable activity rather than an open-ended
+            breach. Revoke a token the instant it is exposed and it stops working immediately — no waiting on a cache to
+            expire.
+          </p>
+          <h3>What automation can never do</h3>
+          <p>
+            Some powers are off the table for tokens entirely, by design: an automated caller cannot disable or rewrite a
+            detection, cannot delete data, and cannot read stored secrets, regardless of the scopes it holds. So handing a
+            token to an agent is a bounded decision, not a leap of faith. Every call it makes is attributed in the audit
+            log to that token, so you can always answer exactly what your automation did. The
+            <a href="/docs/agent-cookbook">agent cookbook</a> walks through building against this safely.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Authentication &amp; access</div>
+        <h2 class="h2">Strong by default, stricter when you need it.</h2>
+      </div>
+      <div class="prose">
+        <p>
+          Accounts sign in with a password and can add multi-factor authentication using time-based one-time codes; as an
+          administrator you can require it across the organisation so a stolen password alone is not enough to get in. New
+          accounts verify their email before they become active, which keeps your member list honest and blocks the
+          obvious abuse vectors at the door.
+        </p>
+        <p>
+          Underneath, the things that quietly matter are handled for you. Credentials are stored as one-way hashes — they
+          are never recoverable, only resettable, so even a worst-case data exposure does not hand anyone a usable
+          password. Sessions are defended against cross-site abuse. And every authentication-relevant action lands in the
+          audit log, so a sign-in from a new place or a flurry of failures is something you can see rather than something
+          you find out about later. You configure the policy; the platform enforces it consistently.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Data governance</div>
+        <h2 class="h2">Your data, on your terms — including its end.</h2>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">Retention you control</div><p>Data is kept on a rolling window suited to its type, with the controls exposed so you can align retention to your own policy rather than inherit someone else’s default.</p></div>
+        <div class="why-card"><div class="why-num">Redaction before storage</div><p>Sensitive values can be stripped before data is ever stored — both at the edge, before it leaves your environment, and again on the way in — so secrets never land in your logs to begin with.</p></div>
+        <div class="why-card"><div class="why-num">Tenant isolation</div><p>Your organisation’s data is isolated end to end. The boundary is enforced at the data layer, not patched on afterwards, so one tenant can never see another’s.</p></div>
+        <div class="why-card"><div class="why-num">Right to erasure</div><p>An owner can delete the organisation and the purge removes its data across every store — including archived copies — not just the visible rows. Erasure means erasure.</p></div>
+      </div>
+      <div class="prose" style="margin-top: 40px;">
+        <p>
+          Data governance is where a lot of platforms quietly let you down — generous about ingesting your data, vague
+          about deleting it. 24Observe treats the end of the data lifecycle as seriously as the start. You can see and
+          shape how long things are kept, keep secrets out of storage entirely with redaction, trust that the tenant
+          boundary is real, and, when the time comes, actually erase an organisation completely. These are the controls a
+          security-conscious admin needs to sign off on a tool, and they are built in rather than promised.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Billing &amp; lifecycle</div>
+        <h2 class="h2">Predictable plans, clean exits.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Billing, owned by owners</h3>
+          <p>
+            Only owners see or change billing, so the financial controls sit with the people accountable for them. Plans
+            are flat and legible — clear entitlements you can predict, not a thicket of per-feature meters that turn a busy
+            month into a surprise invoice. As you grow, you move between plans deliberately; the security and investigation
+            capabilities are part of the platform on every plan, not a tier you have to climb into.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Deprovisioning, cleanly</h3>
+          <p>
+            People leave, hosts get retired, devices get swapped, projects end. Each is a clean, independent action: remove
+            a member and access ends at once; revoke a token and it dies instantly; remove a host or device from the fleet
+            and its credential is revoked so it can no longer send data, with the record kept for your history. On a host,
+            the collector uninstalls in one command. Nothing lingers with stale access, and nothing useful is lost.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The record of everything</div>
+        <h2 class="h2">The audit log is the answer to "who did that?"</h2>
+      </div>
+      <div class="prose">
+        <p>
+          Every meaningful action in the platform is recorded: a role assignment, a token minted or revoked, a settings
+          change, a detection edited, an incident resolved. Each entry captures who did it, when, from where, and crucially
+          whether it came from a person or from an automated token — so the work your agents do is never confused with the
+          work your people do. The log is queryable and exportable, which turns the two worst questions in any review —
+          "who changed this?" and "what did that token do?" — into a single search instead of a forensic dig.
+        </p>
+        <p>
+          That is the throughline of administering 24Observe: small, legible roles; least-privilege tokens with hard
+          limits; strong authentication you can tighten; data you can govern and truly erase; and a complete record of who
+          did what. The point of all of it is to let you hand the platform to a growing team, and to a fleet of automated
+          agents, without lying awake about it. Set the policy once, and the platform keeps it.
+        </p>
+        <h3>A sensible starting configuration</h3>
+        <p>
+          If you are setting up for a team rather than yourself, a few defaults will save you trouble later.
+          <strong>Keep owners to a small handful</strong> — the people genuinely accountable for the account and the bill —
+          and make your operations leads admins rather than owners, so the financial controls stay with the right hands.
+          Put everyone else on member; they can do the entire day-to-day job without administrative reach, and you can
+          promote anyone in seconds if that changes. <strong>Require multi-factor authentication for the organisation</strong>
+          on day one; it is far easier to set the expectation at the start than to retrofit it onto an established team.
+        </p>
+        <p>
+          For automation, resist the temptation to mint one all-powerful token "to get things working." Create a separate,
+          narrowly-scoped token per job — one for the deploy pipeline that provisions monitors, one for the chatops bot
+          that reads incidents, one for each agent — each with only its required scopes and a daily cap. When something
+          needs to change, you adjust or revoke one token without disturbing the others, and the audit log tells you
+          exactly which automation did what. <strong>Decide your retention and redaction posture early</strong> too:
+          configure how long each kind of data is kept to match your policy, and turn on redaction so secrets are stripped
+          before storage rather than discovered in your logs during an audit. These are five-minute decisions at the start
+          and painful migrations later. Made up front, they give you an organisation that is secure, legible, and ready to
+          grow — one you can confidently open to more people and more agents without the administrative overhead growing
+          with it.
+        </p>
+        <h3>Reviewing the account on a cadence</h3>
+        <p>
+          Administration is not a one-time setup; it drifts if you never look at it. A light recurring review keeps the
+          account honest without becoming a chore. Once a quarter is plenty for most teams. Walk the member list and
+          confirm everyone still belongs and still has the right role — people change teams, contractors roll off, and
+          access that made sense in spring is a liability by autumn. Walk the token list the same way: every token should
+          map to a job you can name, and anything you cannot account for should be revoked on sight, because an orphaned
+          token with broad scope is exactly the kind of quiet exposure that audits exist to catch. Skim the audit log for
+          anything surprising, and confirm your retention windows still match whatever your policy or your customers
+          require.
+        </p>
+        <p>
+          The work is deliberately small, and that is the point. Because roles are few and legible, tokens are scoped and
+          named, and every action is recorded, a review is a short read rather than an investigation. You are not
+          reconstructing what happened from fragments; you are confirming that what the platform already records still
+          matches your intent. Offboarding follows the same logic — when someone leaves, removing their membership and
+          revoking the tokens they owned closes their access cleanly and immediately, and the audit log preserves the
+          history of what they did while they were here. That combination, fast clean exits plus a permanent record, is
+          what lets a small administrative team stay comfortable as the number of people and agents touching the platform
+          climbs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Admin guide — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Stand up an organisation you can trust to a team.</h2>
+      <p class="final-cta-sub">Sensible defaults, small roles, least-privilege tokens, real data governance, and a complete audit trail — set it up once and let your team and your agents get to work.</p>
+      <div class="final-cta-buttons">
+        <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg">Start free <span class="arr">→</span></a>
+        <a href="/docs/agent-cookbook" class="btn btn-ghost btn-lg">Build an agent</a>
+      </div>
+    </div>
+  </section>
+</Base>

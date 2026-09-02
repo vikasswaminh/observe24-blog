@@ -1,0 +1,340 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+
+const faqs = [
+  {
+    q: 'Is the self-hosted version a stripped-down edition?',
+    a: 'No. 24Observe is open source and self-hostable with an identical contract — the same ingest, the same detections, the same AI analyst, the same API. You are not getting a community-edition shadow of the real product with the valuable parts held back for the hosted tier. What you run on your own infrastructure is the platform, not a teaser for it.',
+  },
+  {
+    q: 'Who should self-host rather than use the hosted version?',
+    a: 'Teams with a hard requirement that data stays inside their boundary: regulated industries, government and defence, healthcare, finance, anyone with data-residency obligations, and teams running in air-gapped or isolated environments. Also anyone who simply prefers to own their stack and avoid vendor lock-in on principle. If your telemetry — logs, prompts, security events — cannot leave your network, self-hosting is how you still get the platform.',
+  },
+  {
+    q: 'What does it run on?',
+    a: 'Standard, widely-used open-source infrastructure — a relational store, a fast columnar store for telemetry, a queue, and the application services — orchestrated with containers. There is nothing exotic or proprietary to license underneath it. The technical guide walks through the components and the deployment paths step by step; see the <a href="/self-host">self-host guide</a> for specifics.',
+  },
+  {
+    q: 'Do my prompts and sensitive logs ever leave my network?',
+    a: 'Not when you self-host. Everything — ingest, storage, detection, and investigation — runs inside your perimeter, so prompts, completions, security events, and logs stay on infrastructure you control. Redaction still strips secrets before storage as an additional safeguard. For teams whose data genuinely cannot leave, this is the entire point.',
+  },
+  {
+    q: 'Can the AI analyst run self-hosted, including with our own models?',
+    a: 'Yes. The analyst runs in your deployment, and you can point it at the model endpoint you choose — including a model you host yourself — so even the AI investigation never has to send your data to an outside service. That makes the autonomous-triage capability available to teams who could never use a hosted AI feature for compliance reasons. See <a href="/product/ai-analyst">the analyst</a>.',
+  },
+  {
+    q: 'Will I fall behind the hosted version?',
+    a: 'No — it is the same codebase, openly developed, so the capabilities that ship to the hosted platform are the capabilities you run. You update on your own schedule rather than having changes pushed to you, which is itself a benefit for environments with change-control requirements, but you are never on a different, lesser product.',
+  },
+  {
+    q: 'Can I move between self-hosted and hosted later?',
+    a: 'The identical contract is what makes that practical. Because the API, the data model, and the behaviour are the same, the decision to self-host is not a one-way door — you can start hosted and move in-house, or run hosted now with the genuine knowledge that self-hosting is always available if your requirements or your comfort with a vendor change. That optionality is a real hedge against lock-in.',
+  },
+  {
+    q: 'Is self-hosting going to be an operational burden?',
+    a: 'It is a real responsibility — you are running infrastructure — but the platform is deliberately built from standard components with a documented, container-based deployment, not a sprawling bespoke architecture. For a team that already operates infrastructure, it is a tractable addition, and the <a href="/self-host">self-host guide</a> exists to make the path concrete. The trade is operational ownership in exchange for total data control, and for the teams who choose it, that trade is clearly worth it.',
+  },
+];
+---
+<Base
+  title="Self-hosted, inside your perimeter | 24Observe"
+  description="Open source and self-hostable with an identical contract — the same ingest, detections, and AI analyst, running entirely on infrastructure you control."
+  activeNav="self-host"
+>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="eyebrow"><span class="bar"></span> Self-host / on-prem / air-gapped</div>
+          <h1 class="h1">The whole platform, <em>inside your own perimeter.</em></h1>
+          <p class="lede">
+            Some teams cannot send their telemetry to anyone — not their logs, not their security events, and certainly
+            not their prompts. For them, the usual answer is to give up the good tools and make do. 24Observe is open
+            source and self-hostable with an identical contract, so you run the full platform — the same ingest, the same
+            detections, the same AI analyst, the same API — entirely on infrastructure you control. No stripped-down
+            edition, no data leaving your boundary, no lock-in.
+          </p>
+          <div class="hero-ctas">
+            <a href="/self-host" class="btn btn-primary btn-lg">Read the self-host guide <span class="arr">→</span></a>
+            <a href="https://login.24observe.com/register" class="btn btn-ghost btn-lg">Or try it hosted</a>
+          </div>
+          <div class="hero-meta">
+            <span>Open <b>source</b></span>
+            <span>Identical <b>contract</b></span>
+            <span>Data <b>stays home</b></span>
+            <span>Air-gap <b>capable</b></span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="mock">
+            <div class="mock-chrome">
+              <div class="mock-dots"><span></span><span></span><span></span></div>
+              <div class="mock-url"><span class="lock">●</span> your-infra · 24observe</div>
+            </div>
+            <div class="con-head">
+              <div class="con-title"><span class="dot"></span> Inside your perimeter</div>
+              <div class="con-meta">nothing leaves</div>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">ingest · storage · detection · analyst</div>
+                <div class="con-sub"><span>all in-network</span><span class="tech">your control</span></div>
+              </div>
+              <span class="sev sev-med">LOCAL</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">analyst → your own model endpoint</div>
+                <div class="con-sub"><span>no outside calls</span><span class="tech">compliant</span></div>
+              </div>
+              <span class="sev sev-med">PRIVATE</span>
+            </div>
+            <div class="con-row">
+              <div>
+                <div class="con-rule">same code as hosted · update on your schedule</div>
+                <div class="con-sub"><span>no lesser edition</span><span class="tech">no lock-in</span></div>
+              </div>
+              <span class="sev sev-med">FULL</span>
+            </div>
+            <div class="con-foot"><span class="arr">→</span> The full platform, with nothing leaving your network</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The self-host reality</div>
+        <h2 class="h2">For some teams, “send us your data” is a non-starter.</h2>
+      </div>
+      <div class="prose">
+        <p class="lead">
+          A large part of the market has a constraint the typical SaaS pitch quietly ignores: their data is not allowed to
+          leave their boundary. Not as a preference — as a regulatory, contractual, or architectural hard line. For these
+          teams, the entire category of "just point it at our cloud" is off the table before the conversation starts.
+        </p>
+        <p>
+          The reasons are varied and all legitimate. A regulated business may have data-residency or sovereignty
+          obligations that forbid shipping logs to a third party's region. A healthcare or financial organisation handles
+          information whose exposure is a legal event, not just an embarrassment. A defence or government environment may
+          be genuinely air-gapped, with no path to an external service at all. And increasingly, any team running AI is
+          discovering that prompts and completions can contain anything a user typed or a system returned — which makes
+          sending that telemetry to an outside observability vendor its own data-exposure decision.
+        </p>
+        <p>
+          Historically, the price of these constraints was the tooling. Teams that could not use hosted services either
+          built their own monitoring out of open-source parts and maintained it forever, or settled for a stripped-down,
+          self-hostable shadow of a commercial product with the genuinely useful capabilities — the good detections, the
+          investigation, the polish — reserved for the cloud tier they were not allowed to use. The constraint that
+          protected their data also condemned them to worse tools. That trade has always been unfair.
+        </p>
+        <p>
+          24Observe refuses that trade. The platform is open source and self-hostable with an identical contract, which
+          means the version you run inside your own walls is not a community-edition placeholder — it is the same ingest,
+          the same eighty-seven detections, the same AI analyst, and the same API as the hosted product. Even the
+          autonomous investigation can run entirely in-network, pointed at a model endpoint you control. You get the full
+          capability and your data never leaves, which until now you were told you had to choose between.
+        </p>
+        <p>
+          And because it is the same codebase rather than a forked lesser edition, you do not fall behind: what ships to
+          the hosted platform is what you run, updated on your own schedule. The constraint stops being a tax on your
+          tooling and becomes simply a deployment choice.
+        </p>
+      </div>
+      <blockquote class="quote">
+        The teams who most need good observability and security are often the ones forbidden from using hosted tools. The
+        fix is a real platform that runs entirely inside their walls — not a hobbled edition of one.
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> What self-hosting gives you</div>
+        <h2 class="h2">Total data control, with none of the usual sacrifice.</h2>
+        <p class="lede">
+          The defining promise is "identical contract" — everything the hosted platform does, running where you can prove
+          your data stayed.
+        </p>
+      </div>
+      <div class="why-grid why-grid--2">
+        <div class="why-card"><div class="why-num">The full platform</div><p>Same ingest, same 87 detections across 14 packs, same correlation and threat intel, same API — not a stripped community edition. <a href="/product/siem">SIEM →</a></p></div>
+        <div class="why-card"><div class="why-num">The analyst, in-network</div><p>Autonomous investigation runs in your deployment, pointed at a model endpoint you choose — even your own — so no investigation data leaves. <a href="/product/ai-analyst">The analyst →</a></p></div>
+        <div class="why-card"><div class="why-num">Nothing leaves your boundary</div><p>Ingest, storage, detection, and investigation all run inside your perimeter; prompts, logs, and security events stay on infrastructure you control.</p></div>
+        <div class="why-card"><div class="why-num">Standard components</div><p>Built on widely-used open-source infrastructure with a documented, container-based deployment — nothing exotic to license. <a href="/self-host">Self-host guide →</a></p></div>
+        <div class="why-card"><div class="why-num">Air-gap capable</div><p>Suitable for genuinely isolated environments with no path to an external service — the whole system can run with no outbound dependency.</p></div>
+        <div class="why-card"><div class="why-num">No lock-in, ever</div><p>Open source with an identical contract means the choice is reversible and the vendor relationship is a convenience, not a trap.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Why it’s a real option</div>
+        <h2 class="h2">Open source as a guarantee, not a marketing word.</h2>
+      </div>
+      <div class="split">
+        <div class="split-text prose">
+          <h3>Identical contract is the whole game</h3>
+          <p>
+            The reason most "self-hostable" products disappoint is that the self-hosted edition is deliberately worse — the
+            valuable capabilities are held back to push you to the cloud. Identical contract means the opposite: the API,
+            the data model, the detections, and the behaviour are the same whether you run it hosted or in your own data
+            centre. Code you write against one runs against the other; a runbook for one works for the other. You are
+            choosing where it runs, not which version of the product you are allowed to have.
+          </p>
+          <h3>A hedge against the future</h3>
+          <p>
+            Even teams that are comfortable with hosting today value knowing self-hosting is always available, because it
+            neutralises the two fears that make vendor selection stressful: a future price shock and a future change of
+            direction you do not control. With an open-source platform you can take in-house, the vendor relationship is a
+            convenience you keep because it is good, not a trap you cannot leave. That optionality has value even if you
+            never exercise it.
+          </p>
+        </div>
+        <div class="split-media prose">
+          <h3>Private AI, not just private logs</h3>
+          <p>
+            The newest and sharpest reason to self-host is AI. The analyst is the platform's most powerful capability, and
+            for a compliance-bound team a hosted AI feature that processes their data is often simply forbidden. Running
+            the analyst in your own deployment, pointed at a model endpoint you control — including one you host yourself —
+            puts autonomous investigation within reach of teams who could never use it as a cloud service. Your most
+            sensitive data gets the benefit of AI triage without any of it leaving your network.
+          </p>
+          <h3>The same security posture you’d demand</h3>
+          <p>
+            Self-hosting does not mean giving up the safeguards. Redaction still strips secrets before storage, tenant
+            isolation still holds, and the full audit trail still records who did what. You are adding the strongest
+            possible data-control guarantee — it physically stays with you — on top of the platform's existing security
+            properties, not trading one for the other. For the teams who self-host, that combination is exactly the point.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> A worked example</div>
+        <h2 class="h2">A regulated team that couldn’t send a single log out.</h2>
+        <p class="lede">
+          The kind of organisation the hosted-only market leaves behind — and how an identical-contract self-host puts the
+          full platform back within reach.
+        </p>
+      </div>
+      <div class="prose">
+        <p>
+          Picture a team in a regulated environment — finance, healthcare, government, it does not matter which — whose
+          obligations are unambiguous: customer data and operational telemetry must remain within their controlled
+          infrastructure. They want exactly what every other team wants: monitoring that tells them when something breaks,
+          a SIEM that catches threats, and an analyst that investigates incidents. And they have been told, repeatedly,
+          that the good versions of those things are hosted services they are not permitted to use.
+        </p>
+        <p>
+          Their usual options are both bad. They can assemble open-source parts into a homemade stack and own its
+          maintenance forever, never quite reaching the capability of a real product. Or they can adopt the self-hostable
+          edition of a commercial tool, only to find the detections are thin, the investigation is cloud-only, and the
+          features that would have actually helped are precisely the ones reserved for the hosted tier. The constraint that
+          protects their data has, as usual, sentenced them to worse tooling.
+        </p>
+        <p>
+          With 24Observe they deploy the full platform inside their own perimeter. It runs on standard components they
+          already know how to operate, following the documented deployment path, with no exotic licensing underneath. From
+          the first day they have the same ingest, the same eighty-seven detections, the same correlation and threat
+          intelligence, and the same API as the hosted product — because it is the same product. Their logs, their security
+          events, and their telemetry never touch an outside network.
+        </p>
+        <p>
+          The capability that would normally be off-limits — autonomous investigation — runs too. The analyst operates
+          inside their deployment, pointed at a model endpoint they control, so even the AI triage processes their data
+          without any of it leaving. The most compliance-sensitive team in the building gets the same investigated-incident
+          experience as a startup on the hosted free tier, with a data-control guarantee they can demonstrate to an
+          auditor: it physically stayed here.
+        </p>
+        <p>
+          And the decision is not a one-way door. Because the contract is identical, they could move to hosted later if
+          their posture changed, or run a hybrid, without rewriting anything. The thing they were told they had to give up
+          to keep their data — a real, modern, AI-native platform — they did not have to give up at all. That is what
+          self-hosting should mean, and for the teams who need it, it changes what is possible.
+        </p>
+        <p>
+          The broader shift worth naming is that data-control requirements are spreading, not receding. Privacy regulation
+          is tightening across jurisdictions, data-residency expectations are becoming contractual defaults rather than
+          exceptions, and the arrival of AI has made every team think harder about where their most sensitive content
+          goes. The population of organisations for whom "send us your data" is a non-starter is growing, and growing
+          fastest in exactly the areas — regulated industry, the public sector, AI-heavy products — where the need for
+          good observability and security is most acute. Self-hosting is not a legacy concession; it is an increasingly
+          mainstream requirement.
+        </p>
+        <p>
+          Which is why building the platform to run identically in your perimeter is a deliberate stance, not an
+          afterthought. A product that treats self-hosting as a second-class path quietly tells those organisations they
+          do not matter; one that runs the full capability inside your walls says the opposite. For a team weighing this
+          decision, the practical takeaway is simple: you do not have to choose between keeping your data and having a
+          modern, AI-native platform to reason over it. You can have both, the technical path is documented, and the
+          choice remains yours to revisit. Start with the <a href="/self-host">self-host guide</a> when you are ready to
+          see exactly how it goes together.
+        </p>
+        <p>
+          One more reassurance worth stating, because it is the question every self-hosting team eventually asks: what
+          happens if our needs change? With an identical-contract platform, the answer is "nothing painful." Because the
+          API, the data model, and the behaviour are the same hosted or self-hosted, you can move between them, run a
+          hybrid, or hand operation back and forth without rewriting integrations or retraining your team. Self-hosting
+          here is a deployment choice you can reverse, not a fork you commit to — which means the decision carries far
+          less risk than the usual all-or-nothing self-host bet, and you can choose it for the reasons that matter today
+          without fearing the reasons that might matter tomorrow.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> The honest comparison</div>
+        <h2 class="h2">The usual self-host options vs an identical-contract platform.</h2>
+      </div>
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>The job</div><div>DIY stack / stripped edition</div><div class="us">24Observe self-hosted</div></div>
+        <div class="cmp-row"><div class="cmp-k">Capability</div><div>Thin, or maintain-it-yourself.</div><div class="cmp-us">The full platform, identical contract.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Detections</div><div>Reserved for the cloud tier.</div><div class="cmp-us">All 87, on your infrastructure.</div></div>
+        <div class="cmp-row"><div class="cmp-k">AI investigation</div><div>Cloud-only, so forbidden.</div><div class="cmp-us">In-network, your own model endpoint.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Data boundary</div><div>The good tools need the cloud.</div><div class="cmp-us">Nothing leaves your perimeter.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Falling behind</div><div>A forked lesser edition.</div><div class="cmp-us">Same codebase, your schedule.</div></div>
+        <div class="cmp-row"><div class="cmp-k">Lock-in</div><div>Trapped, or roll your own.</div><div class="cmp-us">Open source; reversible choice.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sec-intro">
+        <div class="eyebrow"><span class="bar"></span> Questions, answered</div>
+        <h2 class="h2">Self-host — FAQ.</h2>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <h2 class="h1">Keep your data. Keep the full platform.</h2>
+      <p class="final-cta-sub">
+        Run the same ingest, detections, and AI analyst entirely inside your own perimeter — identical contract, nothing
+        leaving your network, no lock-in. The technical guide walks you through it.
+      </p>
+      <div class="final-cta-buttons">
+        <a href="/self-host" class="btn btn-primary btn-lg">Read the self-host guide <span class="arr">→</span></a>
+        <a href="/product/ai-analyst" class="btn btn-ghost btn-lg">Meet the analyst</a>
+      </div>
+    </div>
+  </section>
+</Base>

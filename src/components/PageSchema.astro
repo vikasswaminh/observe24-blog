@@ -1,0 +1,59 @@
+---
+// Reusable JSON-LD for a deep page — makes each page machine-readable for LLMs /
+// search without any visual change. Drop it near the top of a page's content:
+//
+//   <PageSchema
+//     type="SoftwareApplication"
+//     name="SIEM & Detections"
+//     description="87 detections across 14 packs…"
+//     features={["…","…"]}
+//   />
+//
+// ld+json is valid anywhere in the document, so this renders inline (no head slot
+// needed). Organization + WebSite live site-wide in Base.astro; this adds the
+// page-level descriptor (+ an optional breadcrumb).
+interface Props {
+  type?: 'WebPage' | 'SoftwareApplication' | 'TechArticle';
+  name: string;
+  description: string;
+  /** Path for this page, e.g. "/product/siem". */
+  path?: string;
+  /** Optional capability/feature bullets (SoftwareApplication.featureList). */
+  features?: string[];
+  /** Optional breadcrumb trail: [["Home","/"],["Product","/#"],["SIEM","/product/siem"]]. */
+  breadcrumb?: [string, string][];
+}
+const { type = 'WebPage', name, description, path, features, breadcrumb } = Astro.props;
+const SITE = 'https://24observe.com';
+const url = path ? `${SITE}${path}` : new URL(Astro.url.pathname, SITE).href;
+
+const page: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': type,
+  name,
+  description,
+  url,
+  isPartOf: { '@type': 'WebSite', name: '24Observe', url: SITE },
+};
+if (type === 'SoftwareApplication') {
+  page.applicationCategory = 'DeveloperApplication';
+  page.operatingSystem = 'Web, Self-hosted';
+  page.offers = { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier; paid from $29/mo; self-host free.' };
+}
+if (features && features.length) page.featureList = features;
+
+const crumbLd = breadcrumb && breadcrumb.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumb.map(([nm, p], i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: nm,
+        item: `${SITE}${p}`,
+      })),
+    }
+  : null;
+---
+<script type="application/ld+json" set:html={JSON.stringify(page)} />
+{crumbLd && <script type="application/ld+json" set:html={JSON.stringify(crumbLd)} />}
