@@ -18,7 +18,7 @@ const BLOG_POSTS = [
     date: "2026-09-02",
     readTime: "21 MIN READ",
     link: "/blog/siem-vs-observability-differences-overlap-converging",
-    tag: "NEW"
+    tag: "POPULAR"
   },
   {
     title: "Website Uptime Monitoring: Complete Guide — Build a Monitoring Strategy That Saves Revenue, Not Just Time",
@@ -168,7 +168,7 @@ const RELEASES = [
       </div>
     </div>
 
-    {/* DESKTOP 3-COLUMN LAYOUT */}
+    {/* DESKTOP 3-COLUMN LAYOUT MATCHING ARTICLE PAGES 100% */}
     <div style="display: flex; gap: 40px; align-items: flex-start;">
       
       {/* LEFT SIDEBAR: FEATURED GUIDES */}
@@ -194,17 +194,18 @@ const RELEASES = [
         </a>
       </aside>
 
-      {/* CENTER MAIN CONTENT */}
-      <main style="flex: 1; min-width: 0;">
+      {/* CENTER MAIN CONTENT WRAPPED IN CLEAN CARD CONTAINER BOX MATCHING SIEM ARTICLE PAGE */}
+      <main style="flex: 1; min-width: 0; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03);" class="blog-main-content-box">
+        
         {/* HERO HEADER */}
-        <section style="margin-bottom: 20px;">
-          <div style="font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">
+        <section style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+          <div style="font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">
             Engineering &amp; Platform Blog
           </div>
-          <h1 style="font-size: 2.1rem; font-weight: 800; color: #2A680D; margin: 0 0 8px 0; line-height: 1.2;">
+          <h1 style="font-size: 2.1rem; font-weight: 800; color: #2A680D; margin: 0 0 10px 0; line-height: 1.2;">
             IT Career Blog | Guides, Architecture &amp; News
           </h1>
-          <p style="font-size: 1.02rem; color: #4b5563; margin: 0 0 20px 0; line-height: 1.55;">
+          <p style="font-size: 1.05rem; color: #475569; margin: 0; line-height: 1.55;">
             In-depth guides, architecture breakdowns, uptime tool comparisons, and engineering posts from the 24Observe team.
           </p>
         </section>
@@ -329,14 +330,14 @@ const RELEASES = [
         </section>
       </main>
 
-      {/* RIGHT SIDEBAR: AI & PLATFORM SPECIAL */}
-      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL + CTA CARD */}
+      <aside class="desktop-sidebar" style="width: 280px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
           <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             PLATFORM SPECIAL
           </span>
         </div>
-        <nav style="display: flex; flex-direction: column; gap: 3px;">
+        <nav style="display: flex; flex-direction: column; gap: 3px; margin-bottom: 24px;">
           {RELEASES.map((r) => (
             <a
               href="#releases"
@@ -349,149 +350,25 @@ const RELEASES = [
           <a href="/docs/api-for-agents" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
             AI Agent API &amp; Open API
           </a>
-          <a href="/docs/mcp" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
-            MCP Server Setup Guide
-          </a>
-          <a href="/self-host" class="sidebar-nav-item" style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; line-height: 1.35;">
-            Self-Host Air-Gapped Setup
-          </a>
         </nav>
-        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
-          View All Specials →
-        </a>
-        
-        
-        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
-        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
-          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+
+        {/* SOFT LIGHT GREEN CTA WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <div style="font-size: 0.8rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">
+            24OBSERVE PLATFORM
+          </div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: #2A680D; margin: 0 0 10px 0; line-height: 1.35;">
             AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </h4>
+          <p style="font-size: 0.88rem; color: #374151; line-height: 1.45; margin: 0 0 16px 0;">
+            Stop juggling multiple vendors. Get full stack monitoring with automated AI root cause analysis.
           </p>
-          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+          <a href="https://login.24observe.com/register" style="display: inline-block; width: 100%; background: #2A680D; color: #ffffff; font-weight: 800; font-size: 0.95rem; padding: 11px 16px; border-radius: 10px; text-decoration: none; transition: background 0.2s ease;">
             Start free trial →
           </a>
         </div>
       </aside>
 
     </div>
-
-    {/* COMPLETE BLOG ARCHIVE SECTION (MATCHING NETWORKERS HOME BOTTOM ARCHIVE) */}
-    <section id="complete-archive" style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; color: #2A680D; margin: 0 0 8px 0;">
-        Complete Blog Archive
-      </h2>
-      <p style="font-size: 1.1rem; color: #4b5563; margin: 0 0 24px 0;">
-        Browse all articles by topic and category. Click any article to read the full guide.
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 36px;">
-        <div>
-          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
-            Monitoring &amp; Observability
-          </h3>
-          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-            {BLOG_POSTS.filter(p => p.category.includes("OBSERVABILITY") || p.category.includes("MONITORING")).map(p => (
-              <li>
-                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
-                  • {p.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
-            Tool Comparisons
-          </h3>
-          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-            {BLOG_POSTS.filter(p => p.category.includes("COMPARISON") || p.category.includes("TOOL")).map(p => (
-              <li>
-                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
-                  • {p.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 18px 0; border-bottom: 2px solid #2A680D; padding-bottom: 6px; display: inline-block;">
-            Product &amp; AI Engineering
-          </h3>
-          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-            {BLOG_POSTS.filter(p => p.category.includes("PRODUCT") || p.category.includes("CRON") || p.category.includes("BEST")).map(p => (
-              <li>
-                <a href={p.link} style="color: #111827; text-decoration: none; font-size: 1.05rem; line-height: 1.45; transition: color 0.2s ease;" class="archive-link">
-                  • {p.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
   </main>
-
-  <style>
-    .sidebar-nav-item {
-      color: #111827 !important;
-      font-weight: 600;
-    }
-    .sidebar-nav-item:hover {
-      background: rgba(59, 145, 18, 0.1);
-      color: #2A680D !important;
-    }
-    .featured-hero-card:hover {
-      border-color: #2A680D !important;
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(42, 104, 13, 0.15) !important;
-    }
-    .featured-hero-card:hover .featured-hero-img {
-      transform: scale(1.03);
-    }
-    .inline-blog-card:hover {
-      border-color: #2A680D !important;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(42, 104, 13, 0.12) !important;
-    }
-    .archive-link {
-      color: #111827 !important;
-      font-weight: 500;
-    }
-    .archive-link:hover {
-      color: #2A680D !important;
-      text-decoration: underline !important;
-    }
-    @media (max-width: 1024px) {
-      .desktop-sidebar {
-        display: none !important;
-      }
-      .featured-hero-card {
-        flex-direction: column !important;
-      }
-      .featured-hero-card > div:first-child {
-        width: 100% !important;
-        height: 220px !important;
-      }
-    }
-    @media (min-width: 1025px) {
-      .mobile-sidebars {
-        display: none !important;
-      }
-    }
-  </style>
-
-  <script is:inline>
-    window.toggleGuides = function() {
-      var container = document.getElementById('inline-blogs-container');
-      if (container) {
-        if (container.style.display === 'none' || container.style.display === '') {
-          container.style.display = 'block';
-        } else {
-          container.style.display = 'none';
-        }
-      }
-    };
-  </script>
 </Base>
-
