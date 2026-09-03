@@ -12,6 +12,8 @@ const ARTICLE_META = {
 };
 
 const FEATURED_GUIDES = [
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
   { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
   { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
   { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
@@ -162,10 +164,10 @@ const FAQS = [
           </ul>
         </section>
 
-        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           
           <section id="introduction" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
               Introduction
             </h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">Somewhere right now, a security analyst is staring at a SIEM dashboard with 4,000 unresolved alerts in the queue, quietly triaging by instinct because there's no realistic way to investigate all of them properly. Two floors down, or in a different Slack workspace entirely, an SRE is staring at a Grafana dashboard, trying to figure out why checkout latency just tripled, cross referencing three different tools by hand.</p>
@@ -306,8 +308,8 @@ const FAQS = [
           </div>
         </section>
 
-        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 14px 0; color: #2A680D;">Wrapping It Up</h2>
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 24px 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
           <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">SIEM and observability were never as different as their separate product categories, separate teams, and separate line items on your budget made them look. One asks whether something is malicious, the other asks why something happened, but they're both trying to answer those questions using the same kind of raw material: timestamped events, structured logs, patterns over time, and the relationships between the systems, identities, and services involved. Keeping them in separate silos hasn't made either discipline stronger. It mostly just means that the same incident gets investigated twice, badly, by two different people who never compare notes.</p>
 <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">The genuinely useful direction, and the one worth building toward regardless of your team's size, is treating detection and investigation as one continuous motion, regardless of whether the trigger was a security rule or a performance threshold. That's exactly what 24Observe was built to do: 87 prebuilt SIEM detections across 14 packs, uptime monitoring, log management, and full AI-agent security coverage, all feeding one incident pipeline where an AI analyst investigates every match immediately and hands back a verdict with the evidence attached, instead of a row in a queue for someone to get to eventually.</p>
 <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">Less time deciding which tool an incident belongs to. More time understanding what happened and fixing it.</p>

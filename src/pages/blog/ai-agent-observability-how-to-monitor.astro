@@ -12,6 +12,8 @@ const ARTICLE_META = {
 };
 
 const FEATURED_GUIDES = [
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
   { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
   { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
   { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
@@ -162,7 +164,7 @@ const FAQS = [
           </ul>
         </section>
 
-        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           
           <section id="ai-agent-observability-how-to-monitor-ai-agents-in-production" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
@@ -403,8 +405,8 @@ const FAQS = [
           </div>
         </section>
 
-        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 14px 0; color: #2A680D;">Wrapping It Up</h2>
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 24px 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
           <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">Agents don't crash like normal software. They get expensive, drift, or get talked into things, all while returning what looks like a perfectly good response. Catching that means watching four things from the same telemetry: cost by agent, performance across the full chain of tool calls, behavior against the agent's own baseline, and security signals on those exact same spans.</p>
 <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">The good news is that most of the hard part, instrumentation, is already done for you. Agent frameworks increasingly speak OpenTelemetry's GenAI conventions out of the box, so the real gap for most teams isn't collecting the data. It's having somewhere that understands it, so a loop that starts at 2 AM gets caught the same morning instead of showing up on next month's bill.</p>
 <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">That's what 24Observe does with AI-agent observability and AI-agent security: one stream, one timeline, cost and threats both covered before either one becomes a surprise.</p>

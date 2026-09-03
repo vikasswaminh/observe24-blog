@@ -12,6 +12,7 @@ const ARTICLE_META = {
 };
 
 const FEATURED_GUIDES = [
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
   { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
   { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
   { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
@@ -31,32 +32,32 @@ const PLATFORM_SPECIALS = [
 
 const FAQS = [
   {
-    q: "What's the difference between API monitoring and APM?",
-    a: "APM (application performance monitoring) typically focuses on the internals of your application code, things like slow database queries, memory usage, and code level performance bottlenecks. API monitoring focuses specifically on the API surface as experienced by whoever is calling it, from the outside in. They overlap and complement each other; APM helps you understand why an API is slow once you already know it is, while API monitoring is what tells you it's slow in the first place."
+    "q": "What's the difference between API monitoring and APM?",
+    "a": "APM (application performance monitoring) typically focuses on the internals of your application code, things like slow database queries, memory usage, and code level performance bottlenecks. API monitoring focuses specifically on the API surface as experienced by whoever is calling it, from the outside in. They overlap and complement each other; APM helps you understand why an API is slow once you already know it is, while API monitoring is what tells you it's slow in the first place."
   },
   {
-    q: "What should an API monitoring check validate?",
-    a: "Not just the status code. Response time against a sensible threshold, the actual content of the response body (correct fields, correct types, nothing unexpectedly empty), and for protected endpoints, that auth is being enforced. A 200 status doesn't mean the answer was right."
+    "q": "What should an API monitoring check validate?",
+    "a": "Not just the status code. Response time against a sensible threshold, the actual content of the response body (correct fields, correct types, nothing unexpectedly empty), and for protected endpoints, that auth is being enforced. A 200 status doesn't mean the answer was right."
   },
   {
-    q: "How do you monitor REST API?",
-    a: "Set up scheduled checks on your critical endpoints that send real requests and validate status code, response time, and response content. Run them from multiple regions, add real traffic monitoring on top, track latency per endpoint (not one blended average), and include your key third party dependencies in the same setup."
+    "q": "How do you monitor REST API?",
+    "a": "Set up scheduled checks on your critical endpoints that send real requests and validate status code, response time, and response content. Run them from multiple regions, add real traffic monitoring on top, track latency per endpoint (not one blended average), and include your key third party dependencies in the same setup."
   },
   {
-    q: "What is synthetic API monitoring?",
-    a: "Sending artificial, scheduled requests to your API on a timer, independent of real user traffic, to catch failures fast even when nobody's actively hitting that endpoint. It's proactive rather than reactive but works best paired with real traffic monitoring."
+    "q": "What is synthetic API monitoring?",
+    "a": "Sending artificial, scheduled requests to your API on a timer, independent of real user traffic, to catch failures fast even when nobody's actively hitting that endpoint. It's proactive rather than reactive but works best paired with real traffic monitoring."
   },
   {
-    q: "How do you monitor third party APIs?",
-    a: "List every external API your product depends on, then run dedicated checks against the actual endpoints you use (not just their status page). Track their latency, error rate, and rate limit headroom, and build fallback behavior for when they fail, since their outages become yours the moment you call them."
+    "q": "How do you monitor third party APIs?",
+    "a": "List every external API your product depends on, then run dedicated checks against the actual endpoints you use (not just their status page). Track their latency, error rate, and rate limit headroom, and build fallback behavior for when they fail, since their outages become yours the moment you call them."
   },
   {
-    q: "What should trigger an API alert?",
-    a: "A meaningful deviation from that endpoint's normal behavior: elevated error rate, latency spiking at the 95th/99th percentile, availability dropping below target, or a content check failing even with a healthy status code. Related symptoms from one root cause should group into a single alert, not fire separately."
+    "q": "What should trigger an API alert?",
+    "a": "A meaningful deviation from that endpoint's normal behavior: elevated error rate, latency spiking at the 95th/99th percentile, availability dropping below target, or a content check failing even with a healthy status code. Related symptoms from one root cause should group into a single alert, not fire separately."
   },
   {
-    q: "How is API monitoring different from API testing?",
-    a: "Testing runs before release, in staging, to confirm code works as written. Monitoring runs continuously, in production, to catch what testing can't predict: dependency failures, certificate expiry, traffic patterns, or third-party changes that only surface once real conditions hit."
+    "q": "How is API monitoring different from API testing?",
+    "a": "Testing runs before release, in staging, to confirm code works as written. Monitoring runs continuously, in production, to catch what testing can't predict: dependency failures, certificate expiry, traffic patterns, or third-party changes that only surface once real conditions hit."
   }
 ];
 ---
@@ -159,11 +160,11 @@ const FAQS = [
           </ul>
         </section>
 
-        {/* MAIN BODY SECTIONS CONTAINER BOX MATCHING SIEM-VS-OBSERVABILITY */}
-        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+        {/* MAIN BODY SECTIONS WRAPPED IN BLOG-MAIN-CONTENT-BOX (EXACT MATCH FOR SIEM GUIDE) */}
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           
           <section id="introduction" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
               Introduction
             </h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
@@ -298,14 +299,15 @@ const FAQS = [
 
         </div>
 
-        {/* EXPANDABLE ACCORDION FAQ SECTION MATCHING SIEM-VS-OBSERVABILITY */}
-        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
+        {/* FAQ SECTION MATCHING SIEM GUIDE (DETAILS/SUMMARY ACCORDION) */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
             {FAQS.map((faq) => (
-              <details style="padding: 12px 18px; background: var(--bg-card, #ffffff); border-radius: 10px; border: 1px solid #e2e8f0;">
-                <summary style="font-size: 1.08rem; font-weight: 700; color: #2A680D; cursor: pointer;">
-                  {faq.q}
+              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #2A680D; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                  <span>{faq.q}</span>
+                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
                 </summary>
                 <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                   {faq.a}
@@ -315,9 +317,9 @@ const FAQS = [
           </div>
         </section>
 
-        {/* WRAPPING IT UP SECTION MATCHING SIEM-VS-OBSERVABILITY */}
-        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 14px 0; color: #2A680D;">Wrapping It Up</h2>
+        {/* WRAPPING IT UP SECTION (EXACT MATCH FOR SIEM GUIDE) */}
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 24px 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
           <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
             API monitoring, done properly, is the difference between finding out your checkout API is broken from a graph on your own dashboard, and finding out from a customer who already gave up and left. A passing status code isn&apos;t the same thing as a working API, and a healthy server isn&apos;t the same thing as a healthy endpoint. The teams that catch problems early are the ones tracking the right metrics at the right granularity, running checks from multiple regions before real users hit trouble, watching third party dependencies as closely as their own code, and, increasingly, accounting for the fact that AI agents are now calling APIs in ways traditional monitoring was never built to see.
           </p>
@@ -333,7 +335,7 @@ const FAQS = [
         </section>
       </main>
 
-      {/* RIGHT SIDEBAR: PLATFORM SPECIAL MATCHING SIEM-VS-OBSERVABILITY */}
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL (EXACT MATCH FOR SIEM GUIDE) */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
           <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
@@ -355,7 +357,7 @@ const FAQS = [
           View All Specials →
         </a>
         
-        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET MATCHING SIEM-VS-OBSERVABILITY */}
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
         <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
           <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
             AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
