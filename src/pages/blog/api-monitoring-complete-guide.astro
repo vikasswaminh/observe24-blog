@@ -12,12 +12,11 @@ const ARTICLE_META = {
 };
 
 const FEATURED_GUIDES = [
-  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
-  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
-  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
-  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
   { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
   { title: "Observability vs Monitoring: Key Differences", link: "/blog/observability-vs-monitoring-key-differences" },
+  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
   { title: "Best Uptime Monitoring Tools in 2026", link: "/blog/best-uptime-monitoring-tools-2026" },
 ];
 
@@ -72,7 +71,7 @@ const FAQS = [
     {/* DESKTOP 3-COLUMN LAYOUT MATCHING BLOG.ASTRO EXACTLY */}
     <div style="display: flex; gap: 40px; align-items: flex-start;">
       
-      {/* LEFT SIDEBAR: FEATURED GUIDES */}
+      {/* LEFT SIDEBAR: FEATURED GUIDES (EXACT MATCH FOR BLOG.ASTRO) */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
           <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
@@ -97,7 +96,7 @@ const FAQS = [
 
       {/* CENTER MAIN ARTICLE CONTENT */}
       <main style="flex: 1; min-width: 0;">
-<header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
           <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             <span>{ARTICLE_META.category}</span>
             <span>•</span>
@@ -160,157 +159,163 @@ const FAQS = [
           </ul>
         </section>
 
-        <div style="background: var(--bg-card, #ffffff); border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);" class="article-body-box">
-{/* MAIN BODY SECTIONS */}
-        <section id="introduction" style="margin-bottom: 32px; width: 100%;">
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            Here&apos;s a situation that plays out in engineering teams every single week. A customer emails support. Their integration stopped working three hours ago. Support forwards it to engineering. Engineering checks the status page: green. Check the server dashboard: CPU normal, memory normal, all instances healthy. Check the load balancer: traffic flowing fine. Everything, by every measure the team is watching, looks completely fine.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            Except it isn&apos;t. Somewhere around 9am, one specific endpoint, the one this customer&apos;s integration happens to call, started returning a response that technically has a 200-status code but with an empty array where an object should be. Every server level check passed because the server never crashed. Every uptime check passed because the endpoint responded. Nothing in the stack ever threw an error, logged a warning, or tripped an alert, because nothing was broken from the infrastructure&apos;s point of view. The API was up. It was also wrong.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            This is the gap that API monitoring exists to close, and it&apos;s a genuinely different gap than the one general infrastructure monitoring or basic uptime checks solve. An API can be up, fast, and technically responding, while still failing the one job it has: giving the right answer, quickly, to whoever is calling it. If your monitoring stops at &quot;did the server respond,&quot; you will keep finding out about these failures from customers instead of from your own tools, and by the time a customer tells you, they&apos;ve usually already tried three times, given up, and started looking at a competitor&apos;s docs.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            This guide walks through what API monitoring means, how it&apos;s different from adjacent things like uptime monitoring and full observability, what to measure and why, the different techniques teams used to catch problems, and the mistakes that quietly sink most API monitoring setups. No fluff, no vendor buzzwords for their own sake, just a genuinely useful explanation for developers who are tired of finding out about outages the hard way.
-          </p>
-        </section>
-
-        <section id="what-is-api-monitoring" style="margin-bottom: 32px; width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
-            What Is API Monitoring, Actually?
-          </h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            API monitoring is the ongoing practice of checking whether an API is available, performing well, returning correct results, and behaving securely, measured from the perspective of whoever is calling it. That last part matters more than it sounds like it should. A lot of teams monitor their APIs from the inside: is the process running? Is the container healthy? Is the pod restarting too often? Those checks are useful, but they&apos;re answering, &quot;is my server okay,&quot; not &quot;is my API okay.&quot; Those are related questions, but they are not the same question, and the gap between them is exactly where silent failures live.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            Think about it from the caller&apos;s side. When a client, whether that&apos;s a browser, a mobile app, another service, or an AI agent, hits your API, it cares about a small number of things: did I get a response, did I get it fast enough to be useful, was the response actually correct, and can I trust that this endpoint is going to behave the same way tomorrow. None of those questions can be fully answered by looking at server metrics alone. You can have a server with 2% CPU usage and a database with plenty of headroom and still have an API endpoint that&apos;s timing out for a specific set of users because of a slow downstream call, a misconfigured cache, or a rate limit that got triggered somewhere in the request chain.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            That&apos;s why proper API monitoring treats the API itself as the unit of measurement, not the machine underneath it. You check it the same way an external caller would: send a request, measure how long it takes, check the status code, check the body, and repeat that on a schedule from multiple locations, so you know within minutes, not hours, when something changes.
-          </p>
-        </section>
-
-        <section id="lines-and-differences" style="margin-bottom: 32px; width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
-            API Monitoring, Uptime Monitoring, and Observability: Where the Lines Actually Are
-          </h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            These three terms get used almost interchangeably in casual conversation, and there&apos;s a reason for that: they overlap heavily and most platforms handle pieces of all three. But understanding where they differ changes how you build your monitoring stack, and it&apos;s worth being precise about it.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            Uptime monitoring, in its classic form, is the simplest and oldest of the three. It answers one question: is this endpoint reachable right now? A basic uptime check pings a URL on a schedule and confirms it gets some kind of response back within a timeout window. This is useful and necessary, but it&apos;s a blunt instrument. Our <a href="/blog/website-uptime-monitoring-complete-guide" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">complete uptime monitoring guide</a> goes deeper into why a passing uptime check can still mean your site, or your API, is broken in ways that matter to actual users.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            API monitoring sits at a level above basic uptime checks. It still asks, &quot;is this reachable,&quot; but it goes further: is the response correct, is it fast enough, does a multi-step flow (like login, then fetch data, then submit an order) actually complete successfully end to end, and is the API behaving consistently across different regions and conditions. API monitoring is uptime monitoring with actual understanding of what the API is supposed to do, not just whether it answers the door.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            Observability is the broadest of the three, and it&apos;s a property of your whole system rather than a specific practice. Observability is what lets you answer questions you never anticipated asking, using telemetry your system is already producing, without adding new instrumentation on the fly. API monitoring feeds into observability (the checks you run and the data they produce are part of your telemetry), but observability also includes your logs, your traces, your metrics, and increasingly the context connecting all of it together. If you want the full picture of how these pieces fit together, our <a href="/blog/observability-vs-monitoring-key-differences" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">observability vs monitoring guide</a> covers the three pillars and why they aren&apos;t quite enough on their own.
-          </p>
-          <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 18px;">
-            <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">A Simple Mental Model</h4>
-            <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
-              Uptime monitoring tells you the door opens. API monitoring tells you the door opens, the right room is behind it, and it doesn&apos;t take forever to get there. Observability is what lets you figure out why the door started sticking in the first place, even for a failure mode nobody thought to check for in advance.
-            </p>
-          </div>
-        </section>
-
-        <section id="why-it-matters" style="margin-bottom: 32px; width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
-            Why API Monitoring Matters More Than Ever
-          </h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            APIs used to be a relatively small surface area for most companies: a handful of endpoints, maybe a public facing REST API for partners, and that was mostly it. That&apos;s not the world most teams are operating in anymore.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            A typical product today is built on dozens, sometimes hundreds, of API calls stitched together. Your frontend calls your backend. Your backend calls a payment provider, an email service, a search index, an authentication provider, a mapping API, an analytics platform, and probably a handful of internal microservices, each with its own API surface. Every one of those calls is a place where things can slow down, time out, return bad data, or fail outright. And critically, most of those calls are to systems you don&apos;t own and can&apos;t directly monitor from the inside.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            That last part deserves its own attention, because it&apos;s one of the most common blind spots teams have. With your own APIs, you can instrument them however you like. With third-party APIs, you can&apos;t. You don&apos;t get to see their server logs. You don&apos;t get heads up before they deploy a change. You find out something changed on their end when your own API monitoring notices their response times crept up, or their error rate ticked upward, or their response format subtly changed. If you&apos;re not actively monitoring the third-party APIs your product depends on, you are relying entirely on their status page to tell you about problems, and status pages are famously, chronically behind reality, often updated only after a company&apos;s own support queue has already filled up with complaints.
-          </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            There&apos;s also a newer wrinkle that&apos;s specific to 2026: AI agents are now calling APIs on your behalf and sometimes calling your APIs on behalf of other systems. An agent that&apos;s supposed to make one API call to check inventory might, due to a reasoning loop or a bad prompt, end up calling that same endpoint fifty times in a minute. An agent with access to a payment API might attempt an unexpected or sensitive call that a human would never have triggered. Traditional API monitoring, built around thresholds like &quot;alert if latency exceeds 2 seconds,&quot; doesn&apos;t naturally catch &quot;this caller made an unusual pattern of calls that no human would make.&quot; That&apos;s a genuinely new category of API risk, and it&apos;s one more reason API monitoring in 2026 looks different than it did even a couple of years ago.
-          </p>
-        </section>
-
-        <section id="core-metrics" style="margin-bottom: 32px; width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
-            The Core Metrics: What You Actually Need to Track
-          </h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            There&apos;s a temptation to track everything an API can possibly expose, and that temptation almost always backfires into dashboard fatigue, where you have forty charts and no idea which one to check first during an actual incident. In practice, a small number of metrics cover the vast majority of what you need to know, if you track them at the right granularity.
-          </p>
+        {/* MAIN BODY SECTIONS CONTAINER BOX MATCHING SIEM-VS-OBSERVABILITY */}
+        <div class="blog-main-content-box" style="padding: 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           
-          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">1. Latency (Percentiles, not Averages)</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Latency is how long a request takes to get a response, and it&apos;s the single most user-visible number on this list. The trap most teams fall into is only tracking an average. Averages hide the exact problems you care about most, because a handful of very slow requests can be completely invisible in an average while still ruining a specific customer&apos;s experience. Track percentiles instead (p95 and p99), and track latency per endpoint, not as one blended number across your whole API.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">2. Error Rate (Content &amp; Status Codes)</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Error rate is the percentage of requests returning a failure. A 500 error is obvious. But plenty of real failures hide behind a 200-status code: an empty response where data was expected, a partial payload, or a missing field a downstream system depends on. Validate response content, not just response codes.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">3. Throughput</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Throughput measures how many requests your API handles over a given window (RPS/RPM). Essential context for interpreting latency and errors. A latency spike with a throughput spike points to capacity limits; flat throughput points to downstream dependencies or database locks.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">4. Availability &amp; Failure Patterns</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Availability is the percentage of time your API responds within target SLAs (e.g. 99.9%). Always pair availability with a look at the pattern of failures: being down for one continuous hour vs two minutes every hour produces identical overall percentages with wildly different user impacts.</p>
-            </div>
-          </div>
-        </section>
+          <section id="introduction" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Introduction
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here&apos;s a situation that plays out in engineering teams every single week. A customer emails support. Their integration stopped working three hours ago. Support forwards it to engineering. Engineering checks the status page: green. Check the server dashboard: CPU normal, memory normal, all instances healthy. Check the load balancer: traffic flowing fine. Everything, by every measure the team is watching, looks completely fine.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Except it isn&apos;t. Somewhere around 9am, one specific endpoint, the one this customer&apos;s integration happens to call, started returning a response that technically has a 200-status code but with an empty array where an object should be. Every server level check passed because the server never crashed. Every uptime check passed because the endpoint responded. Nothing in the stack ever threw an error, logged a warning, or tripped an alert, because nothing was broken from the infrastructure&apos;s point of view. The API was up. It was also wrong.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is the gap that API monitoring exists to close, and it&apos;s a genuinely different gap than the one general infrastructure monitoring or basic uptime checks solve. An API can be up, fast, and technically responding, while still failing the one job it has: giving the right answer, quickly, to whoever is calling it. If your monitoring stops at &quot;did the server respond,&quot; you will keep finding out about these failures from customers instead of from your own tools, and by the time a customer tells you, they&apos;ve usually already tried three times, given up, and started looking at a competitor&apos;s docs.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This guide walks through what API monitoring means, how it&apos;s different from adjacent things like uptime monitoring and full observability, what to measure and why, the different techniques teams used to catch problems, and the mistakes that quietly sink most API monitoring setups. No fluff, no vendor buzzwords for their own sake, just a genuinely useful explanation for developers who are tired of finding out about outages the hard way.
+            </p>
+          </section>
 
-        <section id="monitoring-techniques" style="margin-bottom: 32px; width: 100%;">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
-            Different Ways to Monitor an API
-          </h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-            There isn&apos;t one single technique that covers everything, and most solid API monitoring setups combine a few of these approaches, because each one catches problems the others miss.
-          </p>
-          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Synthetic Monitoring</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Send scheduled, artificial requests to your API from outside your network to catch broken endpoints before real users ever hit them. Running synthetic checks from multiple geographic regions catches regional CDN or DNS failures fast.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Real Traffic Monitoring (RUM)</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Instrument production traffic to see what real callers experience across all edge cases, user segments, and real-world payload shapes that synthetic tests miss.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Functional &amp; Multi-Step Transaction Checks</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Test entire multi-step flows end-to-end (e.g. login → fetch token → place order) to catch token expiry bugs, session race conditions, and integration seams.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Contract Testing &amp; Schema Validation</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Verify response payloads against expected JSON schemas to catch silent type shifts, field renames, or broken contracts instantly.</p>
-            </div>
-            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
-              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Security &amp; TLS Monitoring</h4>
-              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Enforce auth checks, rate limits, and SSL/TLS certificate validity. Our <a href="/blog/why-tls-monitoring-matters" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">TLS monitoring guide</a> details how to prevent expired certificate outages.</p>
-            </div>
-          </div>
-        </section>
+          <section id="what-is-api-monitoring" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What Is API Monitoring, Actually?
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              API monitoring is the ongoing practice of checking whether an API is available, performing well, returning correct results, and behaving securely, measured from the perspective of whoever is calling it. That last part matters more than it sounds like it should. A lot of teams monitor their APIs from the inside: is the process running? Is the container healthy? Is the pod restarting too often? Those checks are useful, but they&apos;re answering, &quot;is my server okay,&quot; not &quot;is my API okay.&quot; Those are related questions, but they are not the same question, and the gap between them is exactly where silent failures live.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Think about it from the caller&apos;s side. When a client, whether that&apos;s a browser, a mobile app, another service, or an AI agent, hits your API, it cares about a small number of things: did I get a response, did I get it fast enough to be useful, was the response actually correct, and can I trust that this endpoint is going to behave the same way tomorrow. None of those questions can be fully answered by looking at server metrics alone. You can have a server with 2% CPU usage and a database with plenty of headroom and still have an API endpoint that&apos;s timing out for a specific set of users because of a slow downstream call, a misconfigured cache, or a rate limit that got triggered somewhere in the request chain.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That&apos;s why proper API monitoring treats the API itself as the unit of measurement, not the machine underneath it. You check it the same way an external caller would: send a request, measure how long it takes, check the status code, check the body, and repeat that on a schedule from multiple locations, so you know within minutes, not hours, when something changes.
+            </p>
+          </section>
 
-        {/* FAQ SECTION */}
-        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <section id="lines-and-differences" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              API Monitoring, Uptime Monitoring, and Observability: Where the Lines Actually Are
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              These three terms get used almost interchangeably in casual conversation, and there&apos;s a reason for that: they overlap heavily and most platforms handle pieces of all three. But understanding where they differ changes how you build your monitoring stack, and it&apos;s worth being precise about it.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Uptime monitoring, in its classic form, is the simplest and oldest of the three. It answers one question: is this endpoint reachable right now? A basic uptime check pings a URL on a schedule and confirms it gets some kind of response back within a timeout window. This is useful and necessary, but it&apos;s a blunt instrument. Our <a href="/blog/website-uptime-monitoring-complete-guide" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">complete uptime monitoring guide</a> goes deeper into why a passing uptime check can still mean your site, or your API, is broken in ways that matter to actual users.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              API monitoring sits at a level above basic uptime checks. It still asks, &quot;is this reachable,&quot; but it goes further: is the response correct, is it fast enough, does a multi-step flow (like login, then fetch data, then submit an order) actually complete successfully end to end, and is the API behaving consistently across different regions and conditions. API monitoring is uptime monitoring with actual understanding of what the API is supposed to do, not just whether it answers the door.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Observability is the broadest of the three, and it&apos;s a property of your whole system rather than a specific practice. Observability is what lets you answer questions you never anticipated asking, using telemetry your system is already producing, without adding new instrumentation on the fly. API monitoring feeds into observability (the checks you run and the data they produce are part of your telemetry), but observability also includes your logs, your traces, your metrics, and increasingly the context connecting all of it together. If you want the full picture of how these pieces fit together, our <a href="/blog/observability-vs-monitoring-key-differences" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">observability vs monitoring guide</a> covers the three pillars and why they aren&apos;t quite enough on their own.
+            </p>
+            <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 18px;">
+              <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">A Simple Mental Model</h4>
+              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+                Uptime monitoring tells you the door opens. API monitoring tells you the door opens, the right room is behind it, and it doesn&apos;t take forever to get there. Observability is what lets you figure out why the door started sticking in the first place, even for a failure mode nobody thought to check for in advance.
+              </p>
+            </div>
+          </section>
+
+          <section id="why-it-matters" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why API Monitoring Matters More Than Ever
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              APIs used to be a relatively small surface area for most companies: a handful of endpoints, maybe a public facing REST API for partners, and that was mostly it. That&apos;s not the world most teams are operating in anymore.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A typical product today is built on dozens, sometimes hundreds, of API calls stitched together. Your frontend calls your backend. Your backend calls a payment provider, an email service, a search index, an authentication provider, a mapping API, an analytics platform, and probably a handful of internal microservices, each with its own API surface. Every one of those calls is a place where things can slow down, time out, return bad data, or fail outright. And critically, most of those calls are to systems you don&apos;t own and can&apos;t directly monitor from the inside.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That last part deserves its own attention, because it&apos;s one of the most common blind spots teams have. With your own APIs, you can instrument them however you like. With third-party APIs, you can&apos;t. You don&apos;t get to see their server logs. You don&apos;t get heads up before they deploy a change. You find out something changed on their end when your own API monitoring notices their response times crept up, or their error rate ticked upward, or their response format subtly changed. If you&apos;re not actively monitoring the third-party APIs your product depends on, you are relying entirely on their status page to tell you about problems, and status pages are famously, chronically behind reality, often updated only after a company&apos;s own support queue has already filled up with complaints.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There&apos;s also a newer wrinkle that&apos;s specific to 2026: AI agents are now calling APIs on your behalf and sometimes calling your APIs on behalf of other systems. An agent that&apos;s supposed to make one API call to check inventory might, due to a reasoning loop or a bad prompt, end up calling that same endpoint fifty times in a minute. An agent with access to a payment API might attempt an unexpected or sensitive call that a human would never have triggered. Traditional API monitoring, built around thresholds like &quot;alert if latency exceeds 2 seconds,&quot; doesn&apos;t naturally catch &quot;this caller made an unusual pattern of calls that no human would make.&quot; That&apos;s a genuinely new category of API risk, and it&apos;s one more reason API monitoring in 2026 looks different than it did even a couple of years ago.
+            </p>
+          </section>
+
+          <section id="core-metrics" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Core Metrics: What You Actually Need to Track
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There&apos;s a temptation to track everything an API can possibly expose, and that temptation almost always backfires into dashboard fatigue, where you have forty charts and no idea which one to check first during an actual incident. In practice, a small number of metrics cover the vast majority of what you need to know, if you track them at the right granularity.
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">1. Latency (Percentiles, not Averages)</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Latency is how long a request takes to get a response, and it&apos;s the single most user-visible number on this list. The trap most teams fall into is only tracking an average. Averages hide the exact problems you care about most, because a handful of very slow requests can be completely invisible in an average while still ruining a specific customer&apos;s experience. Track percentiles instead (p95 and p99), and track latency per endpoint, not as one blended number across your whole API.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">2. Error Rate (Content &amp; Status Codes)</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Error rate is the percentage of requests returning a failure. A 500 error is obvious. But plenty of real failures hide behind a 200-status code: an empty response where data was expected, a partial payload, or a missing field a downstream system depends on. Validate response content, not just response codes.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">3. Throughput</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Throughput measures how many requests your API handles over a given window (RPS/RPM). Essential context for interpreting latency and errors. A latency spike with a throughput spike points to capacity limits; flat throughput points to downstream dependencies or database locks.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">4. Availability &amp; Failure Patterns</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Availability is the percentage of time your API responds within target SLAs (e.g. 99.9%). Always pair availability with a look at the pattern of failures: being down for one continuous hour vs two minutes every hour produces identical overall percentages with wildly different user impacts.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="monitoring-techniques" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Different Ways to Monitor an API
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There isn&apos;t one single technique that covers everything, and most solid API monitoring setups combine a few of these approaches, because each one catches problems the others miss.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Synthetic Monitoring</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Send scheduled, artificial requests to your API from outside your network to catch broken endpoints before real users ever hit them. Running synthetic checks from multiple geographic regions catches regional CDN or DNS failures fast.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Real Traffic Monitoring (RUM)</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Instrument production traffic to see what real callers experience across all edge cases, user segments, and real-world payload shapes that synthetic tests miss.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Functional &amp; Multi-Step Transaction Checks</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Test entire multi-step flows end-to-end (e.g. login → fetch token → place order) to catch token expiry bugs, session race conditions, and integration seams.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Contract Testing &amp; Schema Validation</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Verify response payloads against expected JSON schemas to catch silent type shifts, field renames, or broken contracts instantly.</p>
+              </div>
+              <div style="padding: 10px 16px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 700; margin: 0 0 6px 0; color: #2A680D;">Security &amp; TLS Monitoring</h4>
+                <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">Enforce auth checks, rate limits, and SSL/TLS certificate validity. Our <a href="/blog/why-tls-monitoring-matters" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">TLS monitoring guide</a> details how to prevent expired certificate outages.</p>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        {/* EXPANDABLE ACCORDION FAQ SECTION MATCHING SIEM-VS-OBSERVABILITY */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
-          <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
             {FAQS.map((faq) => (
-              <div style="padding: 12px 18px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-                <h3 style="font-size: 1.1rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">
+              <details style="padding: 12px 18px; background: var(--bg-card, #ffffff); border-radius: 10px; border: 1px solid #e2e8f0;">
+                <summary style="font-size: 1.08rem; font-weight: 700; color: #2A680D; cursor: pointer;">
                   {faq.q}
-                </h3>
-                <p style="font-size: 1.02rem; line-height: 1.65; color: #334155; margin: 0;">
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                   {faq.a}
                 </p>
-              </div>
+              </details>
             ))}
           </div>
         </section>
 
-        {/* WRAPPING IT UP SECTION */}
+        {/* WRAPPING IT UP SECTION MATCHING SIEM-VS-OBSERVABILITY */}
         <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 14px 0; color: #2A680D;">Wrapping It Up</h2>
           <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
@@ -326,40 +331,36 @@ const FAQS = [
             </a>
           </div>
         </section>
-</div>
-</main>
+      </main>
 
-      {/* RIGHT SIDEBAR: PLATFORM SPECIAL + CTA CARD */}
-      <aside class="desktop-sidebar" style="width: 280px; flex-shrink: 0; position: sticky; top: 80px;">
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL MATCHING SIEM-VS-OBSERVABILITY */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
           <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             PLATFORM SPECIAL
           </span>
         </div>
-        <nav style="display: flex; flex-direction: column; gap: 3px; margin-bottom: 24px;">
-          {PLATFORM_SPECIALS.map((ps) => (
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
             <a
-              href={ps.link}
+              href={s.link}
               style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
               class="sidebar-nav-item"
             >
-              {ps.title}
+              {s.title}
             </a>
           ))}
         </nav>
-
-        {/* SOFT LIGHT GREEN CTA WIDGET */}
-        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
-          <div style="font-size: 0.8rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">
-            24OBSERVE PLATFORM
-          </div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: #2A680D; margin: 0 0 10px 0; line-height: 1.35;">
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET MATCHING SIEM-VS-OBSERVABILITY */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
             AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
-          </h4>
-          <p style="font-size: 0.88rem; color: #374151; line-height: 1.45; margin: 0 0 16px 0;">
-            Stop juggling multiple vendors. Get full stack monitoring with automated AI root cause analysis.
           </p>
-          <a href="https://login.24observe.com/register" style="display: inline-block; width: 100%; background: #2A680D; color: #ffffff; font-weight: 800; font-size: 0.95rem; padding: 11px 16px; border-radius: 10px; text-decoration: none; transition: background 0.2s ease;">
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
             Start free trial →
           </a>
         </div>
