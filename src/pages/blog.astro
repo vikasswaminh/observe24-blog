@@ -1,96 +1,89 @@
 ---
 import Base from '../layouts/Base.astro';
 
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
+// AUTO-SORTED BY DATE DESCENDING
 const BLOG_POSTS = [
   {
-    title: "API Monitoring: The Complete Guide for Developers (2026)",
-    description: "What is API monitoring, really, and why does a \"200 OK\" response sometimes hide a broken API? This complete guide breaks down every layer of API monitoring, from uptime checks to synthetic transactions to AI agent APIs, and how modern teams catch failures before customers do.",
-    category: "MONITORING & OBSERVABILITY",
-    date: "2026-08-20",
-    readTime: "21 MIN READ",
-    link: "/blog/api-monitoring-complete-guide",
-    tag: "NEW"
+    "title": "AI Agent Observability: How to Monitor AI Agents in Production",
+    "description": "AI agents fail differently than traditional software. Learn what to monitor, how OpenTelemetry GenAI spans work, and how to catch cost spikes, loops, and prompt injection early.",
+    "category": "AI SECURITY",
+    "date": "2026-09-03",
+    "readTime": "21 MIN READ",
+    "link": "/blog/ai-agent-observability-how-to-monitor",
+    "tag": "NEW"
   },
   {
-    title: "SIEM vs Observability: Differences, Overlap, and Why They’re Converging",
-    description: "SIEM and observability solve different problems, but the line between them is disappearing fast. Here's a plain English breakdown of what each one does, where they overlap, and why the smartest teams in 2026 aren't picking one over the other.",
-    category: "SECURITY",
-    date: "2026-09-02",
-    readTime: "21 MIN READ",
-    link: "/blog/siem-vs-observability-differences-overlap-converging",
-    tag: "NEW"
+    "title": "What Is AI Observability? A Complete Guide for LLMs and AI Agents (2026)",
+    "description": "AI observability explained: why traditional monitoring can't tell you if your LLM's answer was correct, what to track (tokens, cost, latency, hallucinations, tool calls), and how to build it into your stack.",
+    "category": "AI OBSERVABILITY",
+    "date": "2026-09-02",
+    "readTime": "21 MIN READ",
+    "link": "/blog/what-is-ai-observability-complete-guide",
+    "tag": "FEATURED"
   },
   {
-    title: "Website Uptime Monitoring: Complete Guide — Build a Monitoring Strategy That Saves Revenue, Not Just Time",
-    description: "Website uptime monitoring explained from first principles — how to catch silent failures before they cost money, build multi-region checks that don't false-alarm, and design a monitoring setup that protects both your infrastructure and your customer's trust. A complete guide for teams serious about reliability.",
-    category: "DEVOPS",
-    date: "2026-09-02",
-    readTime: "21 MIN READ",
-    link: "/blog/website-uptime-monitoring-complete-guide",
-    tag: "POPULAR"
+    "title": "Observability vs Monitoring: Key Differences, Examples & Best Practices",
+    "description": "Observability and monitoring get used like synonyms, but they solve different problems. Here's what separates them, why green dashboards can still hide outages, and how to combine both without drowning your team in noise.",
+    "category": "OBSERVABILITY",
+    "date": "2026-09-02",
+    "readTime": "20 MIN READ",
+    "link": "/blog/observability-vs-monitoring-key-differences",
+    "tag": "POPULAR"
   },
   {
-    title: "AI Agent Observability: How to Monitor AI Agents in Production",
-    description: "AI agents fail differently than traditional software. Learn what to monitor, how OpenTelemetry GenAI spans work, and how to catch cost spikes, loops, and prompt injection early.",
-    category: "AI SECURITY",
-    date: "2026-09-01",
-    readTime: "21 MIN READ",
-    link: "/blog/ai-agent-observability-how-to-monitor",
-    tag: "FEATURED"
+    "title": "Website Uptime Monitoring: Complete Guide — Build a Monitoring Strategy That Saves Revenue, Not Just Time",
+    "description": "Website uptime monitoring explained from first principles — how to catch silent failures before they cost money, build multi-region checks that don't false-alarm, and design a monitoring setup that protects both your infrastructure and your customer's trust. A complete guide for teams serious about reliability.",
+    "category": "OBSERVABILITY & DEVOPS",
+    "date": "2026-09-01",
+    "readTime": "21 MIN READ",
+    "link": "/blog/website-uptime-monitoring-complete-guide",
+    "tag": "POPULAR"
   },
   {
-    title: "What Is AI Observability? A Complete Guide for LLMs and AI Agents (2026)",
-    description: "AI observability explained: why traditional monitoring can't tell you if your LLM's answer was correct, what to track (tokens, cost, latency, hallucinations, tool calls), and how to build it into your stack.",
-    category: "AI OBSERVABILITY",
-    date: "2026-08-31",
-    readTime: "21 MIN READ",
-    link: "/blog/what-is-ai-observability-complete-guide",
-    tag: "FEATURED"
+    "title": "What Is Observability? The Complete Guide (2026)",
+    "description": "What is observability, really, and how is it different from monitoring? This complete guide breaks down the three pillars, why they're not enough on their own, and how modern teams are using AI to investigate incidents instead of just detecting them.",
+    "category": "OBSERVABILITY",
+    "date": "2026-08-25",
+    "readTime": "21 MIN READ",
+    "link": "/blog/what-is-observability-guide-2026",
+    "tag": "POPULAR"
   },
   {
-    title: "Observability vs Monitoring: Key Differences, Examples & Best Practices",
-    description: "Observability and monitoring get used like synonyms, but they solve different problems. Here's what separates them, why green dashboards can still hide outages, and how to combine both without drowning your team in noise.",
-    category: "OBSERVABILITY",
-    date: "2026-08-27",
-    readTime: "20 MIN READ",
-    link: "/blog/observability-vs-monitoring-key-differences",
-    tag: "POPULAR"
+    "title": "Best Datadog Alternatives in 2026 (And How to Actually Pick One)",
+    "description": "Datadog's bill finally caught up with your infrastructure. Here's an honest, no-fluff look at the strongest Datadog alternatives in 2026 — what each one is good at, where it falls short, and how to figure out which one fits your team instead of just the next vendor's sales deck.",
+    "category": "COMPARISONS",
+    "date": "2026-08-24",
+    "readTime": "20 MIN READ",
+    "link": "/blog/best-datadog-alternatives-2026",
+    "tag": "POPULAR"
   },
   {
-    title: "What Is Observability? The Complete Guide (2026)",
-    description: "What is observability, really, and how is it different from monitoring? This complete guide breaks down the three pillars, why they're not enough on their own, and how modern teams are using AI to investigate incidents instead of just detecting them.",
-    category: "OBSERVABILITY",
-    date: "2026-08-25",
-    readTime: "21 MIN READ",
-    link: "/blog/what-is-observability-guide-2026",
-    tag: "POPULAR"
+    "title": "What Is Uptime Monitoring? The Complete Guide (2026 Edition)",
+    "description": "Uptime monitoring explained from first principles — what it actually checks, why \"200 OK\" can still mean your site is broken, and how to build a monitoring setup that catches outages before your customers do.",
+    "category": "DEVOPS",
+    "date": "2026-08-21",
+    "readTime": "20 MIN READ",
+    "link": "/blog/what-is-uptime-monitoring-guide",
+    "tag": "FEATURED"
   },
   {
-    title: "Best Datadog Alternatives in 2026 (And How to Actually Pick One)",
-    description: "Datadog's bill finally caught up with your infrastructure. Here's an honest, no-fluff look at the strongest Datadog alternatives in 2026 — what each one is good at, where it falls short, and how to figure out which one fits your team instead of just the next vendor's sales deck.",
-    category: "COMPARISONS",
-    date: "2026-08-24",
-    readTime: "20 MIN READ",
-    link: "/blog/best-datadog-alternatives-2026",
-    tag: "POPULAR"
-  },
-  {
-    title: "What Is Uptime Monitoring? The Complete Guide (2026 Edition)",
-    description: "Uptime monitoring explained from first principles — what it actually checks, why \"200 OK\" can still mean your site is broken, and how to build a monitoring setup that catches outages before your customers do.",
-    category: "DEVOPS",
-    date: "2026-08-20",
-    readTime: "20 MIN READ",
-    link: "/blog/what-is-uptime-monitoring-guide",
-    tag: "FEATURED"
-  },
-  {
-    title: "Best Uptime Monitoring Tools in 2026: The Complete Guide for Teams That Can't Afford Downtime",
-    description: "Looking for the best uptime monitoring tool in 2026? We break down 10 platforms — including 24Observe, Better Stack, UptimeRobot, Pingdom, and Datadog — so you can pick the right one for your stack, budget, and team.",
-    category: "OBSERVABILITY",
-    date: "2026-08-19",
-    readTime: "20 MIN READ",
-    link: "/blog/best-uptime-monitoring-tools-2026",
-    tag: "POPULAR"
+    "title": "Best Uptime Monitoring Tools in 2026: The Complete Guide for Teams That Can't Afford Downtime",
+    "description": "Looking for the best uptime monitoring tool in 2026? We break down 10 platforms — including 24Observe, Better Stack, UptimeRobot, Pingdom, and Datadog — so you can pick the right one for your stack, budget, and team.",
+    "category": "OBSERVABILITY",
+    "date": "2026-08-20",
+    "readTime": "20 MIN READ",
+    "link": "/blog/best-uptime-monitoring-tools-2026",
+    "tag": "POPULAR"
   }
 ];
 
