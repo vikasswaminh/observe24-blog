@@ -97,7 +97,7 @@ const FAQS = [
 
       {/* CENTER MAIN ARTICLE CONTENT */}
       <main style="flex: 1; min-width: 0;">
-        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+<header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
           <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             <span>{ARTICLE_META.category}</span>
             <span>•</span>
@@ -160,7 +160,8 @@ const FAQS = [
           </ul>
         </section>
 
-        {/* MAIN BODY SECTIONS */}
+        <div style="background: var(--bg-card, #ffffff); border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);" class="article-body-box">
+{/* MAIN BODY SECTIONS */}
         <section id="introduction" style="margin-bottom: 32px; width: 100%;">
           <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
             Here&apos;s a situation that plays out in engineering teams every single week. A customer emails support. Their integration stopped working three hours ago. Support forwards it to engineering. Engineering checks the status page: green. Check the server dashboard: CPU normal, memory normal, all instances healthy. Check the load balancer: traffic flowing fine. Everything, by every measure the team is watching, looks completely fine.
@@ -325,7 +326,8 @@ const FAQS = [
             </a>
           </div>
         </section>
-      </main>
+</div>
+</main>
 
       {/* RIGHT SIDEBAR: PLATFORM SPECIAL + CTA CARD */}
       <aside class="desktop-sidebar" style="width: 280px; flex-shrink: 0; position: sticky; top: 80px;">
