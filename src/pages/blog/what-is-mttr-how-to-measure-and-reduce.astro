@@ -1,0 +1,413 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const ARTICLE_META = {
+  title: "What Is MTTR? How to Measure and Actually Reduce It (2026 Guide)",
+  author: "The 24Observe Engineering Team",
+  date: "2026-09-08",
+  readTime: "22 min read",
+  category: "Monitoring & Observability",
+  description: "MTTR gets thrown around in every postmortem and every SRE job description, but most teams are measuring it wrong and fixing the wrong part of it. This complete guide breaks down what MTTR means, how to calculate it correctly, why the average can lie to you, and what genuinely moves the number down.",
+  slug: "what-is-mttr-how-to-measure-and-reduce",
+};
+
+const FEATURED_GUIDES = [
+  { title: "What Is MTTR? (2026 Guide)", link: "/blog/what-is-mttr-how-to-measure-and-reduce" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+  { title: "Observability vs Monitoring: Key Differences", link: "/blog/observability-vs-monitoring-key-differences" },
+  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+const FAQS = [
+  {
+    "q": "What's a good MTTR benchmark?",
+    "a": "There's no single universal number, because it depends heavily on the severity and complexity of the incidents a team handles, and comparing raw numbers across different companies with different systems is rarely meaningful. What matters more is your own trend over time, and specifically whether the diagnosis phase, your usual bottleneck, is shrinking as you invest in better correlation and context."
+  },
+  {
+    "q": "Should MTTR include the detection phase or start from when a human notices?",
+    "a": "Both versions are used in practice, and there's no universally correct answer, but you should pick one and be consistent. Including detection time gives you a more honest, complete picture of real-world impact, since customers experience the full duration, not just the portion after your team happened to notice."
+  },
+  {
+    "q": "Why does my MTTR look good but on-call still feels miserable?",
+    "a": "This usually means the average is being flattered by a large volume of quick, minor incidents while a small number of genuinely hard ones are dragging out and burning people, without dragging the mean up enough to show clearly. Look at your slowest, worst-case incidents specifically, and check whether your on-call structure and escalation paths are sound, rather than trusting the average alone."
+  },
+  {
+    "q": "Does reducing MTTR just mean hiring more senior engineers?",
+    "a": "No. Senior engineers can shorten diagnosis time through pattern recognition and experience, but that knowledge doesn't scale to the rest of the team, and it evaporates the moment that person is unavailable. Building correlated telemetry and shared context into your tooling makes that same diagnostic speed available to everyone on the rotation, not just your most experienced person."
+  },
+  {
+    "q": "Can AI actually shorten MTTR or is that just marketing?",
+    "a": "The specific claim worth trusting is narrower than 'AI fixes everything': an AI analyst that automatically walks correlated telemetry and context, forms a hypothesis, and checks it against actual evidence genuinely does eliminate a large chunk of the manual correlation work that historically consumed the diagnosis phase. It doesn't replace an engineer's judgment on the actual fix, but it removes a huge amount of the investigative grunt work that used to come before that judgment could even be applied."
+  },
+  {
+    "q": "How often should we review our MTTR?",
+    "a": "Regularly enough to catch trends, but broken down by phase and by severity, not as a single blended number reviewed in isolation once a quarter. A monthly look at detection time, acknowledgment time, and diagnosis time separately tells you far more about where to invest than a single quarterly average ever will."
+  }
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    
+    {/* DESKTOP 3-COLUMN LAYOUT */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            <span>{ARTICLE_META.category}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.date}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.readTime}</span>
+          </div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+            {ARTICLE_META.title}
+          </h1>
+          <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
+            {ARTICLE_META.description}
+          </p>
+        </header>
+
+        {/* TL;DR BOX WITH BACKLINKS */}
+        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+            MTTR stands for mean time to resolve (also used to mean recovery, repair, or respond, depending on who you ask, which is part of the problem), and it measures how long it takes your team to fix an incident from the moment it starts to the moment it's resolved. It's one of the most quoted metrics in engineering, and one of the most misunderstood, because a single average number hides four very different phases: detecting the problem, acknowledging it, figuring out what's wrong, and fixing it. Most teams that struggle with a bad MTTR aren't slow at fixing things once they know what's broken, they're slow at figuring out what's broken in the first place. That's the phase that eats the most time, and it's also the phase that correlated telemetry, better alerting, and an AI analyst that walks the connections between your services can shrink dramatically. Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> are built specifically around collapsing that diagnosis gap, using <a href="/product/on-call" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">on-call and incident management tooling</a> and an <a href="/product/ai-analyst" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI analyst</a> that hands you a cited verdict instead of a pile of dashboards to manually cross-reference.
+          </p>
+        </section>
+
+        {/* KEY TAKEAWAYS BOX */}
+        <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">
+            Key Takeaways
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">MTTR is an umbrella term, not one single metric:</strong> It can mean time to resolve, recover, repair, or respond, and each version measures a slightly different window. Know which one your team is tracking.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">The average hides the real story:</strong> One catastrophic four-hour outage can make your MTTR look terrible even if every other incident that month was fixed in ten minutes. Look at the distribution, not just the mean.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Diagnosis, not repair, is usually the slowest phase:</strong> The actual fix for most incidents takes minutes. Figuring out what's broken, and why, is what eats the hours.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Reducing MTTR is mostly about reducing time to diagnose:</strong> Better alerting, correlated telemetry, and shared context between services cut diagnosis time far more than trying to make engineers type faster during a fix.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">AI-assisted root cause analysis is the single biggest lever in 2026:</strong> Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">24Observe</a> pair <a href="/product/uptime" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">uptime monitoring</a>, <a href="/product/logs" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">log management</a>, and <a href="/product/tracing" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">tracing</a> with an <a href="/product/ai-analyst" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI analyst</a> that automatically correlates signals, turning a forty-minute manual investigation into a two-minute read.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        {/* MAIN BODY SECTIONS WRAPPED IN BLOG-MAIN-CONTENT-BOX */}
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          
+          <section id="introduction" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 12px 0; color: #2A680D;">
+              Introduction
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here&apos;s a number that gets quoted in nearly every incident review meeting, every SRE job posting, and every vendor sales deck in this industry: MTTR. Everyone nods when it comes up. Almost nobody agrees on exactly what it measures, and even fewer teams are tracking it in a way that tells them something useful.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Picture a typical postmortem. Someone pulls up a dashboard and says, &quot;our MTTR this quarter was two hours and eighteen minutes, down from three hours last quarter, great work team.&quot; Everyone claps, mentally, and moves on to the next agenda item. But dig one level deeper and ask a simple question: two hours and eighteen minutes from when to when, exactly? Was that from the moment the system first started misbehaving? From the moment an alert fired? From the moment a human looked at it? And is that average being dragged upward by one brutal four-hour outage that skews the whole quarter, while every other incident that month got fixed in under fifteen minutes?
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Most teams can&apos;t answer these questions cleanly, and that&apos;s a genuine problem, because a metric you can&apos;t precisely define is a metric you can&apos;t reliably improve. You end up in a strange position where the number on the dashboard goes down, everyone feels good about it, and the actual experience of being on call hasn&apos;t gotten any less painful, because the metric was measuring the wrong thing, or averaging away exactly the detail that mattered.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This guide is a genuinely thorough look at MTTR: what it actually means, why there are four or five different versions of it floating around with the same acronym, how to calculate it properly, why the average by itself can be actively misleading, and, most importantly, what actually moves the number down in practice rather than just on a slide. No vague advice to &quot;improve your processes.&quot; Specific, concrete levers, and an honest look at which ones matter most.
+            </p>
+          </section>
+
+          <section id="what-is-mttr" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What Is MTTR, Actually?
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              MTTR is a metric that measures how long, on average, it takes your team to go from an incident starting to an incident being resolved. That sounds simple, and conceptually it is. The complication is that the acronym MTTR gets used to mean at least four genuinely different things, depending on who&apos;s saying it and which part of the incident lifecycle they&apos;re measuring.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Mean time to resolve</strong> is the most common interpretation and generally the most useful one: the time from when an incident begins to when the underlying issue is fixed and the system is back to normal, sustained operation.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Mean time to recovery</strong> is closely related but sometimes used more narrowly to mean the time until service is restored for users, even if the true root cause hasn&apos;t been fully fixed yet, just mitigated or worked around.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Mean time to repair</strong> leans toward hardware and infrastructure contexts, measuring the time spent actively fixing a known, diagnosed problem, and can exclude the earlier detection and diagnosis time entirely.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Mean time to respond</strong> sometimes gets shortened to the same acronym too, measuring how quickly someone acknowledges an alert, which is really a different metric altogether wearing the same three letters.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              None of these definitions are wrong, exactly. They&apos;re just different, and the confusion between them is exactly why one team&apos;s &quot;our MTTR is 20 minutes&quot; and another team&apos;s &quot;our MTTR is 3 hours&quot; might not be comparable at all. For the rest of this guide, we&apos;re using the most common and most genuinely useful definition: mean time to resolve, measured from the moment an incident begins to the moment it&apos;s fully fixed and confirmed stable.
+            </p>
+          </section>
+
+          <section id="mttr-family" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The MTTR Family: The Other Metrics Hiding Behind the Same Three Letters
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              MTTR doesn&apos;t live alone. It&apos;s part of a small family of related metrics and understanding how they connect is what lets you diagnose why your MTTR is bad in the first place, rather than just staring at one number and feeling vaguely bad about it.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px; width: 100%; margin-bottom: 18px;">
+              <div style="padding: 14px 18px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; border-left: 4px solid #2A680D;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">Mean Time to Detect (MTTD)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Measures how long it takes from when a problem starts to when someone, or something, notices it. A slow memory leak might be silently degrading performance for twenty minutes before it crosses a threshold. That twenty minutes sits silently inside your total MTTR.</p>
+              </div>
+              <div style="padding: 14px 18px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; border-left: 4px solid #2A680D;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">Mean Time to Acknowledge (MTTA)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Measures the gap between an alert firing and a human acknowledging it. If your monitoring catches an issue instantly but your alert goes to an unmonitored channel, MTTA inflates your resolution time before investigation even begins.</p>
+              </div>
+              <div style="padding: 14px 18px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; border-left: 4px solid #2A680D;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">Mean Time to Diagnose</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Measures the time from acknowledgment to understanding what&apos;s wrong and why. In nearly every real incident, this is the single longest and most variable phase, and the one with the most room for automation.</p>
+              </div>
+              <div style="padding: 14px 18px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; border-left: 4px solid #2A680D;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">Mean Time Between Failures (MTBF)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Measures how often failures happen at all. A low MTTR paired with frequent incidents (low MTBF) tells a very different story than rare, well-handled incidents.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="why-popular" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why MTTR Became Everyone&apos;s Favorite Metric
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It&apos;s worth understanding why this number achieved such outsized importance. MTTR became popular because it&apos;s directly, intuitively tied to customer experience and business impact. Nobody outside engineering cares about error budget burn rate in the abstract, but &quot;how long were we down&quot; is a question a CEO, customer, and support team understand immediately.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It also feels actionable. Unlike abstract metrics, MTTR feels like something a team can work to bring down through specific changes: better alerting, better runbooks, and better on-call structure. The trouble is that popularity and correct usage aren&apos;t the same thing, and MTTR is often misused because it&apos;s simple enough to compute badly.
+            </p>
+          </section>
+
+          <section id="how-to-calculate" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              How to Actually Calculate MTTR
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The basic formula is straightforward:
+            </p>
+            <div style="padding: 16px 20px; background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 12px; margin-bottom: 18px; text-align: center;">
+              <span style="font-size: 1.25rem; font-weight: 800; color: #2A680D;">
+                MTTR = Total Resolution Time Across All Incidents / Total Number of Incidents
+              </span>
+            </div>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              If your team handled 10 incidents last month with a combined resolution time of 20 hours, your MTTR is 2 hours. The part that trips teams up is defining the exact inputs:
+            </p>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Start Time:</strong> Must be consistent across all incidents—either the moment system impact began or when first detected.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">End Time:</strong> The moment the system is genuinely restored and confirmed stable, not when an unverified quick-patch is applied.</li>
+            </ul>
+          </section>
+
+          <section id="why-averages-lie" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why the Average Alone Can Genuinely Lie to You
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Imagine a team that handles 20 incidents in a month. Nineteen are minor and resolved in 8 minutes each. The 20th is a novel, severe outage taking 4 hours to fix.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The average MTTR comes out to ~19 minutes. That number paints a picture of a slow team, when in reality 95% of incidents were resolved in under 10 minutes, with one massive outlier dragging the mean up.
+            </p>
+            <div style="padding: 16px 20px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 18px; border-left: 4px solid #2A680D;">
+              <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">Pro Tip: Track Median &amp; Percentiles</h4>
+              <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+                Always track median resolution time (p50) alongside p95/p99 worst-case incidents. This separates how well you handle routine playbooks from how you perform on complex, novel outages.
+              </p>
+            </div>
+          </section>
+
+          <section id="real-components" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Breaking MTTR Into Its Real Components
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              An average incident breaks down into 5 phases: <strong style="color: #2A680D;">Detect → Acknowledge → Diagnose → Fix → Verify</strong>.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">The Fix Phase is Fast:</strong> Rolling back a deploy takes minutes; restarting a container takes seconds.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">The Diagnosis Phase is Slow:</strong> Engineers opening 5 dashboards, cross-referencing timestamps across disconnected tools, forming and discarding hypotheses. If your MTTR is bad, the fix is rarely "type faster"—it&apos;s "figure out what&apos;s wrong faster."
+            </p>
+          </section>
+
+          <section id="reducing-phases" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              How to Reduce Each Phase of MTTR
+            </h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+              <div style="padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">1. Reduce Time to Detect (MTTD)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Use proactive <a href="/product/uptime" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">synthetic checks</a> running from multiple regions rather than waiting for customer complaints. Tune alert thresholds to avoid silent failures and alert fatigue.</p>
+              </div>
+              <div style="padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">2. Reduce Time to Acknowledge (MTTA)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Configure smart <a href="/product/on-call" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">on-call rotations and automated escalations</a>. Route critical alerts to push/SMS notifications while sending minor warnings to daily Slack digests.</p>
+              </div>
+              <div style="padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">3. Reduce Time to Diagnose (The Biggest Lever)</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Unify logs, metrics, and traces in one connected platform. Use an <a href="/product/ai-analyst" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI analyst</a> to automatically correlate telemetry and surface cited root-cause hypotheses instantly.</p>
+              </div>
+              <div style="padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">4. Reduce Time to Fix</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Maintain updated runbooks for recurring issues and implement one-click automated rollback mechanisms so remedies are safe, fast, and repeatable.</p>
+              </div>
+              <div style="padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #2A680D;">5. Reduce Time to Verify</h4>
+                <p style="font-size: 1.05rem; line-height: 1.7; color: #09090b; margin: 0;">Monitor metrics returning to sustained baselines before closing incidents to prevent re-opening bugs that distort MTTR tracking.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="common-mistakes" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Common Mistakes That Quietly Inflate MTTR
+            </h2>
+            <ul style="padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Treating MTTR as one number instead of five phases:</strong> Prevents identifying where the real bottleneck lies.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Optimizing the fix phase when diagnosis is the bottleneck:</strong> Running fix fire-drills when investigation eats 80% of the time.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Inconsistent incident boundaries:</strong> Shifting start/stop times across incidents makes metrics uncomparable.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Alert fatigue:</strong> High noise causes engineers to tune out alerts, silently inflating MTTA.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Disconnected tools:</strong> Forcing SREs to manually cross-reference timestamps across 4 different vendor UIs.</li>
+            </ul>
+          </section>
+
+        </div>
+
+        {/* FAQ SECTION MATCHING DESIGN SYSTEM */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            {FAQS.map((faq) => (
+              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #2A680D; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                  <span>{faq.q}</span>
+                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* WRAPPING IT UP SECTION */}
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            MTTR is a genuinely useful metric, and it deserves the attention it gets, but only once you understand what it's made of. It's not one number, it's the sum of detection, acknowledgment, diagnosis, fixing, and verification, and in nearly every real incident, diagnosis is the phase quietly eating most of the clock. Teams that chase a lower MTTR by trying to make the fix itself faster are usually optimizing the wrong phase. The real gains come from shrinking the messy, manual correlation work that happens before anyone even knows what to fix.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            That's exactly the gap 24Observe is built to close: uptime monitoring, log management, tracing, and on-call and incident management, unified with an AI analyst that automatically correlates your telemetry and hands you an evidence backed verdict the moment something breaks. Less time reconstructing what happened by hand, more time fixing it.
+          </p>
+
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+              Start free with 24Observe →
+            </a>
+          </div>
+        </section>
+      </main>
+
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>
