@@ -1,0 +1,566 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const ARTICLE_META = {
+  title: "What Is a SIEM? A Complete Guide for Security and Engineering Teams (2026)",
+  author: "The 24Observe Engineering Team",
+  date: "2026-09-07",
+  readTime: "23 min read",
+  category: "SOC & Security",
+  description: "What is a SIEM, really, and why do most security teams still drown in alerts even after buying one? This complete guide breaks down how SIEM works, where it came from, why detection without investigation is only half a solution, and what a modern, AI investigated SIEM looks like in 2026.",
+  slug: "what-is-a-siem-complete-guide",
+};
+
+const FEATURED_GUIDES = [
+  { title: "What Is a SIEM? (2026 Guide)", link: "/blog/what-is-a-siem-complete-guide" },
+  { title: "What Is MTTR? (2026 Guide)", link: "/blog/what-is-mttr-how-to-measure-and-reduce" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+  { title: "Website Uptime Monitoring Complete Guide", link: "/blog/website-uptime-monitoring-complete-guide" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+const FAQS = [
+  {
+    "q": "What does SIEM stand for?",
+    "a": "Security Information and Event Management. The name reflects its origin as a merger of two older, separate product categories: Security Information Management, focused on log storage and compliance reporting, and Security Event Management, focused on real time alerting."
+  },
+  {
+    "q": "Is a SIEM the same thing as a firewall or antivirus software?",
+    "a": "No. A firewall and antivirus software are both sources of data that a SIEM ingests and correlates alongside dozens of other sources. A SIEM does not replace those tools, it sits above them, connecting what each individual tool sees into a more complete picture that no single source could produce on its own."
+  },
+  {
+    "q": "Do small companies need a SIEM, or is it only for large enterprises?",
+    "a": "Small companies arguably benefit the most from a well-designed investigation capable of SIEM, precisely because they typically lack a dedicated security team to manual triage alerts. A platform where detections open fully investigated incidents rather than raw alerts effectively gives a small team senior level security capability without requiring senior level headcount."
+  },
+  {
+    "q": "What is the difference between a SIEM and SOAR?",
+    "a": "A SIEM's core job is detecting and, ideally, investigating security relevant events. SOAR, which stands for Security Orchestration, Automation, and Response, sits downstream and focuses on automatically executing a response once a verdict has already been reached, such as blocking an address or disabling a compromised account. The two are complementary rather than competing categories."
+  },
+  {
+    "q": "Why do so many companies still get breached even though they have a SIEM deployed?",
+    "a": "Almost always because of alert fatigue, not because the detection engine failed to fire. Faced with an overwhelming volume of alerts and limited analyst time, teams tune down noisy rules to keep the queue manageable, and that process, entirely rational at each step, gradually erodes coverage until a genuinely novel technique slips through a rule that was quietly desensitized months earlier."
+  },
+  {
+    "q": "Can a SIEM detect threats it has never seen a rule written for?",
+    "a": "Traditional, purely rule based SIEM platforms cannot, by definition, since a static rule only catches the specific pattern, it was written to catch. Behavioral and anomaly-based detection, along with correlation logic that looks at unusual sequences and cardinality rather than a single fixed pattern, can catch a broader range of novel techniques, though no detection approach catches everything."
+  },
+  {
+    "q": "Does a SIEM cover threats from AI agents and LLM powered tools?",
+    "a": "Most legacy SIEM rule sets were built before AI agents existed in production environments and do not cover this category at all. Modern platforms are beginning to add dedicated detection packs for prompt injections, runaway tool calling loops, and sensitive or abusive tool use by agents, and any organization running agents in production should confirm their SIEM covers this specifically rather than assuming traditional rules extend to it automatically."
+  },
+  {
+    "q": "How much does a SIEM typically cost?",
+    "a": "Pricing varies enormously by vendor and model. Many legacy platforms charge based on data volume ingested per day, which can produce unpredictable and rapidly escalating bills as log volume grows, along with a separate, often costly tier specifically for threat intelligence access. Predictable, flat pricing models that bundle detection, correlation, and threat intelligence into one platform without a second meter running in the background are increasingly the more sustainable choice for growing organizations."
+  },
+  {
+    "q": "What is the single biggest factor in whether a SIEM implementation succeeds?",
+    "a": "Whether the organization has a realistic plan for what happens the moment after a detection fires. A SIEM with excellent detection rules but no capacity, human or automated, to properly investigate what those rules surface will, over time, drift toward the alert fatigue trap regardless of how sophisticated its detection engine is on paper."
+  },
+  {
+    "q": "Should I choose a SIEM that requires a proprietary query language?",
+    "a": "It is worth thinking carefully before committing one. A proprietary, vendor specific query dialect creates a real training and hiring cost, since new team members need to learn syntax that has no value anywhere outside that one product. Platforms that let you write detections using the same query language you already use for everyday search meaningfully lower the barrier to authoring and maintaining your own rules over time."
+  }
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    
+    {/* DESKTOP 3-COLUMN LAYOUT */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            <span>{ARTICLE_META.category}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.date}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.readTime}</span>
+          </div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+            {ARTICLE_META.title}
+          </h1>
+          <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
+            {ARTICLE_META.description}
+          </p>
+        </header>
+
+        {/* TL;DR BOX */}
+        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+            A SIEM (Security Information and Event Management) is a platform that collects security relevant data from across your environment, normalizes it into a common format, and looks for patterns that suggest something malicious or risky is happening. It grew out of two older ideas, Security Information Management and Security Event Management, that got fused together because logs and real time alerts are really two views of the same problem. The part almost nobody tells you upfront is that a SIEM's real job was never just detection. Any tool can throw an alert. The job that protects you is figuring out, fast, whether that alert is a real attacker or a misconfigured cron job, and that investigation step is exactly where most SIEM deployments quietly fail. Modern platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> are built around closing that gap: every detection opens a case, and an <a href="/product/ai-analyst" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI analyst</a> investigates it immediately, so a human reads a verdict with evidence instead of triggering a queue by hand.
+          </p>
+        </section>
+
+        {/* KEY TAKEAWAYS BOX */}
+        <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">
+            Key Takeaways
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">A SIEM is log collection, normalization, correlation, and alerting working together</strong>, not just a place logs get stored. Any of those missing pieces weakens everything downstream of it.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Detection was never the hard part of security monitoring.</strong> The real cost, and the real point of failure in most deployments, is the investigation that must happen after an alert fire.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Alert fatigue is the single biggest reason fully deployed SIEM tools still miss real attacks.</strong> Teams quietly tune down noisy rules to survive the alert volume, and that is exactly how coverage erodes over time.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Multi event correlation, not just single event thresholds, is what catches sophisticated attacks.</strong> A sequence of failed logins followed by success, or one source touching many accounts, tells a story a single rule alone cannot.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">The future of SIEM is unified detection and investigation</strong>, with dedicated coverage for AI agent threats. Platforms like 24Observe pair every detection with an automated, evidence-backed investigation, so a human reads a verdict instead of triaging a queue by hand.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        {/* MAIN BODY SECTIONS WRAPPED IN BLOG-MAIN-CONTENT-BOX */}
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          
+          <section id="introduction" style="margin-bottom: 36px; width: 100%;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here is a scene that plays out in security operations centers every single day, whether the company has five engineers or five thousand.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is 2 AM. A rule fires: fifteen failed logins against the same account inside two minutes. The SIEM dutifully pushes an alert into the queue. The on-call analyst, half awake, pulls it up. Now the real work begins. Was this a brute force attempt, or is it just someone's laptop stuck retrying an expired VPN token? They pull the source address and check it against threat intelligence feeds by hand, tab by tab. They check whether the account eventually succeeded in logging in. They check what that account normally does and whether anything sensitive got touched afterward. They check the geography, because a login attempt from a country the employee has never visited is a very different story than one from their home office. Twenty minutes later, they have an answer: false alarm, an expired token, nothing to see here. They close the ticket and move to the next one in the queue, of which there are, this being a Tuesday night at a mid-sized company, roughly two hundred more.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Multiply that twenty minutes by the volume a properly instrumented SIEM produces across a real environment and you start to understand why security teams everywhere describe the same feeling: it is not that they lack visibility. It is that visibility without the capacity to act on it is just a very expensive way of watching things happen. This is the exact tension that sits at the heart of what a SIEM is, what it promises, and where, repeatedly, real world deployments fall short of that promise.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This guide is a genuinely thorough look at SIEM: what the term actually means, where it came from, how the technology works under the hood, what a modern security stack needs that a decade old SIEM architecture was never designed to provide, and what changes when detection and investigation finally live in the same system. No recycled definitions, no marketing fluff for its own sake, just a clear and honest walk through a category that gets referenced constantly and understood properly far less often.
+            </p>
+          </section>
+
+          <section id="what-is-a-siem-actually" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              So, What Is a SIEM, actually?
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              SIEM stands for Security Information and Event Management, and the name itself is a merger of two ideas that used to be separate product categories. Security Information Management, or SIM, was originally about long term storage and reporting on log data, mostly to satisfy auditors and compliance requirements. Security Event Management, or SEM, was about real time monitoring and alerting security events as they happened. Around the mid-2000s, analysts and vendors realized these two things were really the same underlying problem viewed from different angles, and the two categories merged into what we now call SIEM.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              At its core, a SIEM does three things. First, it collects security relevant data from across your environment: authentication logs, firewall events, endpoint activity, cloud provider audit trails, application logs, network flow data, and more. Second, it normalizes that data into a consistent format, because a Windows login event, a Linux SSH log, and a cloud provider's audit log all describe similar concepts using completely different field names and structures. Third, it applies rules, correlation logic, and increasingly machine learning to that normalized data to surface events that matter: an authentication brute force attempt, a spike in outbound data transfer, a privileged account doing something it has never done before.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That third step is where the value is supposed to live, and it is also where the category has historically struggled the most. A SIEM that only performs the first two steps well is essentially an extremely expensive log archive. It can tell you what happened after the fact if you already know exactly what to search for, but it cannot proactively tell you that something is wrong. A SIEM that performs all three steps well is what people mean when they talk about a security monitoring platform that earns its budget line.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is worth being precise about one more thing: a SIEM is fundamentally a security specific lens on data that overlaps heavily with what an observability or monitoring platform also collects. The distinction has always been a bit artificial. A failed login is both a security event and, in aggregate, an operational signal about your authentication service's health. A spike in error rates from a specific host could be an outage or it could be an attacker probing for a vulnerability. The dividing line between "this is a SIEM problem" and "this is an observability problem" has gotten thinner every year, and in 2026, the more forward-thinking platforms have stopped pretending the line exists at all. Our companion guide on what observability means covers this overlap from the operations side in more depth.
+            </p>
+          </section>
+
+          <section id="brief-history" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              A Brief History: How SIEM Came to Be
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Understanding where SIEM came from helps explain why it looks the way it does today, warts and all.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              In the late 1990s and early 2000s, organizations started generating security relevant logs faster than any human could reasonably review them by hand. Firewalls, intrusion detection systems, and antivirus tools each produced their own logs, in their own formats, stored in their own silos. Security teams were essentially doing forensic archaeology after every incident, trying to reconstruct a timeline from a pile of disconnected text files scattered across a dozen different systems.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The first generation of SIEM tools solved the most obvious part of that problem: centralization. Get all the logs into one place, in one searchable format. This alone was transformative for its time. Suddenly an analyst could search across firewall logs, server logs, and authentication logs from a single interface instead of remoting them into a dozen different boxes.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The second generation added correlation. Rather than just storing everything centrally, these platforms started applying rules that could connect events across different sources. A failed login on a server plus a suspicious outbound connection from that same host, seen together within a short window, is a far stronger signal than either event alone. This is when SIEM started to genuinely earn half of its name, moving beyond passive storage into active pattern recognition.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The third generation, which is roughly where the industry sits today heading into the back half of the 2020s, added threat intelligence integration, user and entity behavior analytics (commonly shortened to UEBA), cloud native log ingestion at massive scale, and increasingly, machine learning models attempting to spot anomalies that static rules would miss. This generation also inherited the industry's biggest unsolved problem from every previous generation: alert volume grew faster than the industry's ability to investigate each alert. More data plus more correlation rules plus more sensitive thresholds equals more alerts, and more alerts without more analyst capacity is not actually progress. It is just a faster way to generate a backlog.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That unsolved problem is exactly what the newest wave of platforms, including 24Observe's approach to SIEM and detections, is built to finally address, not by adding yet another detection layer on top, but by pairing every detection with an automated investigation step so the backlog never forms in the first place.
+            </p>
+          </section>
+
+          <section id="how-siem-works-under-hood" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              How a SIEM Actually Works Under the Hood
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It helps to walk through the actual mechanics, because "collects logs and finds threats" glosses over a surprising amount of engineering.
+            </p>
+            
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Log and Event Collection</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Everything starts with ingestion. A SIEM needs data flowing in from wherever security relevant activity happens: authentication systems, firewalls and network devices, endpoint detection tools, cloud provider audit logs (AWS CloudTrail, Azure Activity Log, and similar), application logs, database access logs, and increasingly, telemetry from AI agents and LLM powered tools running in production. Collection typically happens through agents installed on hosts, log forwarders, syslog receivers, or direct API integrations with cloud providers and SaaS tools.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The volume here is genuinely enormous for any organization of meaningful size. A mid-sized company can easily generate tens of millions of log lines per day once you count every authentication attempt, every firewall packet decision, and every API call across a modern cloud stack. This is also where cost models start to bite: many legacy SIEM vendors charge per gigabyte ingested, which creates a perverse incentive to ingest less data than you need, precisely the opposite of what good security coverage requires.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Normalization and Parsing</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Raw logs arrive in wildly inconsistent formats. A firewall from one vendor writes a denied connection differently than a firewall from another vendor. A cloud provider's audit log structures a "user created" event with entirely different field names than an on-premise Active Directory log describing the same underlying action. Before any correlation logic can run, a SIEM needs to parse each source's format and map it onto a common schema, so that "source IP," "user," and "action" mean the same thing regardless of which system originally produced the event.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This step is unglamorous, and it is also where a huge amount of practical SIEM engineering effort goes. Poorly maintained parsers silently drop fields, misinterpret timestamps across time zones, or fail entirely when an upstream vendor changes their log format in a routine software update. A detection rule is only as good as the normalized data feeding it, and teams that skip investing here end up with correlation rules that look sophisticated on paper and miss obvious attacks in practice because a field was empty when it should not have been.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Correlation and Detection Logic</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is the layer most people picture when they think of a SIEM: rules that watch the normalized event stream and fire when a pattern matches. The simplest rules are single event, threshold-based checks: more than five failed logins from one source in one minute, for example. More sophisticated rules look at sequences across multiple events: a burst of failed logins followed immediately by a successful login for the same account is meaningfully different, and far more concerning, story than either event on its own.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Beyond sequences, there is cardinality-based detection, which looks at unusual breadth rather than unusual frequency. One source address attempting login against ten different user accounts in a short window is not a brute force against a single account, it is the fingerprint of a password spray or account enumeration sweep, and it needs an entirely different kind of rule to catch. A mature SIEM needs both flavors, because attackers deliberately design their techniques to slip beneath whichever detection style a target organization has neglected.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Threat Intelligence Enrichment</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Modern SIEM platforms cross reference incoming events against threat intelligence feeds, lists of known malicious IP addresses, domains associated with command-and-control infrastructure, indicators tied to specific malware families, and anonymizing network exit nodes. A login attempt from an address that also happens to be a known Tor exit node, or one that appears on a recent list of addresses scanning for a specific vulnerability, is a materially stronger signal than the same login attempt from an unremarkable residential IP. The best implementations check this the moment an event is ingested, not as a slow batch job hours later, because the value of a threat intelligence match decays fast if an attacker has already moved laterally by the time anyone notices.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Alerting, Case Management, and Response</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Finally, when a rule matches, something needs to happen: an alert gets generated, ideally grouped sensibly with related alerts sharing a root cause, routed to the right person or team, and tracked through to resolution. This is the layer where the difference between a SIEM that merely detects and one that helps becomes most visible. A tool that fires fifty separate notifications for one underlying intrusion is, in a very real sense, making the analyst's job harder rather than easier, because now they must manually recognize that fifty alerts are one incident before they can even begin investigating it properly.
+            </p>
+          </section>
+
+          <section id="siem-vs-log-management-vs-observability" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              SIEM vs Log Management vs Observability vs SOAR: Untangling the Alphabet Soup
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              People frequently use these terms as if they are interchangeable, and the confusion is understandable given how much the underlying technology overlaps. It is worth being precise, because the differences matter when you are deciding what to buy or build.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Log management</strong> is the foundational layer: collecting, storing, and making logs searchable. It answers "what happened" if you already know roughly what you are looking for. A SIEM builds on top of log management by adding security specific correlation, threat intelligence, and alerting logic that proactively surfaces things you did not know to search for.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">Observability</strong>, in its classic sense, is a broader operational concept: the ability to understand a system's internal state from its external outputs, covering logs, metrics, and traces together. Observability was traditionally framed around reliability and performance rather than security, but the underlying data, timestamped events, identity context, request flows, is fundamentally the same raw material a SIEM needs. This is precisely why the line between "an observability platform" and "a SIEM" has gotten so blurry in recent years. A detailed breakdown of that overlap lives in our guide to what observability means.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong style="color: #2A680D; font-weight: 800;">SOAR</strong>, which stands for Security Orchestration, Automation, and Response, is a category that sits downstream of a SIEM. Where a SIEM's job is detection and, ideally, investigation, a SOAR platform's job is executing a response: automatically blocking an IP address, disabling a compromised account, or triggering a pre-approved remediation playbook once a verdict has already been reached. Historically these were separate products because a SIEM told you something was wrong and the SOAR platform acted on that conclusion. The gap between the two has always been the investigation step in the middle, the part where a human must confirm the SIEM's alert is real before any automated response should safely trigger.
+            </p>
+          </section>
+
+          <section id="core-capabilities" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Core Capabilities That Define a Real SIEM
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              If you strip away vendor specific branding, most genuinely capable SIEM platforms share a common set of capabilities, and it is worth knowing what to look for.
+            </p>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Broad and reliable log ingestion.</strong> The ability to collect data from authentication systems, network devices, cloud providers, endpoints, and applications, with parsers that stay current as upstream formats change.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Consistent normalization.</strong> A common schema so that "who did what, to what, from where, and when" can be asked as a single query rather than a different query per data source.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Rule based and behavioral detection.</strong> Both explicit, human authored rules for known attack patterns and some form of anomaly detection for behavior that deviates from an established baseline.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Multi event correlation.</strong> The ability to detect sequences and cardinality patterns across many events, not just single event thresholds.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Threat intelligence integration.</strong> Both public feeds and the ability to bring your own private indicators specific to your organization's threat model.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Identity and asset enrichment.</strong> Knowing that an event touched a specific, named, high value asset, or came from an account with elevated privileges.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Case management and grouping.</strong> The ability to collapse related alerts sharing a root cause into a single case.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Compliance and audit reporting.</strong> Many organizations are legally required to retain security logs and produce reports demonstrating monitoring coverage.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Actual investigation support.</strong> This is the piece that separates tools that merely detect from tools that genuinely help a security team.</li>
+            </ul>
+          </section>
+
+          <section id="why-so-many-fail" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why So Many SIEM Deployments Quietly Fail
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here is an uncomfortable truth that does not get told out loud often enough: a large share of SIEM deployments, even expensive ones from well-known vendors, fail to actually improve an organization's security posture in any measurable way, and it is almost never because the detection engine itself is weak.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The failure mode is almost always the same, and it plays out in a predictable sequence. A team deploys a SIEM with broad log coverage and a healthy set of detection rules enabled. For the first few weeks, the alert volume is manageable, and the security team investigates diligently. Then the volume grows, because more log sources get connected, more rules get enabled, and normal business activity keeps producing events that look superficially suspicious: a developer running a legitimate but unusual script, a new SaaS integration authenticating in a pattern the rules were not tuned to expect, a marketing team member logging in from an airport during a work trip. Each of these generates an alert. None of them are attacks. And the analyst who must manually rule out each one loses twenty minutes doing it, every single time.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Faced with a growing backlog and a fixed number of analyst hours, teams do the only thing they reasonably can: they start turning down the noisiest rules. A brute force detection with a threshold that is too sensitive gets its threshold raised. A rule that fires too often on legitimate automation gets disabled entirely, with a plan to "revisit it later" that rarely actually happens. Over months, this process, entirely rational at each individual step, quietly hollows out the SIEM's effective coverage. The dashboard looks calm. The alert queue is manageable. And a genuinely novel attack technique that would have tripped one of those now silenced or desensitized rules sails through completely unnoticed, because the tool that was supposed to catch it was tuned into irrelevance by the very people it was meant to protect.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is not hypothetical. It is close to the single most common root cause analysts cite, in postmortems across the industry, for how a fully deployed, fully licensed SIEM still failed to catch a real intrusion. The tool did exactly what it was configured to do. It just was not configured to do the thing that mattered, because the cost of investigating every alert honestly was higher than anyone could sustain.
+            </p>
+          </section>
+
+          <section id="alert-fatigue" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Alert Fatigue: The Problem That Defines the Whole Category
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is worth sitting with alert fatigue specifically for a moment, because it is genuinely the defining challenge of the entire SIEM category, more than any specific detection technique or data source.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Security teams are, structurally, almost always outnumbered. A single analyst might be responsible for triaging alerts across an entire organization's authentication systems, network perimeter, cloud infrastructure, and endpoint fleet. Meanwhile, the number of events flowing through a modern, cloud native, microservices heavy environment has grown by orders of magnitude compared to a decade ago. Every one of those events is a potential source of an alert, and every alert, if taken seriously, costs meaningful human time to resolve.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Math simply does not work at scale using a purely manual investigation model. If it takes twenty minutes to properly investigate one alert, and a well-tuned SIEM at a mid-sized company produces two hundred alerts on a typical day, that is over sixty six hours of investigative work required from a team that might have two or three people available for the task. Something must give, and historically, what gives is thoroughness. Analysts start pattern matching on alert titles rather than reading full context. They develop a habit of dismissing entire categories of alerts because "those are usually noise," a habit that is statistically reasonable and occasionally catastrophic.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There are only two structural ways out of this trap. One is reducing the number of alerts that require human attention in the first place, through better correlation, tighter tuning, and grouping related alerts into single cases. The other, and this is the more fundamental shift the industry is going through right now, is automating the investigation step itself, so that a human's time is spent reading a conclusion with evidence attached rather than doing the underlying legwork by hand for every single alert regardless of how likely it is to matter.
+            </p>
+          </section>
+
+          <section id="what-a-modern-siem-should-do" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What a Modern SIEM Should Actually Do Differently
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Given everything above, what does a SIEM that genuinely solves the problem, rather than just relocating it, look like?
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The starting principle is treating detection and investigation as one continuous motion rather than two separate stages with a human bottleneck in between. When a detection fires, instead of dropping a row into a queue for someone to eventually get to, the system should immediately begin gathering the same evidence a skilled analyst would gather by hand: checking whether a failed login burst was followed by a success, checking the source address against threat intelligence, checking whether the account has touched anything sensitive recently, checking whether the login's geography is plausible given the user's normal behavior. This is precisely the architecture behind <a href="https://24observe.com" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">24Observe's approach to SIEM and detections</a>, where every one of the platform's built in detections opens a full incident and an <a href="/product/ai-analyst" style="color: #2A680D; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">AI analyst</a> investigates it immediately, corroborating the signal against independent evidence before returning a verdict a human can act on or audit in seconds rather than reconstruct over twenty minutes.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The second principle is refusing to treat a noisy detection as a burden to be silenced. If investigation is automatic and consistent, a rule that fires a bit too often on legitimate activity is no longer a tax on a scarce analyst's time, it is just a few extra incidents that get dispositioned automatically in seconds, most of them closed as benign before a human ever has to look. This removes the perverse incentive that quietly hollows out detection coverage over time in a purely manual model. Detection breadth and analyst sanity stop being a trade off against each other, which is the tradeoff that has quietly undermined the category for two decades.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The third principle is grouping related detections that share a single root cause into one case. If an intrusion trips five separate rules across a few services, a well-designed platform should recognize the shared root and collapse those five alerts into one case with one notification, rather than paging an on-call analyst five separate times for what is genuinely a single event.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The fourth principle is making rule authoring genuinely accessible rather than gatekept behind a proprietary query language that takes months to learn. A detection should be expressible as a readable query with a window, a threshold, a severity, and an attack technique tag mapped to a recognized framework, something a responder can write between calls rather than something that requires a dedicated query language certification.
+            </p>
+          </section>
+
+          <section id="attack-patterns" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Attack Patterns Every SIEM Should Be Watching For
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It helps to ground all of this in concrete examples of what a well-configured SIEM is looking for day by day.
+            </p>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Authentication brute force and password spray.</strong> The classic case: repeated failed login attempts against a single account, or a single source touching many different accounts in a short window.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Credential and secret exposure.</strong> Credentials, API keys, and tokens leaking into logs, request URLs, or error messages are among the most valuable things an attacker can find.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Data exfiltration.</strong> Bulk exports, unusually large outbound transfers, database dumps, and data leaving through unexpected channels.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Privilege escalation and persistence.</strong> New privileged accounts being created, SSH keys added to a host outside a normal change process, scheduled tasks configured for persistence.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Web application attacks.</strong> Injection attempts, path traversal, and automated scanning against public facing applications.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Cloud control plane abuse.</strong> Root account usage, new access key creation, audit trail tampering, and unusual console activity inside cloud provider accounts.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">AI agent and LLM specific threats.</strong> Prompt injection attempts, an agent stuck in a runaway tool calling loop burning through budget, sensitive tool calls made by a compromised or manipulated agent.</li>
+            </ul>
+          </section>
+
+          <section id="build-vs-buy" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Building a SIEM In House vs Buying One
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              For organizations evaluating whether to build custom log correlation infrastructure versus purchasing a platform, the honest calculus usually comes down to a handful of factors.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Building in house makes sense when an organization has genuinely unusual requirements that no commercial platform addresses well, has the engineering capacity to maintain parsers as every upstream log format inevitably drifts over time, and has the security expertise on staff to write and continuously tune detection rules as attacker techniques evolve. It rarely makes sense purely as a cost saving measure, because the ongoing maintenance burden of keeping parsers, correlation logic, and threat intelligence feeds current is consistently underestimated at the outset.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Buying a platform makes sense for many organizations, because the value is not really in the storage and search capability, which has become commoditized, it is in the accumulated detection content, the threat intelligence relationships, and increasingly, the investigation automation layered on top. The genuinely important question is not "does this platform detect threats," because nearly every serious vendor can answer yes to that. The important question is "what happens the moment after a detection fires," because that is where the actual cost, and the actual value, lives.
+            </p>
+          </section>
+
+          <section id="siem-and-compliance" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              SIEM and Compliance: The Part Nobody Finds Exciting but Everybody Needs
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A meaningful share of SIEM purchases, particularly at larger and more regulated organizations, are driven initially by compliance requirements rather than a pure security motivation, and it is worth understanding why that matters.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Standards like PCI DSS for organizations handling payment card data, HIPAA for healthcare organizations handling patient information, SOC 2 for service providers handling customer data, and GDPR for organizations handling data belonging to individuals in the European Union, all include requirements around logging, monitoring, and demonstrating the ability to detect and respond to security incidents in a timely manner. A SIEM is frequently the tool an organization point to as evidence it meets these requirements during an audit.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The important nuance here is that compliance driven logging and genuinely effective security monitoring are related but not identical goals. It is entirely possible to satisfy a compliance checklist, retaining the right logs for the right duration, while still having a SIEM that would not actually catch a real, live attacker moving through your environment, because the detection rules were configured to satisfy an auditor's checklist rather than to model how a genuine adversary behaves. Organizations that treat compliance as the floor rather than the ceiling of what their SIEM should accomplish tend to end up with meaningfully better security outcomes as a side effect.
+            </p>
+          </section>
+
+          <section id="common-mistakes" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Common Mistakes Organizations Make When Implementing a SIEM
+            </h2>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Treating deployment as a one-time project rather than an ongoing practice.</strong> A SIEM's detection rules need continuous tuning as the environment changes, new services get deployed, and attacker techniques evolve.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Ingesting everything without a plan for what matters.</strong> More data is not automatically better if nobody has decided which sources feed meaningful detections.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Inconsistent field naming across sources.</strong> Standardizing on a common schema early pays for itself many times over.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Enabling every available rule at maximum sensitivity on day one.</strong> This is the fastest route to the alert fatigue trap described earlier.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">No plan for grouping related alerts.</strong> Without case grouping, a single intrusion that trips multiple rules floods an analyst with what looks like many separate incidents.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Ignoring the AI agent attack surface entirely.</strong> Organizations running LLM powered agents or tools in production without any detection coverage specific to prompt injection have a real blind spot.</li>
+            </ul>
+          </section>
+
+          <section id="what-a-good-siem-looks-like" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What a Genuinely Good SIEM Experience Looks Like in Practice
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is worth walking through what a well-built, modern SIEM implementation feels like during a live security event, because the difference from the legacy experience described at the start of this guide is stark.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A burst of failed logins hits one of your services. A brute force detection watches for exactly this pattern, and the moment the count crosses its threshold, it does what every detection in a well-designed system should do: it opens a full incident, not a line item buried in a log, carrying the rule's severity and its mapped attack technique from the start.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Because the incident is wired into a live map of your environment as it opens, the affected account, the source address, and the host behind the service are already attached. There is no separate step where a human must manually figure out what this event touches. That context is present from the first second, and it is exactly what allows the next step to begin immediately rather than starting from a cold, empty search bar.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Now the investigation is happening automatically. Rather than taking the failed login spike at face value, the system corroborates it against independent evidence, the same way a skilled analyst would: was there a successful login for that account immediately following the wall of failures? Is the source address flagged by threat intelligence, or coming from a known anonymizing network? Is login’s geography plausible given how this user normally behaves? Has this account touched anything sensitive since? Each question gets answered against your real telemetry, and each answer is recorded with a citation back to the underlying evidence.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The verdict that comes back is a decision, not merely a description. If the evidence converges (failures, then a success, from a flagged source, in an implausible location) it comes back as a confident true positive, with every supporting record linked so a human can verify the conclusion in seconds rather than reconstructing it from scratch over twenty minutes. If the evidence is thin or contradictory, the system says so plainly and routes it to a human for judgment rather than crying wolf with false confidence either way.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              If the same underlying intrusion happened to trip several detections at once across multiple services, rather than paging an analyst five separate times, a well-built platform recognizes the shared root and collapses those alerts into a single case, so the human investigates one incident instead of chasing five echoes of it. And when an analyst reviews a verdict and corrects it, confirming it, downgrading it, adding a note, that correction feeds back into how future investigations get handled, so the system measurably improves at reading that specific organization's environment over time.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              None of this needs to trap an organization's data inside a single vendor either. A well-designed detection fires a signed webhook to existing tooling and any SOAR platform the instant it matches, and a gap free export can stream an audit trail for any downstream system to consume. The goal was never to lock data in. It was to make sure no detection ever again dies unread in a queue.
+            </p>
+          </section>
+
+          <section id="siem-for-teams" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              SIEM for Different Kinds of Teams
+            </h2>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">For a small startup without a dedicated security hire</strong>, a modern, investigation capable SIEM is the difference between having genuine security coverage and having none.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">For a growing engineering organization</strong>, the priority tends to shift toward standardizing log formats and field naming across an expanding set of services early.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">For a security conscious enterprise</strong>, the biggest win of a unified platform is collapsing the artificial distinction between "was this a security event or an operational one."</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">For a managed service provider (MSP)</strong>, the priority is platform architecture that keeps detection and case management genuinely separate per customer.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">For any team shipping AI agents into production</strong>, dedicated detection coverage for prompt injection, token and cost abuse, and runaway tool calling loops needs to sit inside the same primary telemetry.</li>
+            </ul>
+          </section>
+
+          <section id="future-of-siem" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Future of SIEM: Where This Category Is Actually Heading
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A few genuine shifts are reshaping what SIEM means heading further into the back half of the 2020s, and they are worth naming plainly rather than treating as vague futurism.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The first is the collapse of the artificial boundary between SIEM and general observability. The underlying data, timestamped events, identity context, request and behavior patterns, has always been fundamentally the same regardless of whether a human labels the resulting question a "security" question or an "operations" question. Platforms that unify both motions into one pipeline, rather than forcing organizations to buy staff, and maintain two entirely separate tools that each see half the picture, are increasingly the more sensible default rather than the exception.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The second is the shift from detection as the finish line to investigation as the actual product. The industry spent two decades competing primarily on how many rules a platform ships and how sensitive its anomaly detection can be tuned. That competition has largely run its course, because the bottleneck was never really detection sensitivity, it was always what happens in the twenty minutes after a detection fires. Platforms that automate those twenty minutes, rather than simply generating faster alerts, are where the genuine competitive differentiation now lives.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The third is the arrival of an entirely new attack surface that essentially did not exist a few years ago: AI agents and LLM powered tools running with real permissions in production systems. This category requires detection logic that has no direct precedent in traditional network or endpoint security, and organizations that treat it as a footnote rather than a first-class category of risk are going to be the ones caught flat footed when it matters.
+            </p>
+          </section>
+
+        </div>
+
+        {/* FAQ SECTION MATCHING DESIGN SYSTEM */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            {FAQS.map((faq) => (
+              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #2A680D; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                  <span>{faq.q}</span>
+                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* WRAPPING IT UP SECTION */}
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            A SIEM, stripped of marketing language, is really a straightforward idea: pull security relevant data together from everywhere it lives, make it speak a common language, and watch for patterns that suggest something worth a human's attention is happening. Where the category has struggled for two decades is the assumption that generating the alert was the hard part. It never was. The hard part, the part that determines whether an organization catches a real intrusion or buries it under a pile of alerts nobody had time to properly work, has always been the investigation that follows.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            That is the exact gap 24Observe's approach to SIEM and detections was built to close: eighty seven prebuilt detections across fourteen packs covering authentication abuse, data exfiltration, secret exposure, cloud control plane tampering, and dedicated AI agent security, each one wired directly into an incident the moment it fires. An AI analyst investigates every single one immediately, corroborating the signal against independent evidence and returning a verdict with citations a human can act on or audit in seconds. Multi event correlation catches the sequences and patterns a single rule would miss. Threat intelligence and identity enrichment happen now an event lands, not hours later during a manual review. And when five detections fire from one root cause, they collapse into a single case instead of paging an analyst five separate times.
+          </p>
+
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+              Start free with 24Observe →
+            </a>
+          </div>
+        </section>
+      </main>
+
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>
