@@ -1,0 +1,367 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const ARTICLE_META = {
+  title: "Best PagerDuty Alternatives in 2026 (And How to Actually Pick One)",
+  author: "The 24Observe Engineering Team",
+  date: "2026-09-10",
+  readTime: "22 min read",
+  category: "Tool Comparisons",
+  description: "PagerDuty still owns incident response, but the bill, the per-user pricing, and the thin alerts are pushing teams to look elsewhere. Here's an honest look at the strongest PagerDuty alternatives in 2026, including Opsgenie's shutdown, and how to pick the one that fits your team instead of the next vendor's demo.",
+  slug: "best-pagerduty-alternatives-2026",
+};
+
+const FEATURED_GUIDES = [
+  { title: "Best PagerDuty Alternatives in 2026", link: "/blog/best-pagerduty-alternatives-2026" },
+  { title: "What Is a SIEM? (2026 Guide)", link: "/blog/what-is-a-siem-complete-guide" },
+  { title: "What Is MTTR? (2026 Guide)", link: "/blog/what-is-mttr-how-to-measure-and-reduce" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+const FAQS = [
+  {
+    "q": "Why are teams leaving PagerDuty in 2026?",
+    "a": "Mostly cost. Per responder pricing scales awkwardly as teams grow, useful features often sit behind paid add ons, and many teams find they're paying for enterprise depth they never actually use."
+  },
+  {
+    "q": "Is there one best PagerDuty alternative?",
+    "a": "No. The right pick depends on your actual pain, cost, missing automation, Opsgenie's shutdown, or a desire for deeper investigation tooling, not a single universal ranking."
+  },
+  {
+    "q": "What should Opsgenie users do right now?",
+    "a": "Start planning a migration now rather than waiting. Full support ends April 5, 2027, and teams that waited until the final months consistently report the roughest transitions."
+  },
+  {
+    "q": "What's the cheapest PagerDuty alternative?",
+    "a": "Grafana OnCall for teams already in the Grafana ecosystem, or Squadcast and Zenduty for teams that want a comparable full feature set at meaningfully lower per seat pricing."
+  },
+  {
+    "q": "Is switching incident management tools as easy as vendors claim?",
+    "a": "Not quite. Escalation policies and schedules rarely export cleanly, and a proper parallel run through at least one full rotation cycle before cutting over is worth the extra time it takes."
+  },
+  {
+    "q": "Why do some newer tools focus on Slack instead of separate consoles?",
+    "a": "Because most teams already coordinate incidents in Slack anyway. Building the entire incident lifecycle inside the chat tool people already live in removes a context switch that costs real time during an active outage."
+  },
+  {
+    "q": "Should cost be the only deciding factor?",
+    "a": "No. Escalation depth, integration breadth, and what happens after the page land all matter just as much. A cheap tool that leaves your team doing manual detective work on every incident hasn't solved the underlying problem."
+  }
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+    
+    {/* DESKTOP 3-COLUMN LAYOUT */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      
+      {/* LEFT SIDEBAR: FEATURED GUIDES */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE CONTENT */}
+      <main style="flex: 1; min-width: 0;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            <span>{ARTICLE_META.category}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.date}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.readTime}</span>
+          </div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+            {ARTICLE_META.title}
+          </h1>
+          <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
+            {ARTICLE_META.description}
+          </p>
+        </header>
+
+        {/* TL;DR BOX */}
+        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+            Almost nobody leaves PagerDuty because it fails at its core job. It doesn't. Teams leaves because the per user pricing quietly turns every new hire into a line item, because the platform has grown into something bigger and more complex than most teams actually need, and because a page from PagerDuty is, structurally, just a title and a link back to whatever tool actually holds the evidence. The right alternative depends entirely on what's bothering you. Better Stack or incident.io if you want a cleaner, Slack native experience at a friendlier price. Grafana OnCall if you're already deep in the Grafana ecosystem and want to on-call for close to free. Squadcast or Zenduty if budget is the whole story. FireHydrant or Rootly if you want deep incident response automation and retrospectives baked in. Opsgenie is a special case this year, since Atlassian is shutting it down on April 5, 2027, which means anyone still on it needs a migration plan regardless of whether they love the tool. And then there are platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a>, for teams whose real complaint isn't the router at all, it's that the page arrives empty and every incident starts with a human doing detective work from zero. There is no single best PagerDuty alternative. There is a best fit for whichever part of the on-call experience is costing you money, time, or sleep.
+          </p>
+        </section>
+
+        {/* KEY TAKEAWAYS BOX */}
+        <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">
+            Key Takeaways
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">PagerDuty Alternatives Mostly Solve Cost, Not Capability:</strong> PagerDuty's routing and escalation logic works well for most teams. The search for alternatives is usually driven by per user pricing that scales awkwardly with team size, feature bloat that most teams never touch, and a UI that has grown heavier over the years than the core job requires.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">There Is No Universal Best PagerDuty Competitor:</strong> Better Stack and incident.io suit teams that want a modern, Slack native experience. Grafana OnCall suits teams already running Grafana. Squadcast and Zenduty suit budget conscious teams. FireHydrant and Rootly suit teams that want incident response automation and postmortems built in, not just paging.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Opsgenie's Shutdown Is Forcing an Unplanned Migration for Many Teams:</strong> Atlassian confirmed Opsgenie reaches full end of support on April 5, 2027, with new sales already closed since June 2025. Anyone still running Opsgenie needs to pick a landing spot regardless of how satisfied they were with the product, since staying put simply is not an option past that date.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">Choose Based on What Actually Follows the Page, Not Just the Page Itself:</strong> Don't evaluate a PagerDuty alternative purely on whether it can wake someone up. Compare escalation depth, integration breadth, incident timelines, postmortem tooling, status page quality, and how much manual investigation work still lands on the human who gets paged.
+              </div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div>
+                <strong style="color: #2A680D; font-weight: 800;">The Best Alternative Should Shrink the Investigation, Not Just Cut the Bill:</strong> A cheaper way to get woken up at 2 a.m. is still just a cheaper way to get woken up at 2 a.m. Platforms like 24Observe that pair on call with actual root cause investigation, so the page arrives with a verdict instead of a title and a link, are solving a different and arguably bigger problem than price alone.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        {/* MAIN BODY SECTIONS WRAPPED IN BLOG-MAIN-CONTENT-BOX */}
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          
+          <section id="introduction" style="margin-bottom: 36px; width: 100%;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There's a moment that plays out on nearly every growing engineering team, usually a few quarters after headcount doubles. Someone in finance flags the PagerDuty renewal, someone in engineering opens the seat count, and both of them do the same quiet math: forty engineers, twenty on rotation, a handful of paid add ons for advanced analytics or extra API concurrency, and suddenly a tool that used to feel like a rounding error is a genuine budget line. It isn't that PagerDuty stopped working. PagerDuty invented modern on-call as a category, and its escalation logic, its mobile app, and its integration catalogue are still some of the most mature in the industry. The frustration is almost never "this tool is broken." It's "this tool now costs more per engineer than our observability platform, and half of what we're paying for we've never opened."
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That's the setup for 2026's alternative landscape, and it's a genuinely more interesting market than it was even two years ago. There's a wave of newer, Slack native incident platforms built by teams who lived through PagerDuty pain themselves. There is a strong open-source and Grafana adjacent option for teams that don't want another SaaS invoice at all. There's a whole tier of budget focused tools built specifically to undercut PagerDuty's per seat pricing without gutting the core feature set. And there's a genuine, unavoidable event this year: Opsgenie, one of PagerDuty's longest standing competitors, is being wound down by Atlassian, which is pushing a meaningful chunk of the market to re-evaluate everything at once, whether they wanted to or not.
+            </p>
+          </section>
+
+          <section id="why-everyone-is-shopping" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Why Everyone's Suddenly Shopping for a PagerDuty Alternative
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Before getting into specific tools, it's worth being precise about why teams start this search.
+            </p>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Per user pricing that scales badly with team growth:</strong> PagerDuty's pricing model charges per responder, and once you factor in the tiers that unlock the features most mid-sized teams want, the effective per seat cost climbs quickly.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Feature bloat relative to actual need:</strong> PagerDuty has spent years building outward into automation, AIOps style event correlation, and enterprise workflow tooling. For a fifteen-person engineering team, it often means paying for and navigating a UI that has grown considerably more complex than the job of "wake the right person up" requires.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">The Opsgenie shutdown:</strong> Atlassian announced that Opsgenie is being phased out as a standalone product, forcing teams who weren't necessarily unhappy to go shopping on a deadline.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Preference for Slack native workflows:</strong> A newer generation of tools built the entire incident lifecycle around the chat tool teams already live in all day.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Frustration with empty alerts:</strong> For teams whose real pain is the cold start investigation that follows every page rather than the paging mechanism itself, no amount of switching between routers fixes the underlying problem.</li>
+            </ul>
+          </section>
+
+          <section id="what-it-actually-costs" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              What PagerDuty Actually Costs You (Beyond the Sticker Price)
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It's worth spending real time here, because the line item on the invoice is only part of the story.
+            </p>
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Per responder pricing compounds</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              PagerDuty's core plans price per user, and the tiers that unlock features most growing teams want, like advanced reporting, event orchestration rules, and extended incident workflows, sit on higher priced plans.
+            </p>
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Add ons are where the real surprises live</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Features like AIOps event intelligence, advanced status pages, and higher API rate limits are frequently gated behind separate add on pricing rather than bundled into the base plan.
+            </p>
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Seat sprawl is a quiet cost</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Every engineer who joins an on-call rotation, even a junior engineer shadowing for a quarter, is a billable seat. Teams end up paying for a headcount that doesn't map cleanly to who's taking pages in each month.
+            </p>
+          </section>
+
+          <section id="alternatives-by-category" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Alternatives Breakdown
+            </h2>
+            
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Opsgenie (Important: It's Being Shut Down)</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Opsgenie deserves its own section this year. Atlassian confirmed in March 2025 that Opsgenie is reaching end of life, with new sales already stopped, customers on the Jira Service Management bundled version losing access as of October 2025, and full end of support arriving on April 5, 2027. If your team is still running Opsgenie today, this isn't a "should we switch" decision anymore, it's a "where do we land, and how soon" decision.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Better Stack</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Better Stack positions itself as a complete replacement for the "PagerDuty plus separate uptime plus separate status page" combination. Its incident management includes on-call scheduling, unlimited phone call and SMS alerts on paid plans, and deep integrations into Slack and Microsoft Teams. The strongest pitch is pricing predictability paired with breadth, consolidating multiple tools into one product and one bill.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">incident.io</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              incident.io built its reputation by being genuinely Slack native from the ground up. Declaring an incident, posting updates, assigning roles, and building a timeline all happen inside Slack itself, removing the context switch into a separate console. It handles incident timelines automatically, generates retrospective drafts, and tracks follow up action items so postmortem learning doesn’t quietly disappear.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Grafana OnCall (Grafana Cloud IRM)</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              For teams already running Grafana for dashboards and alerting, Grafana OnCall is one of the more compelling options simply because it removes an entire separate vendor relationship. Alerts generated from Grafana's own alerting rules can route directly into on-call schedules. Its biggest appeal is cost, historically offering a genuinely usable free or low-cost tier.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">FireHydrant and Rootly</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Both FireHydrant and Rootly build their identity around incident response automation and structured postmortems rather than paging as the primary product. Their runbook automation can trigger actions automatically as an incident progresses, spinning up a dedicated Slack channel, paging the right service owner based on a live service catalogue, and updating a status page.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">Squadcast and Zenduty</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Budget conscious, feature complete alerting and on-call platforms aimed squarely at teams whose primary complaint about PagerDuty is cost. Both offer comparable core feature sets (on-call scheduling, escalation policies, incident timelines, status pages) at meaningfully lower per user pricing that doesn't punish a company for growing.
+            </p>
+
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: #2A680D;">xMatters</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Carved out specifically for large organizations with established incident management practices and complex, highly customized escalation workflows across many teams and business units. It competes on depth of workflow customization at genuine enterprise scale rather than undercutting on price for smaller teams.
+            </p>
+          </section>
+
+          <section id="where-24observe-fits" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Where 24Observe Fits into This
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Every tool covered above, however good it is, is fundamentally still a router or an incident coordination layer that sits on top of whatever detected the problem in the first place. Switching routers changes who wakes you up and how nicely the interface is designed. It doesn't change the fact that the actual investigation still starts from zero the moment you acknowledge the page.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              24Observe's positioning comes from a different starting point entirely: uptime monitoring, log management, and security detection (SIEM) unified in one platform, with on-call and incidents living inside that same platform. When something breaks, the AI analyst walks the live context graph of your services, hosts, and dependencies, identifies the change most likely responsible, confirms that theory against the actual telemetry, and hands back evidence backed verdict before the page even goes out. The pitch isn't "a cheaper way to route the same thin alert." It's "the investigation is already done by the time you open your phone."
+            </p>
+          </section>
+
+          <section id="decision-framework" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              The Decision Framework: Matching the Tool to the Actual Pain
+            </h2>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If per seat cost is the entire problem and your team is mid-sized, <strong style="color: #2A680D; font-weight: 800;">Squadcast or Zenduty</strong> are very likely your strongest financial move.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If you're already deep in Grafana or Prometheus, <strong style="color: #2A680D; font-weight: 800;">Grafana OnCall</strong> removes an entire vendor relationship.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If your complaint is that everything after the page is manual and scattered, <strong style="color: #2A680D; font-weight: 800;">incident.io</strong> is built specifically to close that gap.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If you want deep automation and service catalogue integration, <strong style="color: #2A680D; font-weight: 800;">FireHydrant or Rootly</strong> are worth the setup.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If you're currently on Opsgenie, the decision isn't optional. Start planning your migration now.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;">If you'd rather have monitoring, logs, and security unified with on-call and an AI analyst that hands you the verdict alongside the page, that's what <strong style="color: #2A680D; font-weight: 800;">24Observe</strong> is built to close.</li>
+            </ul>
+          </section>
+
+          <section id="migrating" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+              Migrating Off PagerDuty: What the Transition Actually Involves
+            </h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              However, it is tempting to treat "pick a new tool" as the whole project, the migration itself deserves its own honest accounting.
+            </p>
+            <ul style="padding-left: 20px; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Export everything before you touch anything:</strong> Escalation policies, on-call schedules, service definitions, and historical incident data all need to be exported cleanly.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Rebuild escalation policies deliberately, not by copy paste:</strong> Escalation logic tuned around one platform's timing behavior rarely translates one to one into a different tool's model.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Running both tools in parallel:</strong> A proper parallel run catches integration gaps and misconfigured escalation chains before they matter in a real incident.</li>
+              <li style="font-size: 1.05rem; line-height: 1.7; color: #09090b;"><strong style="color: #2A680D; font-weight: 800;">Re-train the people who take the pages:</strong> A new tool means new mobile apps, new acknowledgment flows, and new terminology for the engineers on rotation.</li>
+            </ul>
+          </section>
+
+        </div>
+
+        {/* FAQ SECTION MATCHING DESIGN SYSTEM */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            {FAQS.map((faq) => (
+              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #2A680D; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                  <span>{faq.q}</span>
+                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* WRAPPING IT UP SECTION */}
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            PagerDuty didn't get worse in 2026, its seat pricing simply kept compounding as teams grew, and a genuinely strong field of alternatives, along with Opsgenie's looming shutdown, gave a lot of teams a reason to look around properly for the first time in years. Whether you want a cleaner Slack native experience like incident.io, a budget friendly swap like Squadcast or Zenduty, deep automation like FireHydrant or Rootly, or a near free option through Grafana OnCall, the market is mature enough now that leaving PagerDuty no longer means settling for less.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto;">
+            If your goal is to go beyond faster paging and shrink the investigation that follows every incident, 24Observe offers a unified platform combining monitoring, logs, security, on-call, and AI powered root cause analysis, with full self-hosting options if that matters to your team. Pick the alternative that solves your specific operational pain today, not the one that simply looks best on a comparison chart.
+          </p>
+
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+              Start free with 24Observe →
+            </a>
+          </div>
+        </section>
+      </main>
+
+      {/* RIGHT SIDEBAR: PLATFORM SPECIAL */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        
+        {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>
