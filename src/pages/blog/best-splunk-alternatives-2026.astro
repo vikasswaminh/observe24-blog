@@ -182,18 +182,37 @@ const FAQS = [
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
               Before getting into specific platforms, it is worth being precise about the actual triggers, because the reason for your team is shopping shapes which alternative will solve your problem.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The most common trigger by a wide margin is ingestion economics. Splunk's traditional pricing models, whether metered by daily ingest volume or by computing under its newer workload-based pricing, scale with data volume in a way that punishes exactly the kind of telemetry modern infrastructure produces. A team running Kubernetes with verbose JSON logging, dense label sets, and a growing number of microservices can watch daily ingest volume climb in ways that have very little to do with genuine infrastructure growth and everything to do with how chatty modern instrumentation has become. The predictable response is rationing. And that is exactly what should worry every security leader reading this. Teams start dropping log sources and shortening retention windows just to control the bill. This is entirely backwards for a security function. The one log line you decided not to keep is inevitably the one you’ll need for an investigation six months later.
-            </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The second trigger is the sheer operational and human cost of running Splunk well. The Search Processing Language, SPL, is powerful, genuinely more expressive than most alternatives once you have climbed the learning curve. But that learning curve is real, and it concentrates capability in a small number of specialists rather than spreading it across a team. When your one SPL expert is out sick, on vacation, or leaves for a new job, your SOC's actual investigative capacity drops with them. That is a key person risk that most teams do not price into their evaluation until it bites them.
-            </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The third trigger is renewal uncertainty tied to the Cisco acquisition. This is not a criticism of Cisco's stewardship so much as an honest acknowledgment that any large platform going through an ownership transition creates a period where customers hedge their bets, evaluate alternatives in parallel, and want contractual and architectural flexibility they might not have wanted five years ago when Splunk's independent roadmap felt more predictable.
-            </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The fourth trigger, and the one growing fastest, is dissatisfaction with what happens after a detection fires. Splunk gives you an extraordinary engine for constructing an investigation. It does not construct that investigation for you. An analyst still must write the follow up searches, pull the related events, build the timeline, and decide whether what they are looking at is a real incident or noise. That is true whether your data lives in Splunk or in a cheaper competitor with the same dashboards and alerts philosophy. A lot of teams are realizing that the thing consuming their analyst hours was never the search bar, it was the manual detective work that starts the moment an alert fire.
-            </p>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;">
+
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <strong style="color: #09090b;">The most common trigger</strong> by a wide margin is ingestion economics. Splunk's traditional pricing models, whether metered by daily ingest volume or by computing under its newer workload-based pricing, scale with data volume in a way that punishes exactly the kind of telemetry modern infrastructure produces. A team running Kubernetes with verbose JSON logging, dense label sets, and a growing number of microservices can watch daily ingest volume climb in ways that have very little to do with genuine infrastructure growth and everything to do with how chatty modern instrumentation has become. The predictable response is rationing. And that is exactly what should worry every security leader reading this. Teams start dropping log sources and shortening retention windows just to control the bill. This is entirely backwards for a security function. The one log line you decided not to keep is inevitably the one you'll need for an investigation six months later.
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <strong style="color: #09090b;">The second trigger</strong> is the sheer operational and human cost of running Splunk well. The Search Processing Language, SPL, is powerful, genuinely more expressive than most alternatives once you have climbed the learning curve. But that learning curve is real, and it concentrates capability in a small number of specialists rather than spreading it across a team. When your one SPL expert is out sick, on vacation, or leaves for a new job, your SOC's actual investigative capacity drops with them. That is a key person risk that most teams do not price into their evaluation until it bites them.
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <strong style="color: #09090b;">The third trigger</strong> is renewal uncertainty tied to the Cisco acquisition. This is not a criticism of Cisco's stewardship so much as an honest acknowledgment that any large platform going through an ownership transition creates a period where customers hedge their bets, evaluate alternatives in parallel, and want contractual and architectural flexibility they might not have wanted five years ago when Splunk's independent roadmap felt more predictable.
+                </p>
+              </div>
+
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <strong style="color: #09090b;">The fourth trigger,</strong> and the one growing fastest, is dissatisfaction with what happens after a detection fires. Splunk gives you an extraordinary engine for constructing an investigation. It does not construct that investigation for you. An analyst still must write the follow up searches, pull the related events, build the timeline, and decide whether what they are looking at is a real incident or noise. That is true whether your data lives in Splunk or in a cheaper competitor with the same dashboards and alerts philosophy. A lot of teams are realizing that the thing consuming their analyst hours was never the search bar, it was the manual detective work that starts the moment an alert fire.
+                </p>
+              </div>
+
+            </div>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
               Different alternatives address different combinations of these four. Keep that in mind through the rest of this guide, because the honest answer to "which Splunk alternative is best" really is a function of which of these four is your actual, specific pain.
             </p>
