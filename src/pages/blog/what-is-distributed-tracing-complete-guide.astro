@@ -1,0 +1,522 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const ARTICLE_META = {
+  title: "What Is Distributed Tracing? A Complete Guide (2026)",
+  author: "The 24Observe Engineering Team",
+  date: "2026-09-16",
+  readTime: "23 min read",
+  category: "Monitoring & Observability",
+  description: "Distributed tracing explained in plain English. Learn what spans, trace IDs, and context propagation mean, why microservices broke traditional debugging, and how modern teams use tracing to find the one slow service out of fifty in seconds instead of hours.",
+  slug: "what-is-distributed-tracing-complete-guide",
+};
+
+const FEATURED_GUIDES = [
+  { title: "Best PagerDuty Alternatives in 2026", link: "/blog/best-pagerduty-alternatives-2026" },
+  { title: "What Is a SIEM? (2026 Guide)", link: "/blog/what-is-a-siem-complete-guide" },
+  { title: "What Is MTTR? (2026 Guide)", link: "/blog/what-is-mttr-how-to-measure-and-reduce" },
+  { title: "API Monitoring Complete Guide (2026)", link: "/blog/api-monitoring-complete-guide" },
+  { title: "What Is AI Observability? (2026 Guide)", link: "/blog/what-is-ai-observability-complete-guide" },
+  { title: "AI Agent Observability: How to Monitor", link: "/blog/ai-agent-observability-how-to-monitor" },
+  { title: "SIEM vs Observability: Differences & Convergence", link: "/blog/siem-vs-observability-differences-overlap-converging" },
+];
+
+const PLATFORM_SPECIALS = [
+  { title: "August 2026 Release Notes", link: "/blog#releases" },
+  { title: "June 2026 Release Notes", link: "/blog#releases" },
+  { title: "May 2026 (Phase 2 — Agent API)", link: "/blog#releases" },
+  { title: "AI Agent API & Open API", link: "/docs/api-for-agents" },
+  { title: "MCP Server Setup Guide", link: "/docs/mcp" },
+  { title: "Self-Host Air-Gapped Setup", link: "/self-host" },
+];
+
+const FAQS = [
+  {
+    q: "Is distributed tracing the same thing as logging?",
+    a: "No, though they work well together. A log is a record of a discrete event from one service's own point of view. A trace connects records across many services into a single timeline for one specific request, tracking how that request moved and how long it spent at each stop. Many mature setups embed the trace ID inside log lines specifically so the two can be correlated later."
+  },
+  {
+    q: "Do I need microservices before distributed tracing is worth adopting?",
+    a: "Mostly, yes, in the sense that its value scales directly with how many separate components a typical request touches. A single monolithic application running on one server gets comparatively little extra value from tracing, since a stack trace and solid logging already cover most of the same ground. The moment a request starts crossing network boundaries into two or more independently deployed components, tracing starts paying for itself quickly."
+  },
+  {
+    q: "What is a trace waterfall or flame graph, exactly?",
+    a: "It is simply a visual representation of a trace's spans, laid out along a timeline, with each span shown as a horizontal bar whose width represents its duration, and bars nested underneath their parent span to show the call hierarchy. It is designed to be read immediately: the widest bar is almost always where the time went."
+  },
+  {
+    q: "Does distributed tracing add meaningful performance overhead?",
+    a: "Well implemented tracing adds a small, generally negligible overhead per request, mostly the cost of generating span data and exporting it asynchronously in the background rather than blocking the actual request. Poorly implemented tracing, particularly synchronous exports that block the request path, or excessive unsampled trace volume, can absolutely become a real performance problem, which is exactly why sampling and asynchronous export through something like an OpenTelemetry Collector matter."
+  },
+  {
+    q: "What is the difference between OpenTelemetry, OpenTracing, and OpenCensus?",
+    a: "OpenTracing and OpenCensus were two separate, competing earlier efforts at standardizing telemetry instrumentation. They merged in 2019 into OpenTelemetry, which is now the single actively maintained standard. If you encounter references to OpenTracing or OpenCensus in older documentation or legacy code, treat them as predecessors that have been superseded; new instrumentation work should be built on OpenTelemetry."
+  },
+  {
+    q: "How long should I retain trace data?",
+    a: "This depends heavily on your use case and budget, but most teams retain full trace detail for a relatively short window, often somewhere between one and four weeks, since traces are primarily useful for active incident investigation and recent performance analysis rather than long term historical trend analysis, which metrics handle far more efficiently at a fraction of the storage cost."
+  },
+  {
+    q: "Can distributed tracing help with security investigations, not just performance?",
+    a: "Increasingly, yes. A trace showing exactly which services a particular request touched, in what order, and with what parameters, can be genuinely useful evidence during a security investigation, particularly for understanding the blast radius of a compromised credential or an unusual internal service call. This is part of why modern platforms increasingly treat operational tracing and SIEM security detection as feeding into the same underlying investigation rather than living in entirely separate tools."
+  },
+  {
+    q: "Do I need a dedicated tracing backend, or can I get away with just logs and metrics?",
+    a: "You can go a fairly long way with well correlated logs and metrics, particularly on smaller systems, but the moment you find yourself repeatedly manually reconstructing a request's path across multiple services by cross referencing timestamps, that manual work is precisely what a proper trace automates for you, and at that point the investment starts paying for itself very quickly."
+  },
+];
+---
+
+<Base
+  activeNav="blog"
+  title={ARTICLE_META.title}
+  description={ARTICLE_META.description}
+>
+  <main style="max-width: 100%; padding: 16px clamp(24px, 3.5vw, 64px);">
+
+    {/* DESKTOP 3-COLUMN LAYOUT */}
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+
+      {/* LEFT SIDEBAR */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            FEATURED GUIDES
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {FEATURED_GUIDES.map((g) => (
+            <a
+              href={g.link}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              class="sidebar-nav-item"
+            >
+              {g.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Guides →
+        </a>
+      </aside>
+
+      {/* CENTER MAIN ARTICLE */}
+      <main style="flex: 1; min-width: 0;">
+        <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            <span>{ARTICLE_META.category}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.date}</span>
+            <span>•</span>
+            <span>{ARTICLE_META.readTime}</span>
+          </div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+            {ARTICLE_META.title}
+          </h1>
+          <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
+            {ARTICLE_META.description}
+          </p>
+        </header>
+
+        {/* TL;DR BOX */}
+        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
+            Distributed tracing is how you follow a single request as it hops across every service, database, queue, and third-party API it touches on its way through a modern application, so that when something is slow or broken, you can see exactly which one of those dozens of hops caused it. It works by attaching a unique trace ID to a request the moment it enters your system, then stamping every step along the way (called a span) with that same ID, timing information, and a parent child relationship to the step before it. Stitch all those spans back together and you get a visual map of the request's entire journey, often called a waterfall or a flame graph. Without it, engineers are left guessing which of fifty microservices is the bottleneck. With it, that same question gets answered in seconds. Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> ingest OpenTelemetry traces natively and pair them with an AI analyst that reads the trace for you and hands you a verdict instead of a wall of spans to squint at.
+          </p>
+        </section>
+
+        {/* KEY TAKEAWAYS */}
+        <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">Key Takeaways</h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #2A680D; font-weight: 800;">Distributed tracing follows one request across many services.</strong> Instead of separate logs from ten different systems, a trace gives you a single connected timeline showing exactly where a request spent its time.</div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #2A680D; font-weight: 800;">Spans and trace IDs are the core building blocks.</strong> Every operation gets a span; every span in the same request shares a trace ID; parent and child relationships show you the call hierarchy.</div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #2A680D; font-weight: 800;">Sampling decisions matter more than most teams realize.</strong> Capturing every single trace at scale is expensive and often unnecessary. Tail based sampling that keeps the interesting traces (errors, slow requests) is usually the smarter approach.</div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #2A680D; font-weight: 800;">OpenTelemetry is the standard, and it is worth adopting early.</strong> It decouples your instrumentation from any single vendor, so you are never locked into one tracing backend.</div>
+            </li>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
+              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #2A680D; font-weight: 800;">Raw traces still need a human (or an AI) to read them.</strong> A trace tells you where time went. Platforms like 24Observe connect that trace to logs, metrics, deploys, and ownership so the investigation is already halfway done by the time you open the incident.</div>
+            </li>
+          </ul>
+        </section>
+
+        {/* MAIN BODY */}
+        <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+
+          <section id="intro-scenario" style="margin-bottom: 36px; width: 100%;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here is a scene that plays out in engineering teams every single week. A customer opens a support ticket: "checkout is taking forever." Your monitoring dashboard shows everything green. CPU is fine. Memory is fine. The health check is passing. You refresh the dashboard a few times, half hoping the problem will just resolve itself, and it does not.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              So, you start digging the old way. You open the API gateway logs and search for the customer's request. You find it, eventually, buried under thousands of other lines, and it tells you the request took eight seconds, which you already knew. It does not tell you why. You open the logs for the inventory service. Nothing obviously wrong there either. You check the payment service logs. Also fine, mostly. You open a fourth tab for the shipping calculator, a fifth for the tax service, a sixth for the fraud detection microservice that someone added eighteen months ago, and everyone has quietly forgotten still exists.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Forty-five minutes later, after manually lining up timestamps across six browser tabs like you are assembling a jigsaw puzzle with half the pieces missing, you finally notice it. The fraud detection service made a call to an external identity verification API, and that external API has been responding in six to seven seconds instead of its usual two hundred milliseconds. Nobody built an alert for that specific dependency because nobody thought to. It was never the slow part before.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is exactly the kind of problem distributed tracing exists to solve, and it solves it in a genuinely different way than logs or metrics ever could. Instead of you manually reconstructing a request's path across six services by eye, a trace already has that path recorded, timed, and connected the moment the request finishes. What took you forty-five minutes of tab switching becomes a fifteen second glance at a single visual timeline that points directly at the slow span.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This guide walks through what distributed tracing is, how it works under the hood, why it became necessary in the first place, and what separates a team that finds its bottleneck in minutes from one still opening browser tabs at midnight.
+            </p>
+          </section>
+
+          <section id="what-is-distributed-tracing" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">So, What Is Distributed Tracing, Exactly?</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Distributed tracing is the practice of tracking a single request as it travels through every component of a distributed system, recording how long it spent at each stop and how those stops relate to each other, so that the entire journey can be reconstructed afterward as one connected timeline.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The word "distributed" is doing real work in that definition. If your entire application runs as one process on one server, you do not really need distributed tracing. A stack trace and a decent logging setup will usually get you where you need to go, because there is nowhere else for the request to hide. The moment your application splits into multiple services, running on multiple machines, communicating over the network, that stops being true. A single user action, like clicking "place order," might touch an API gateway, an authentication service, an inventory service, a pricing engine, a payments processor, a tax calculation service, a fulfillment queue, and a notification service, all before the user sees a confirmation screen. Each of those services almost certainly has its own logs. None of those logs, on their own, know anything about the other five.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Distributed tracing solves that by giving the request itself an identity that survives the entire trip. The instant a request enters your system, it gets assigned a unique trace identifier. That identifier gets passed along with the request to every single service it touches, the same way a tracking number follows a package through every sorting facility and delivery truck between a warehouse and your front door. Each service, as it does its work, records a span: a time-stamped record of what it did, how long it took, and whether it succeeded or failed, all tagged with that same trace identifier. When the request finally completes, you can pull every span that shares that trace identifier and lay them out in order, and you get a complete, accurate picture of exactly where that request spent every millisecond of its life.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That picture usually gets displayed as a waterfall chart or a flame graph. Reading one is intuitive almost immediately: wider bars mean more time spent, and bars stacked underneath a parent bar mean that operation was called by the one above it. If checkout took eight seconds and one single bar in the middle of the waterfall takes up six of those eight seconds, you have found your problem before you have even finished your coffee.
+            </p>
+          </section>
+
+          <section id="history" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">A Quick History: Why This Became Necessary</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Distributed tracing is not a brand-new idea. It was popularized publicly by Google in a 2010 research paper describing an internal system called Dapper, built to solve exactly the problem described above at a scale most companies will never approach: tens of thousands of requests flowing through thousands of internal services every second, with engineers needing to understand latency across all of it.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The core ideas from Dapper, low overhead instrumentation, sampling to control cost, and a trace identifier propagated through every hop, became the blueprint that the rest of the industry eventually followed. Twitter built Zipkin as an open-source implementation of similar ideas not long after. Uber built Jaeger for the same reasons a few years later, as its own architecture exploded from a handful of services into thousands. For a while, tracing tooling fragmented across competing standards: OpenTracing focused on the instrumentation API, OpenCensus focused on collection and export, and different vendors pushed their own proprietary agents that locked you into their platform the moment you adopted them.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              In 2019, OpenTracing and OpenCensus merged into a single project called OpenTelemetry, now governed under the Cloud Native Computing Foundation, the same organization that oversees Kubernetes. OpenTelemetry became the vendor neutral standard for generating, collecting, and exporting logs, metrics, and traces, and it is now the default expectation for how any serious platform should ingest telemetry. If you are instrumenting a system for tracing today and you are not building on OpenTelemetry, you are almost certainly making your future self's life harder for no real benefit.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The reason all of this happened when it did is not a coincidence. It tracks almost exactly with the industry's shift from monolithic applications toward microservices, containers, and later serverless functions. A monolith fails in predictable, contained ways. A system made of fifty independently deployed services, each owned by a different team, each capable of failing or slowing down independently, fails in the connections between those services, and those connections are precisely what traditional per service logging was never built to show you.
+            </p>
+          </section>
+
+          <section id="how-it-works" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">How Distributed Tracing Actually Works Under the Hood</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 24px;">
+              It helps to break this down into its actual building blocks, because once you understand these four or five concepts, the entire rest of the topic becomes much easier to reason about.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Spans: The Basic Unit of Work</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  A span represents a single unit of work within a trace. It could be an entire HTTP request handled by a service, a single database query, a call to a third-party API, or a specific function that someone decided was worth measuring individually. Every span records at minimum a name describing what operation it represents, a start time and an end time (so duration can be calculated), a status indicating success or failure, and a set of key value attributes giving extra context, like which customer ID the request belonged to, which HTTP route was hit, or which database table was queried.
+                </p>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Trace ID: What Ties Everything Together</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  Every span belonging to the same end to end request shares a single trace identifier. This is the thread that lets a tracing backend later pull together every span from every service that touched a particular request and reassemble them into one coherent timeline, even though those spans were generated independently, on different machines, possibly milliseconds or seconds apart, by services that have no direct knowledge of each other.
+                </p>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Span ID and Parent Span ID: The Family Tree</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  Each individual span also gets its own unique span identifier, separate from the trace identifier. Alongside that, most spans (except the very first one in a trace) carry a parent span identifier, pointing to whichever span called it. This is what lets a tracing tool reconstruct not just a flat list of everything that happened, but the actual hierarchy: which operation called which other operation, and in what order. This parent and child structure is exactly what produces that intuitive waterfall visualization, with nested bars showing exactly how deep the call stack went for any given request.
+                </p>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Context Propagation: How the Trace Survives the Network</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  For a trace to work, the trace identifier, the current span identifier, and a handful of other pieces of metadata need to travel with the request itself as it moves from one service to the next, usually carried inside HTTP headers. The industry has largely standardized on the W3C Trace Context specification for this, which defines a <code>traceparent</code> header containing the trace ID, the parent span ID, and some flags. When service A calls service B, it attaches this header to the outgoing request. Service B reads that header, sees it belongs to an existing trace, creates its own span as a child of the span referenced in that header, and if it in turn calls service C, it passes an updated version of that same header along.
+                </p>
+              </div>
+            </div>
+
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This works cleanly for straightforward synchronous HTTP calls. It gets genuinely difficult the moment your architecture includes anything asynchronous: a message dropped onto a queue that gets picked up by a worker seconds or minutes later, an event published to a stream that fans out to several independent consumers, or a batch job that processes a thousand records that originated from a thousand separate requests. In all of those cases, there is no simple synchronous HTTP call to attach a header to, so the trace context has to be deliberately embedded into the message payload or the event metadata itself, and the consumer has to know to extract it and continue the trace rather than starting a fresh, disconnected one.
+            </p>
+          </section>
+
+          <section id="baggage" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Baggage: Passing Extra Context Along for the Ride</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Separately from the core trace identifiers, tracing systems also support what is usually called baggage: arbitrary key value data that travels alongside the trace context through every hop, available to any service downstream, regardless of whether that service specifically knows what to do with it. This gets used for things like propagating a customer tier, a feature flag value, or an internal debugging flag all the way through a request's journey, so that any service along the way can make decisions or add richer span attributes based on it, without every service needing a direct integration with every other service that might care about that value.
+            </p>
+          </section>
+
+          <section id="tracing-vs-logs-metrics" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Distributed Tracing vs Logs vs Metrics: Where Each One Actually Helps</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is worth being precise about how tracing relates to the other two pillars of observability, because they genuinely answer different questions, and confusing them leads teams to expect one tool to do a job it was never designed for.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Logs</strong> are timestamped records of discrete events, rich with detail but siloed by default. A log line from your payment service knows everything about what happened inside the payment service and nothing at all about the eleven other services involved in the same customer request unless you go out of your way to correlate them, usually using, appropriately enough, a trace identifier embedded in the log line itself.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Metrics</strong> are numeric measurements aggregated over time: request rate, error rate, average latency, queue depth. They are efficient to store and superb at showing you a trend, like "p99 latency has climbed steadily for the last three hours." What they cannot do is tell you which individual request was slow or why, because the aggregation that makes them efficient also erases the per request detail.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Tracing</strong> sits in a different spot entirely. It answers a question neither logs nor metrics were built to answer well on their own: out of everywhere this specific request went, which single hop consumed the time? A metric can tell you that average checkout latency spiked at 3:41 PM. A trace from one of the affected requests can tell you it spiked because the fraud detection service's call to an external identity API took six seconds instead of its usual two hundred milliseconds. Those three pillars genuinely complement each other rather than compete: metrics tell you something is wrong and roughly when, traces tell you where in the request's journey the problem lives, and logs tell you the specific error message or detail once you already know which service and which span to look at.
+            </p>
+          </section>
+
+          <section id="real-benefits" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Why Distributed Tracing Actually Matters: The Real Benefits</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Finding the Actual Bottleneck, Not a Guess at One</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">This is the headline benefit, and the reason tracing exists in the first place. In a system with dozens of services, "something is slow" is close to useless information on its own. A trace turns that vague statement into a specific, actionable one: this exact span, on this exact service, took this exact number of milliseconds, and here is everything that was happening around it.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Understanding Your Actual Dependency Graph</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Most engineering teams, if you ask them to draw their system's dependency graph from memory, will draw something that is somewhat wrong, usually because it reflects how the system was designed two years ago rather than how it actually behaves today. Traces do not lie about this the way memory does. Aggregate enough traces over time and you get an accurate, living service map showing exactly which services call which other services, how often, and how that traffic is distributed.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Root Cause Analysis That Does Not Require Six Open Tabs</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Once a request's entire journey exists as one connected object instead of six disconnected log streams, root cause analysis stops being an exercise in manual timestamp correlation and becomes something closer to reading a story from start to finish. You are not guessing which service to check next. The trace already shows you.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Catching Problems That Live in the Gaps Between Services</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">A huge share of real production incidents does not live inside any single service's code; they live in the interaction between services. A retry storm where service A's timeout is shorter than service B's actual response time is essentially invisible if you are only looking at each service's individual dashboards. It becomes obvious the moment you look at a trace and see the retry pattern laid out visually.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Making Performance Work Genuinely Data Driven</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Engineering teams love debating where to spend optimization effort, and that debate is often driven by intuition rather than evidence. Aggregated trace data removes the guesswork by showing, concretely and with real numbers, which operations consistently eat the most time across thousands of real requests, so optimization effort goes exactly where it will matter.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="sampling" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Sampling: The Decision That Quietly Shapes Your Entire Tracing Strategy</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Here is something most introductory explanations of tracing skip over entirely, and it turns out to be one of the most consequential decisions any team makes when adopting it: you almost certainly should not, and often practically cannot, capture and store a full trace for every single request your system handles.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              At any meaningful scale, tracing every request generates an enormous volume of data, most of which represents perfectly boring, successful, fast requests that nobody will ever need to look at. This is where sampling comes in, and there are two fundamentally different approaches, each with real tradeoffs.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;">
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Head-Based Sampling</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Makes the decision to keep or discard a trace right at the start, the moment the very first span is created, usually based on a simple probability. It is cheap and simple to implement, and it works fine if all you care about is getting a statistically representative sample of overall system behavior. Its obvious weakness is that it has no idea whether this request is going to turn out to be interesting. It might discard the one trace that failed or ran unusually slow, purely because the coin flip went the wrong way at the start.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #2A680D; font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0;">Tail-Based Sampling</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Waits until the entire request has finished, looks at what actually happened across every span, and then decides whether to keep the trace based on that full picture: keep it if any span reported an error, keep it if the total duration exceeded some threshold, keep it if it touched a particularly important customer or endpoint, and otherwise discard it. This is unambiguously more useful, because it biases your stored data toward exactly the traces you would want to look at during an investigation. The tradeoff is infrastructure complexity since it requires holding every span in memory somewhere until the whole trace completes.</p>
+              </div>
+            </div>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Most mature setups end up landing on a hybrid: a modest head-based sample rate to keep a representative baseline of normal traffic for trend analysis, combined with tail-based rules that guarantee anything involving an error, an unusually long duration, or a specifically flagged important customer or endpoint gets kept regardless of the random sampling decision.
+            </p>
+          </section>
+
+          <section id="implementing" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Implementing Distributed Tracing: Where to Start</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Instrument with OpenTelemetry, not a proprietary agent.</strong> If you are starting from scratch today, there is very little reason to reach for anything other than OpenTelemetry. It provides SDKs across essentially every major language and an export format that any modern observability backend can ingest, meaning you are never locked into a single vendor's proprietary collection format.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Start with automatic instrumentation, then add manual spans where they matter.</strong> Most OpenTelemetry language SDKs ship auto instrumentation packages that can automatically wrap your HTTP framework, your database client, and other common libraries with essentially zero code changes. From there, add manual spans deliberately around the specific pieces of business logic that matter most to your team.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Get context propagation right across every boundary in your system.</strong> Walk through every place a request crosses a boundary in your architecture and confirm the trace context is being correctly injected on the way out and correctly extracted on the way back in at every single one of them. This is the single highest leverage thing to get right early.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Add meaningful attributes, not just timing.</strong> A span enriched with attributes like the customer ID, the specific route or query involved, the response status, and any relevant feature flags becomes dramatically more useful during an actual investigation, because it lets you filter and search traces by exactly the dimensions that matter for a given incident.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">5</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Send everything through an OpenTelemetry Collector.</strong> Rather than having every single service export directly to your chosen backend, route everything through a Collector first. This single architectural decision saves an enormous amount of future pain if you ever need to change backends, adjust sampling policy, or add a redaction rule.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">6</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">Feed traces into a platform that connects them to everything else.</strong> Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> natively ingest OpenTelemetry tracing data and connect it directly to log management, metrics, and an underlying context graph mapping how your services, hosts, and identities relate to each other, so a slow span in a trace can be immediately linked to the deploy that happened four minutes earlier.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="propagation-challenges" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Context Propagation Challenges You Will Actually Run Into</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              It is worth calling out a handful of specific situations where context propagation commonly breaks, because these are exactly the gaps that quietly undermine confidence in a tracing setup months after it was first rolled out.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Queue based and event driven architectures</strong> are the most common culprit. Whenever a request's continuation depends on a message sitting in a queue for an unknown amount of time before a worker picks it up, the trace context has to be explicitly carried inside that message rather than relying on an HTTP header, and it is extremely easy for a team to instrument the synchronous parts of their system thoroughly while completely missing this asynchronous handoff.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Serverless functions</strong> introduce their own wrinkle, since cold starts, short lived execution environments, and platform specific invocation models do not always play nicely with libraries designed with long running processes in mind, and propagating context correctly through function chains often requires platform specific handling.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Third party APIs you do not control</strong> are an unavoidable dead end for propagation. You can send a trace context header to an external payment processor, but you have no guarantee it respects it or returns anything useful back, so the best you can typically do is create a span around the outbound call itself, timing how long that external dependency took.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              <strong>Batch and background jobs</strong> that process many independent records in a single run raise a genuinely tricky design question: should the entire batch job be one trace, or should each individual record retain its own original trace? There is no universally correct answer; it depends entirely on what question you are more likely to need to answer later, and it is worth deciding deliberately rather than letting it happen by accident.
+            </p>
+          </section>
+
+          <section id="ai-agents" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Distributed Tracing for AI Agents: A Genuinely New Wrinkle</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Distributed tracing was designed around the assumption that a request's path through a system is largely deterministic: service A calls service B calls service C, in a predictable order defined by code. AI agents break that assumption in a meaningful way. An agent might decide, at runtime, based on a model's output, to call one tool, then reconsider and call a different one, then loop back and call the first tool again with different parameters, then call a completely different agent to help with a sub task. The shape of the trace is not fixed in advance the way it is for a traditional microservice call chain; it is decided dynamically by the model itself, request by request.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is exactly why OpenTelemetry has introduced GenAI specific semantic conventions, extending the standard span and attribute model to capture things that matter specifically for AI workloads: which model was called, how many input and output tokens were consumed, what the estimated cost of that call was, which tools were invoked and with what parameters, and how many reasoning or tool calling loops occurred before the agent produced a final answer.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              For teams building anything with AI agents in production, this is not an optional nice to have. An agent quietly stuck in a reasoning loop can burn through a token budget in minutes without ever throwing a traditional error or spiking CPU usage, and a traditional tracing setup built purely around HTTP latency will completely miss it. Platforms building for this world, including 24Observe's approach to AI agent observability, extend the same tracing foundation to surface these agent specific failure modes directly alongside standard application traces.
+            </p>
+          </section>
+
+          <section id="common-mistakes" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Common Mistakes Teams Make with Distributed Tracing</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Treating instrumentation as a one-time project</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Tracing coverage decays quietly as new services get added, existing ones get refactored, and nobody remembers to wire up the new queue consumer or the new internal API the way the original services were implemented. Six months later, half the system has beautiful traces, and the other half is a silent black hole.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Sampling everything or nothing, rather than sampling deliberately</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Capturing one hundred percent of traces at real production scale is often unnecessary and expensive. Capturing almost nothing means the one trace you desperately need during an incident was never kept. Thoughtful sampling, biased toward errors and outliers, avoids both failure modes.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Missing context propagation at asynchronous boundaries</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">This is consistently the single most common gap, and it is often invisible until the exact incident where it would have mattered most.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Inconsistent naming and attribute conventions across services</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">If one team's spans are named <code>checkout.process</code> and another team's equivalent operation is named <code>handle_order</code>, searching and filtering across an entire system's traces becomes needlessly painful. Agreeing on shared naming conventions early, ideally aligned with OpenTelemetry's own semantic conventions, pays off enormously later.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">5. Generating traces nobody looks at</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Instrumentation without the habit of using traces during incident response and during regular performance reviews is wasted effort. The value of tracing only shows up once looking at a trace becomes a genuine reflex during an investigation, rather than an afterthought reached for only occasionally.</p>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">6. Forgetting that traces alone still require correlation work</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">A trace tells you where time went in a single request. It does not, on its own, tell you that this specific slow span correlates with a deploy that happened four minutes earlier, or that the same slow dependency is also affecting eleven other unrelated services right now. That correlation still needs to happen somewhere, either manually or through a platform built to do it automatically.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="real-incident" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">What Genuinely Good Tracing Looks Like During a Real Incident</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Picture the same checkout latency scenario from the very beginning of this guide, but this time with proper distributed tracing in place, connected to a platform that uses it.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              An alert fires: checkout latency has exceeded its normal threshold. Instead of opening six browser tabs, the on-call engineer opens the incident and immediately sees a handful of representative traces from the affected time window, already flagged because tail-based sampling correctly identified them as slow. The waterfall for one of them shows, unmistakably, one wide bar taking up most of the total duration: a call from the fraud detection service out to an external identity verification API. The span's attributes confirm it: a normal two hundred millisecond call that, for this request, took six point one seconds.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              Because the platform connects that trace to everything else it already knows, it also surfaces that this same slow dependency shows up across several other traces from the same time window, all pointing at the identical external service, ruling out a one-off fluke and confirming a genuine upstream degradation. The engineer spends two minutes reading a clear, evidence backed picture instead of forty-five minutes manually cross-referencing browser tabs.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              That is the actual, practical payoff of distributed tracing done properly: not a nicer looking dashboard, but a genuinely faster path from "something is wrong" to "here is exactly why."
+            </p>
+          </section>
+
+          <section id="for-different-teams" style="margin-bottom: 36px; width: 100%;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Distributed Tracing for Different Kinds of Teams</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">For a small, early-stage team:</strong> you likely do not have the luxury of a dedicated observability engineer, and that is fine. Adopting OpenTelemetry from day one, even with just auto instrumentation and no custom spans yet, sets you up so that tracing exists and is usable the moment you need it.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">For a growing engineering organization with many independently owned services:</strong> the priority shifts toward consistency. Shared naming conventions, a shared sampling policy, and shared collector configuration prevent tracing from becoming a patchwork of inconsistently instrumented services that only partially connect to each other.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">For a platform team supporting many internal customers:</strong> tracing becomes the shared language that lets different teams debug across ownership boundaries without needing deep familiarity with each other's internal code.</p>
+              </div>
+              <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;"><strong style="color: #09090b;">For teams shipping AI agents:</strong> tracing needs to extend beyond standard HTTP and database spans to capture model calls, token usage, and tool invocation chains, ideally living in the exact same telemetry pipeline as the rest of the system rather than a separate, disconnected tool.</p>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        {/* FAQ SECTION */}
+        <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            {FAQS.map((faq) => (
+              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #09090b; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                  <span>{faq.q}</span>
+                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
+                </summary>
+                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* WRAPPING UP */}
+        <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping It Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+            Distributed tracing solves a genuinely specific, genuinely painful problem: in a world where a single user action can ripple across dozens of independently deployed services, "something is slow" used to mean forty-five minutes of manual detective work across a dozen browser tabs. A trace turns that same question into a single connected timeline that points directly at the culprit, whether that culprit is a slow database query, a misbehaving third party dependency, or an AI agent quietly stuck in a reasoning loop.
+          </p>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+            Getting there requires a handful of concrete pieces done correctly: consistent instrumentation built on OpenTelemetry, reliable context propagation across every boundary in your system including the tricky asynchronous ones, sampling that is deliberate rather than accidental, and ultimately a platform that connects those traces to everything else you already know about your system, so the investigation does not still depend on a human manually stitching five tools together at two in the morning. That last part is exactly what 24Observe was built for.
+          </p>
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+              Start free with 24Observe →
+            </a>
+          </div>
+        </section>
+
+      </main>
+
+      {/* RIGHT SIDEBAR */}
+      <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+            PLATFORM SPECIAL
+          </span>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 3px;">
+          {PLATFORM_SPECIALS.map((s) => (
+            <a
+              href={s.link}
+              style="padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"
+              class="sidebar-nav-item"
+            >
+              {s.title}
+            </a>
+          ))}
+        </nav>
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+          View All Specials →
+        </a>
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+            AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
+          </p>
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+            Start free trial →
+          </a>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</Base>
