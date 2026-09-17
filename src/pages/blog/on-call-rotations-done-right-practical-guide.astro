@@ -330,10 +330,16 @@ const FAQS = [
           <section id="runbooks-documentation" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #09090b;">Documentation, Runbooks, and Why Tribal Knowledge Fails Under Pressure</h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              Every engineering team has at least one person who is the unofficial answer to "what do we do when this specific thing breaks." This works fine right up until that person is on vacation, asleep, or has left the company.
+              Every engineering team has at least one person who is the unofficial answer to "what do we do when this specific thing breaks." Usually, it's whoever built the system originally, or whoever has been on the team the longest. This works fine right up until that person is on vacation, asleep, or has left the company, at which point the entire on-call rotation is only as strong as whoever happens to be holding the pager that week, and their individual memory of a system they may not have built.
             </p>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The best runbooks are written in plain, direct language, contain the exact commands or dashboard links needed to investigate, and are linked directly inside the alert payload. Crucially, runbook maintenance must be part of every postmortem process so documentation stays fresh.
+              Runbooks exist to solve exactly this problem, and good ones are worth the investment many times over. A runbook for a specific, recurring failure mode should be specific enough that someone unfamiliar with the deep internals of a system could still follow it under pressure at 3 a.m. and reach a resolution, or at least a safe mitigation, without needing to wake up the one person who "really understands this part."
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The best runbooks share a few qualities. They're written in plain, direct language, not clever or terse, because a stressed, half-asleep engineer at 3 a.m. does not benefit from cleverness. They include the actual commands or exact steps to run, not vague descriptions like "check the database," but the specific query, the specific dashboard link, the specific service to restart. They're kept close to where the alert fires, ideally linked directly from the alert itself, because an engineer who must go searching through a wiki for the right document during an active incident has already lost several precious minutes.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              And critically, they get updated. A runbook that was accurate two architecture changes ago is worse than no runbook at all, because it gives false confidence and can send someone down entirely the wrong path during a live incident. Building a habit of updating the relevant runbook as part of every incident's postmortem, rather than treating runbook maintenance as a separate, always deprioritized task, is one of the simplest structural changes a team can make.
             </p>
           </section>
 
@@ -341,7 +347,13 @@ const FAQS = [
           <section id="handoffs" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #09090b;">Handoffs: The Underrated Moment Where Context Disappears</h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              The moment one on-call shift ends and another begins is deceptively risky. It's when accumulated context—flaky deploys, pending customer tickets, active investigations—either gets passed along cleanly or evaporates entirely. A good handoff should cover open issues, shift anomalies, and upcoming planned deploys.
+              The moment one on-call shift ends, and another begins is deceptively risky. It's when accumulated context, the thing that's currently a little flaky, the deploy that went out Tuesday and might still be settling, the customer who's been complaining about intermittent slowness that nobody's fully diagnosed yet, either gets passed along cleanly, or evaporates entirely.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A good handoff doesn't need to be elaborate, but it does need to be deliberate. At minimum, it should cover what's currently open or unresolved, anything unusual that happened during the outgoing engineer's shift even if it didn't become a full incident, and anything scheduled or expected during the incoming engineer's shift, like a planned deploy, a maintenance window, or a known risky change. Some teams do this as a short synchronous call; some do it as a written summary posted to a shared channel and either can work well if it happens consistently rather than being skipped whenever things feel quiet.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              The teams that skip handoffs entirely tend to justify it the same way every time: "nothing's really happening right now, so there's nothing to hand off." This is almost always a mistake, because the value of a handoff isn't really about transferring information when things are calm, it's about building the habit and the shared documentation trail so that when things aren't calm, the habit is already there and nobody has to invent a process under pressure.
             </p>
           </section>
 
@@ -349,10 +361,16 @@ const FAQS = [
           <section id="compensation-fairness" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #09090b;">Compensation and Fairness: The Conversation Teams Avoid</h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              Being on call is work, even in weeks when the pager stays silent. Treating on call purely as an unpaid, expected part of the job with no compensation or acknowledgment erodes team goodwill over time.
+              This is the part of on-call design that gets skipped most often, usually because it's uncomfortable, and it's also the part that determines, more than almost anything else, whether your best engineers stay or quietly start interviewing elsewhere.
             </p>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              High-performing teams utilize transparent compensation models: flat weekly stipends, per-incident after-hours pay, or built-in recovery time (such as guaranteed light workloads or a day off following a heavy rotation).
+              Being on call is work, even in the weeks when the pager stays silent. It restricts what a person can do with their evenings and weekends, it costs sleep quality even without an actual incident, and it carries a background stress that doesn't show up on any timesheet. Treating on call purely as an unpaid, expected part of the job, with no additional compensation and no acknowledgment of the cost, is a decision, even if nobody explicitly frames it that way, and it's a decision that tends to erode goodwill over time.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              There's no single correct model for compensating on-call time, and what's appropriate varies by company size, industry, and local labor norms, which is worth checking against local regulations since some jurisdictions have specific legal requirements around on-call pay. But the teams that handle this well tend to do at least one of a few things: a flat stipend for each week of primary on-call regardless of whether anything happens, additional per incident pay for actual pages responded to outside of normal hours, or built in recovery time, such as a guaranteed lighter workload or a day off the week following a particularly rough on-call stretch.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              What matters less than the exact model is that there is one that is transparent, and that it's applied consistently. A rotation where compensation feels arbitrary or where certain people quietly absorb more of the burden than others, often junior engineers or the ones least comfortable pushing back, is a rotation that will eventually produce resentment, even if nobody says anything about it directly for a long time.
             </p>
           </section>
 
@@ -360,10 +378,16 @@ const FAQS = [
           <section id="tooling-layer" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #09090b;">The Tooling Layer: Where On-Call Either Gets Easier or Gets Worse</h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              A weak setup scatters alerts across five disconnected monitoring tools, forcing an engineer at 3 a.m. to manually cross-reference timestamps across multiple browser tabs.
+              Everything discussed so far, the rotation model, the escalation policy, the alert discipline, the runbooks, the handoffs, gets implemented through software, and the quality of that software has an enormous effect on whether the process holds up under real pressure.
             </p>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              A strong setup collapses that entire process. Modern platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> unify uptime monitoring, log management, and on-call routing with an AI analyst that investigates incidents automatically—turning a 40-minute manual investigation into a 2-minute read with evidence-backed answers.
+              A weak setup looks like this: alerts scattered across five different monitoring tools, each with its own notification settings, none of them talking to each other, so a single underlying problem shows up as four separates, disconnected pages. The on-call engineer wakes up, checks tool one, sees nothing conclusive, checks tool two, starts cross-referencing timestamps by hand, and twenty minutes into an incident they still don't have a clear picture of what's wrong, only a growing pile of dashboards open in browser tabs.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              A strong setup collapses that entire process. Alerts from uptime checks, logs, and infrastructure metrics flow into a single place, correlated automatically so that related symptoms of the same underlying issue show up as one incident, not five. Escalation policies live in that same place, so a missed acknowledgment escalates automatically without anyone having to manually chase down a backup. And increasingly, the strongest setups now include something genuinely new: an AI layer that doesn't just surface the raw signals, but actually walks through them, forms a hypothesis about what's happening, and checks that hypothesis against the actual evidence before handing the on call engineer a cited, specific starting point instead of a pile of graphs to interpret alone.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              This is precisely the gap <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> is built to close. It combines uptime monitoring with multi region checks, log management for searching and correlating events, and an on-call and incident management layer with smart escalation, all feeding into an AI analyst that investigates incidents automatically rather than leaving a half asleep engineer to manually reconstruct what happened across four disconnected tools. The difference this makes in practice is not subtle. A well-correlated, AI assisted investigation can turn what used to be a forty-minute manual slog into a two-minute read, and when you're the one who must be coherent enough at 3 a.m. to act on what you find, that difference matters enormously.
             </p>
           </section>
 
@@ -371,7 +395,10 @@ const FAQS = [
           <section id="metrics" style="margin-bottom: 36px; width: 100%;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #09090b;">Metrics Worth Tracking, and Ones Worth Ignoring</h2>
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
-              Track <strong>Time to Acknowledge (TTA)</strong>, <strong>Incident Volume per Rotation Member</strong>, and the <strong>Signal-to-Noise Ratio</strong> of alerts. Avoid using these metrics as leaderboards or performance review criteria for individual engineers.
+              Once a rotation is up and running, it's worth measuring it, but it's easy to measure the wrong things or misinterpret the right ones. A few metrics are genuinely useful. Time to acknowledge tells you whether pages are reaching people and being noticed promptly, and a rising trend here is often an early warning sign of alert fatigue setting in before it becomes an obvious crisis. Incident volume per rotation member, tracked over time, tells you whether the burden is distributed fairly or whether certain people are quietly absorbing more than their share. And the ratio of pages that turned into real, actionable incidents versus pages that turned out to be noise is probably the single most important number for judging alert quality, because a low ratio here is a direct, measurable sign that your alerting needs tightening.
+            </p>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+              What's worth being cautious about is turning any of these into a leaderboard or a performance metric tied to individual engineers. The moment "how many incidents you resolved" becomes something that affects someone's performance review, you've created an incentive to either downplay real problems or, worse, to avoid escalating for help when it's genuinely needed, because asking for backup starts to feel like an admission of weakness rather than the correct call. These metrics exist to improve the system, not to rank the people operating inside it.
             </p>
           </section>
 
