@@ -169,8 +169,8 @@ const FAQS = [
             <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
               Before naming specific tools, it's worth being precise about why teams start this search—because the reason you're reading this dictate which alternative is right for you.
             </p>
-            <ol style="list-style: none; display: flex; flex-direction: column; gap: 16px; padding: 0; margin: 0 0 24px 0;">
-              <li style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <ol style="list-style: none; display: flex; flex-direction: column; gap: 20px; padding: 0; margin: 0 0 24px 0;">
+              <li style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="flex-shrink: 0; width: 32px; height: 32px; background: #2A680D; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem;">
                   1
                 </div>
@@ -178,7 +178,7 @@ const FAQS = [
                   <strong style="color: #2A680D;">The most common trigger is operational fragmentation.</strong> It's rarely one catastrophic failure. It's death by a thousand small ones: a Loki upgrade that breaks label parsing, a Tempo storage backend that needs re-tuning after a traffic spike, a Mimir cluster that needs its own dedicated on call rotation, all while the actual business problem you were trying to solve (understanding why the checkout service is slow) sits untouched because everyone's busy keeping the observability stack itself alive. Grafana isn't fragile exactly, but the ecosystem around it asks a lot of whoever owns it.
                 </div>
               </li>
-              <li style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+              <li style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="flex-shrink: 0; width: 32px; height: 32px; background: #2A680D; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem;">
                   2
                 </div>
@@ -186,7 +186,7 @@ const FAQS = [
                   <strong style="color: #2A680D;">The second most common trigger is the query language tax.</strong> PromQL, LogQL, and TraceQL are each reasonably learnable in isolation, but very few engineers are fluent in all three, and during an actual incident, that's exactly the wrong moment to be looking up syntax. Teams increasingly want to just write SQL, or increasingly, plain English, and get an answer that spans metrics, logs, and traces together instead of stitching results from three separate query panels by hand.
                 </div>
               </li>
-              <li style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+              <li style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="flex-shrink: 0; width: 32px; height: 32px; background: #2A680D; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem;">
                   3
                 </div>
@@ -194,7 +194,7 @@ const FAQS = [
                   <strong style="color: #2A680D;">The third is cardinality and cost at scale.</strong> Prometheus and Mimir were not built with unbounded label cardinality in mind, and a Kubernetes environment that labels everything by pod name, container ID, and request path can produce a metrics cardinality explosion that degrades query performance and inflates storage costs long before anyone notices it happening. Loki has a related but distinct pain point: it indexes labels, not full log content, which is efficient until your query patterns need to search inside log bodies at scale, at which point teams often find themselves fighting the tool rather than using it.
                 </div>
               </li>
-              <li style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+              <li style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="flex-shrink: 0; width: 32px; height: 32px; background: #2A680D; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem;">
                   4
                 </div>
@@ -202,7 +202,7 @@ const FAQS = [
                   <strong style="color: #2A680D;">The fourth is a new development worth naming plainly:</strong> Grafana Labs archived the open-source OnCall repository in March 2026, moving it into maintenance mode and steering incident response and on call scheduling toward the paid Grafana Cloud IRM product. For teams that had built their incident escalation workflow around the free, self-hosted version of OnCall, that's a real fork in the road: either follow Grafana into its paid incident response tier or go find a different tool for that specific job, on a timeline that wasn't entirely of their own choosing.
                 </div>
               </li>
-              <li style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 16px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+              <li style="display: flex; gap: 16px; align-items: flex-start;">
                 <div style="flex-shrink: 0; width: 32px; height: 32px; background: #2A680D; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem;">
                   5
                 </div>
