@@ -1,17 +1,24 @@
-/* 24Observe design tokens — ported from the Claude Design handoff bundle. */
+/* 24Observe design tokens — Ollagraph Crimson Rose & Slate palette. */
 
 :root {
-  --brand-green: #2A680D;
-  --brand-green-hover: #3B9112;
-  --brand-green-light: #f5faeb;
-  --brand-green-border: #cdebc2;
-  --brand-green-glow: rgba(42, 104, 13, 0.25);
+  --brand-blue: #E11D48;
+  --brand-blue-hover: #BE123C;
+  --brand-blue-light: #FFF1F2;
+  --brand-blue-border: #FECDD3;
+  --brand-blue-glow: rgba(225, 29, 72, 0.25);
 
-  --brand-red: #2A680D;
-  --brand-red-hover: #3B9112;
-  --brand-red-light: #f5faeb;
-  --brand-red-border: #cdebc2;
-  --brand-red-glow: rgba(42, 104, 13, 0.25);
+  --brand-green: #E11D48;
+  --brand-green-hover: #BE123C;
+  --brand-green-light: #FFF1F2;
+  --brand-green-border: #FECDD3;
+  --brand-green-glow: rgba(225, 29, 72, 0.25);
+
+  --brand-red: #E11D48;
+  --brand-red-hover: #BE123C;
+  --brand-red-light: #FFF1F2;
+  --brand-red-border: #FECDD3;
+  --brand-red-glow: rgba(225, 29, 72, 0.25);
+
   --text-main: #0f172a;
   --text-muted: #64748b;
   --text-sub: #475569;
@@ -21,15 +28,16 @@
   --bg-card: #FFFFFF;
   --border-color: #E2E8F0;
   --border-light: #F1F5F9;
-  --blue-badge-bg: #f5faeb;
-  --blue-badge-text: #3B9112;
-  --green-badge-bg: #f5faeb;
-  --green-badge-text: #3B9112;
+
+  --blue-badge-bg: #FFF1F2;
+  --blue-badge-text: #E11D48;
+  --green-badge-bg: #FFF1F2;
+  --green-badge-text: #E11D48;
 
   --bg: #FFFFFF;
   --bg-1: #FAFAFB;
-  --bg-2: #f5faeb;
-  --bg-3: #cdebc2;
+  --bg-2: #FFF1F2;
+  --bg-3: #FECDD3;
   --border: #E2E8F0;
   --line: #E2E8F0;
   --line-2: #CBD5E1;
@@ -37,17 +45,17 @@
   --ink-1: #1e293b;
   --ink-2: #475569;
   --ink-3: #64748b;
-  --accent: #2A680D;
-  --accent-hover: #3B9112;
-  --accent-dim: #f5faeb;
-  --accent-line: #cdebc2;
-  --purple: #2A680D;
+  --accent: #E11D48;
+  --accent-hover: #BE123C;
+  --accent-dim: #FFF1F2;
+  --accent-line: #FECDD3;
+  --purple: #E11D48;
   --amber: #D97706;
-  --blue: #2A680D;
-  --violet: #2A680D;
+  --blue: #E11D48;
+  --violet: #E11D48;
 
-  --font-main: "Lato", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "DM Mono", "Geist Mono", monospace;
+  --font-main: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --mono: var(--font-mono);
   --sans: var(--font-main);
 
@@ -65,8 +73,8 @@
 [data-theme="dark"] {
   --bg: #FFFFFF;
   --bg-1: #FAFAFB;
-  --bg-2: #f5faeb;
-  --bg-3: #cdebc2;
+  --bg-2: #FFF1F2;
+  --bg-3: #FECDD3;
   --bg-card: #FFFFFF;
   --border: #E2E8F0;
   --line: #E2E8F0;
@@ -75,15 +83,7 @@
   --ink-1: #334155;
   --ink-2: #64748B;
   --ink-3: #94A3B8;
-  --accent: #2A680D;
-  --accent-dim: #f5faeb;
-  --accent-line: #cdebc2;
-}
-
-[data-density="compact"] {
-  --pad: 20px;
-}
-
-[data-density="comfy"] {
-  --pad: 48px;
+  --accent: #E11D48;
+  --accent-dim: #FFF1F2;
+  --accent-line: #FECDD3;
 }
