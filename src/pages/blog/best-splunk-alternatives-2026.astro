@@ -75,7 +75,7 @@ const FAQS = [
       {/* LEFT SIDEBAR */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+          <span style="background: #000000; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             FEATURED GUIDES
           </span>
         </div>
@@ -83,14 +83,14 @@ const FAQS = [
           {FEATURED_GUIDES.map((g) => (
             <a
               href={g.link}
-              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #2A680D; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(59, 145, 18, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #000000; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(0, 0, 0, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
               class="sidebar-nav-item"
             >
               {g.title}
             </a>
           ))}
         </nav>
-        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #000000; text-decoration: none;">
           View All Guides →
         </a>
       </aside>
@@ -98,14 +98,14 @@ const FAQS = [
       {/* CENTER MAIN ARTICLE CONTENT */}
       <main style="flex: 1; min-width: 0;">
         <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
-          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #2A680D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             <span>{ARTICLE_META.category}</span>
             <span>•</span>
             <span>{ARTICLE_META.date}</span>
             <span>•</span>
             <span>{ARTICLE_META.readTime}</span>
           </div>
-          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #2A680D; width: 100%;">
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #000000; width: 100%;">
             {ARTICLE_META.title}
           </h1>
           <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
@@ -114,47 +114,47 @@ const FAQS = [
         </header>
 
         {/* TL;DR BOX */}
-        <section id="tldr" style="background: rgba(59, 145, 18, 0.15); border-left: 5px solid #2A680D; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: #2A680D; margin: 0 0 6px 0;">TL;DR</h3>
-          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
-            Almost nobody leaves Splunk because it stops working. They leave because the invoice grows faster than the infrastructure it is watching, because the Cisco acquisition left renewal conversations feeling uncertain, and because a platform that demands a specialist language query and a dedicated admin becomes a hiring problem long before it becomes a technical one. The right alternative depends entirely on what you use Splunk for. Elastic Stack or Graylog if you want open-source control and already have the operational muscle to run it. Microsoft Sentinel or Google Security Operations if you are cloud native and want a SIEM that plugs into an ecosystem you already pay for. Wazuh if budget is the whole story and you are willing to self-host. Sumo Logic, Exabeam, or IBM QRadar if you want a managed enterprise SIEM without Splunk's specific pricing math. And platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #2A680D; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> if what you want is not a cheaper search bar, but a SIEM that investigates the alert for you instead of handing you a query language and a blank canvas. There is no universal winner here. There is a best fit for whichever part of Splunk is hurting you.
+        <section id="tldr" style="background: rgba(0, 0, 0, 0.15); border-left: 5px solid #000000; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #000000; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #0f172a; margin: 0;">
+            Almost nobody leaves Splunk because it stops working. They leave because the invoice grows faster than the infrastructure it is watching, because the Cisco acquisition left renewal conversations feeling uncertain, and because a platform that demands a specialist language query and a dedicated admin becomes a hiring problem long before it becomes a technical one. The right alternative depends entirely on what you use Splunk for. Elastic Stack or Graylog if you want open-source control and already have the operational muscle to run it. Microsoft Sentinel or Google Security Operations if you are cloud native and want a SIEM that plugs into an ecosystem you already pay for. Wazuh if budget is the whole story and you are willing to self-host. Sumo Logic, Exabeam, or IBM QRadar if you want a managed enterprise SIEM without Splunk's specific pricing math. And platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #000000; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> if what you want is not a cheaper search bar, but a SIEM that investigates the alert for you instead of handing you a query language and a blank canvas. There is no universal winner here. There is a best fit for whichever part of Splunk is hurting you.
           </p>
         </section>
 
         {/* KEY TAKEAWAYS BOX */}
         <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h3 style="font-size: 1.3rem; font-weight: 800; color: #2A680D; margin: 0 0 16px 0;">
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #000000; margin: 0 0 16px 0;">
             Key Takeaways
           </h3>
           <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
               <div>
-                <strong style="color: #2A680D; font-weight: 800;">Splunk Alternatives Exist Because of Predictable Pain Points:</strong> Ingestion based pricing that punishes verbose modern log volumes, a steep SPL learning curve, the operational weight of running the platform, and renewal uncertainty following the Cisco acquisition are the four reasons teams start looking, and each reason points toward a different replacement.
+                <strong style="color: #000000; font-weight: 800;">Splunk Alternatives Exist Because of Predictable Pain Points:</strong> Ingestion based pricing that punishes verbose modern log volumes, a steep SPL learning curve, the operational weight of running the platform, and renewal uncertainty following the Cisco acquisition are the four reasons teams start looking, and each reason points toward a different replacement.
               </div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
               <div>
-                <strong style="color: #2A680D; font-weight: 800;">There Is No Single Best Splunk Competitor:</strong> Elastic Stack and Graylog serve open-source minded teams with the engineering time to self-host. Microsoft Sentinel and Google Security Operations fit teams already anchored to Azure or Google Cloud. Sumo Logic, Exabeam, and QRadar serve teams that want a managed enterprise SIEM without rebuilding from raw infrastructure.
+                <strong style="color: #000000; font-weight: 800;">There Is No Single Best Splunk Competitor:</strong> Elastic Stack and Graylog serve open-source minded teams with the engineering time to self-host. Microsoft Sentinel and Google Security Operations fit teams already anchored to Azure or Google Cloud. Sumo Logic, Exabeam, and QRadar serve teams that want a managed enterprise SIEM without rebuilding from raw infrastructure.
               </div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
               <div>
-                <strong style="color: #2A680D; font-weight: 800;">Open-Source Options Trade License Cost for Operational Labor:</strong> Wazuh, Graylog, and the Elastic Stack can eliminate licensing spend almost entirely, but somebody on your team has to run, scale, and tune them, and labor is a real cost even when the software itself is free.
+                <strong style="color: #000000; font-weight: 800;">Open-Source Options Trade License Cost for Operational Labor:</strong> Wazuh, Graylog, and the Elastic Stack can eliminate licensing spend almost entirely, but somebody on your team has to run, scale, and tune them, and labor is a real cost even when the software itself is free.
               </div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
               <div>
-                <strong style="color: #2A680D; font-weight: 800;">Cost Should Never Be the Only Criteria:</strong> A platform that is dramatically cheaper but cannot cover your actual detection surface, your compliance requirement, or your log volume ends up costing more in blind spots and workaround engineering than Splunk ever did in license fees.
+                <strong style="color: #000000; font-weight: 800;">Cost Should Never Be the Only Criteria:</strong> A platform that is dramatically cheaper but cannot cover your actual detection surface, your compliance requirement, or your log volume ends up costing more in blind spots and workaround engineering than Splunk ever did in license fees.
               </div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #2A680D; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
               <div>
-                <strong style="color: #2A680D; font-weight: 800;">The Best Alternative Investigates, It Does Not Just Detect:</strong> A growing number of platforms, 24Observe among them, are built around the idea that a SIEM's job should not stop at firing an alert. It should gather evidence, trace the blast radius, and hand an analyst a verdict instead of a search bar and a blinking cursor.
+                <strong style="color: #000000; font-weight: 800;">The Best Alternative Investigates, It Does Not Just Detect:</strong> A growing number of platforms, 24Observe among them, are built around the idea that a SIEM's job should not stop at firing an alert. It should gather evidence, trace the blast radius, and hand an analyst a verdict instead of a search bar and a blinking cursor.
               </div>
             </li>
           </ul>
@@ -164,317 +164,317 @@ const FAQS = [
         <div class="blog-main-content-box" style="padding: 10px 24px 18px 24px; background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
           
           <section id="best-splunk-alternatives-intro" style="margin-bottom: 36px; width: 100%;">
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               There is a specific moment that happens to almost every security and platform team that has run Splunk for more than a year or two. Someone pulls up the renewal quote, does the math against last year's ingestion volume, and asks the room a version of the same question: are we actually getting proportionally more value out of this platform as our data grows, or are we just paying more to keep the lights on?
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It is not really Splunk's fault, at least not entirely. Splunk earned its reputation honestly. It is one of the most capable search engines ever built for machine data, its query language can express almost any question an analyst can dream up, and its Enterprise Security app and the surrounding ecosystem of add ons represent more than a decade of accumulated security content that nothing else on the market fully replicates. Teams that have mastered Splunk can do genuinely remarkable things with it, correlating identity signals, network telemetry, and application logs into a single investigative surface that most competitors are still catching up to.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               But 2026 is a different market than the one Splunk grew up dominating. Log volumes have exploded with the shift to containerized, ephemeral, high cardinality infrastructure. The Cisco acquisition, which closed in 2024, has settled the ownership question but not fully settled the roadmap and pricing questions that renewal conversations keep circling back to. And a new generation of platforms, some open source, some cloud native, some built around AI driven investigation rather than raw search, have matured enough to make "just stick with what we know" feel less like the safe choice and more like the expensive one. This guide walks through the strongest Splunk alternatives available right now, honestly, including exactly where each one falls short, because a comparison that only lists strengths is not really a comparison. It is a sales page wearing a disguise.
             </p>
           </section>
 
           <section id="why-teams-leave" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">
               Why Teams Are Actually Leaving (It Is Rarely Just One Thing)
             </h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Before getting into specific platforms, it is worth being precise about the actual triggers, because the reason for your team is shopping shapes which alternative will solve your problem.
             </p>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;">
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
-                  <strong style="color: #09090b;">The most common trigger</strong> by a wide margin is ingestion economics. Splunk's traditional pricing models, whether metered by daily ingest volume or by computing under its newer workload-based pricing, scale with data volume in a way that punishes exactly the kind of telemetry modern infrastructure produces. A team running Kubernetes with verbose JSON logging, dense label sets, and a growing number of microservices can watch daily ingest volume climb in ways that have very little to do with genuine infrastructure growth and everything to do with how chatty modern instrumentation has become. The predictable response is rationing. And that is exactly what should worry every security leader reading this. Teams start dropping log sources and shortening retention windows just to control the bill. This is entirely backwards for a security function. The one log line you decided not to keep is inevitably the one you'll need for an investigation six months later.
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
+                  <strong style="color: #0f172a;">The most common trigger</strong> by a wide margin is ingestion economics. Splunk's traditional pricing models, whether metered by daily ingest volume or by computing under its newer workload-based pricing, scale with data volume in a way that punishes exactly the kind of telemetry modern infrastructure produces. A team running Kubernetes with verbose JSON logging, dense label sets, and a growing number of microservices can watch daily ingest volume climb in ways that have very little to do with genuine infrastructure growth and everything to do with how chatty modern instrumentation has become. The predictable response is rationing. And that is exactly what should worry every security leader reading this. Teams start dropping log sources and shortening retention windows just to control the bill. This is entirely backwards for a security function. The one log line you decided not to keep is inevitably the one you'll need for an investigation six months later.
                 </p>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
-                  <strong style="color: #09090b;">The second trigger</strong> is the sheer operational and human cost of running Splunk well. The Search Processing Language, SPL, is powerful, genuinely more expressive than most alternatives once you have climbed the learning curve. But that learning curve is real, and it concentrates capability in a small number of specialists rather than spreading it across a team. When your one SPL expert is out sick, on vacation, or leaves for a new job, your SOC's actual investigative capacity drops with them. That is a key person risk that most teams do not price into their evaluation until it bites them.
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
+                  <strong style="color: #0f172a;">The second trigger</strong> is the sheer operational and human cost of running Splunk well. The Search Processing Language, SPL, is powerful, genuinely more expressive than most alternatives once you have climbed the learning curve. But that learning curve is real, and it concentrates capability in a small number of specialists rather than spreading it across a team. When your one SPL expert is out sick, on vacation, or leaves for a new job, your SOC's actual investigative capacity drops with them. That is a key person risk that most teams do not price into their evaluation until it bites them.
                 </p>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
-                  <strong style="color: #09090b;">The third trigger</strong> is renewal uncertainty tied to the Cisco acquisition. This is not a criticism of Cisco's stewardship so much as an honest acknowledgment that any large platform going through an ownership transition creates a period where customers hedge their bets, evaluate alternatives in parallel, and want contractual and architectural flexibility they might not have wanted five years ago when Splunk's independent roadmap felt more predictable.
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
+                  <strong style="color: #0f172a;">The third trigger</strong> is renewal uncertainty tied to the Cisco acquisition. This is not a criticism of Cisco's stewardship so much as an honest acknowledgment that any large platform going through an ownership transition creates a period where customers hedge their bets, evaluate alternatives in parallel, and want contractual and architectural flexibility they might not have wanted five years ago when Splunk's independent roadmap felt more predictable.
                 </p>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #2A680D; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
-                  <strong style="color: #09090b;">The fourth trigger,</strong> and the one growing fastest, is dissatisfaction with what happens after a detection fires. Splunk gives you an extraordinary engine for constructing an investigation. It does not construct that investigation for you. An analyst still must write the follow up searches, pull the related events, build the timeline, and decide whether what they are looking at is a real incident or noise. That is true whether your data lives in Splunk or in a cheaper competitor with the same dashboards and alerts philosophy. A lot of teams are realizing that the thing consuming their analyst hours was never the search bar, it was the manual detective work that starts the moment an alert fire.
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
+                  <strong style="color: #0f172a;">The fourth trigger,</strong> and the one growing fastest, is dissatisfaction with what happens after a detection fires. Splunk gives you an extraordinary engine for constructing an investigation. It does not construct that investigation for you. An analyst still must write the follow up searches, pull the related events, build the timeline, and decide whether what they are looking at is a real incident or noise. That is true whether your data lives in Splunk or in a cheaper competitor with the same dashboards and alerts philosophy. A lot of teams are realizing that the thing consuming their analyst hours was never the search bar, it was the manual detective work that starts the moment an alert fire.
                 </p>
               </div>
 
             </div>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Different alternatives address different combinations of these four. Keep that in mind through the rest of this guide, because the honest answer to "which Splunk alternative is best" really is a function of which of these four is your actual, specific pain.
             </p>
           </section>
 
           <section id="true-cost" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">
               What Splunk Actually Costs You Beyond the License
             </h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It is worth spending a little more time here than most comparison articles do, because the sticker price on a Splunk quote is rarely where the real cost lives.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Ingestion volume</strong> is the obvious one, but it compounds in non-obvious ways. Whether you are on legacy ingest based pricing or the newer workload pricing model, cost tracks with the volume and complexity of what you send in. Teams that instrument aggressively with OpenTelemetry, or that run verbose application logging by default, often discover their actual ingest volume is meaningfully higher than what they budgeted for, because nobody explicitly signed off on every log line the instrumentation layer generates automatically.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Retention decisions</strong> become financial decisions, not just compliance decisions. Keeping twelve months of security relevant logs instead of ninety days sounds like an easy call from a pure security posture standpoint. It is a materially different number on the renewal quote, and that tension pushes some teams toward retention windows shorter than they would choose on security merits alone.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>The specialist labor cost</strong> rarely appears on the invoice but is very real. A Splunk administrator with genuine SPL fluency and platform tuning experience commands a real salary, and a team of any size running Splunk well typically needs at least one person whose job substantially includes keeping the platform healthy, tuning searches for performance, and managing the index lifecycle. That headcount cost belongs in any honest total cost of ownership comparison, and it is the exact cost that a lot of alternatives on this list are explicitly designed to reduce.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>The investigative labor cost</strong> is the quiet one nobody puts in the budget line. Every detection that fires still needs a human to gather context, check related events, and decide on disposition. That time is real, it is expensive analyst time, and it does not show up anywhere on a software invoice even though it is arguably the largest true cost of running any SIEM, Splunk included.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               None of this makes Splunk a bad platform. It makes it a platform whose full cost is genuinely hard to see from the sales page, which is exactly why "predictable pricing" and "reduces analyst hours" show up as headline pitches on nearly every alternative below.
             </p>
           </section>
 
           <section id="elastic-stack" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Elastic Stack and Elastic Security</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Elastic Stack and Elastic Security</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               For teams that already run Elasticsearch, or whose workflows are fundamentally search and log centric, the Elastic Stack remains one of the most credible full replacements for Splunk on the market. Elastic Security, built on top of the same Elasticsearch and Kibana foundation, covers a genuinely broad slice of what Splunk Enterprise Security does, including detection rules, case management, and endpoint telemetry when paired with Elastic Agent.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The appeal is real and specific. You get flexible deployment across cloud, self-managed, and hybrid, a mature and enormous community with a decade of accumulated integrations, and Beats plus Logstash as a credible replacement for Splunk's Universal Forwarders during migration. Elastic Cloud, the managed offering, removes a meaningful chunk of the operational burden for teams that like the platform but do not want to run the infrastructure themselves.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The honest tradeoff sits in two places. First, getting genuine value out of Elastic still assumes a team with real Elasticsearch operational knowledge, index management, shard sizing, and query performance tuning are not things you pick up in an afternoon. Second, its APM and broader observability tooling, while functional, still trails the depth Splunk's more mature enterprise security offers for highly bespoke correlation use cases. For a team that already lives in Elasticsearch daily, or is willing to build that expertise, it is a natural fit. For a team hoping to avoid a learning curve entirely, you are trading one specialist skill set for a different one.
             </p>
           </section>
 
           <section id="microsoft-sentinel" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Microsoft Sentinel</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Microsoft Sentinel</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Microsoft Sentinel is the obvious first stop for any organization already anchored to Azure and the broader Microsoft security stack. As a cloud native SIEM built directly into Azure, Sentinel sidesteps the infrastructure management question entirely, there is no server fleet to size or patch, and it plugs natively into Microsoft Defender, Entra ID, and the rest of the Microsoft 365 security ecosystem in a way that feels genuinely integrated rather than bolted together after the fact.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Its pricing model, based on data ingestion into the underlying Log Analytics workspace, is generally viewed as more predictable at moderate scale than Splunk's traditional model, and its built-in analytics rules and machine learning-based anomaly detection give teams a reasonable out of the box detection baseline without building everything from scratch.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The catch, and it is a meaningful one, is that Sentinel's value proposition is strongest specifically for organizations already committed to the Microsoft ecosystem. Pulling in non-Microsoft telemetry, third party firewalls, on premises Linux fleets, multi cloud workloads, require more deliberate connector work and can feel like a second-class citizen compared to how naturally Microsoft's own products flow in. If your environment is genuinely Microsoft centric, Sentinel is often the path of least resistance. If it is heterogeneous, budget real evaluation time to confirm the non-Microsoft ingestion story meets your needs before committing.
             </p>
           </section>
 
           <section id="google-security-operations" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Google Security Operations</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Google Security Operations</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Google Security Operations, the platform built on the technology Google acquired as Chronicle, takes a genuinely different architectural approach than most of this list. It was built around Google's own petabyte scale data infrastructure, which means it is specifically designed to make very high volume, long retention log storage and search economically viable in a way that traditional per gigabyte ingestion pricing struggles with.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               For organizations drowning specifically in log volume, where the Splunk conversation always comes back to "we simply cannot afford to keep this much data searchable for this long," Google Security Operations is worth a serious look precisely because its architecture was purpose built around that exact problem. It also brings genuinely strong threat intelligence integration, drawing on Google's own visibility into the broader threat landscape, and increasingly agentic AI capabilities aimed at automating parts of the triage and investigation workflow.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The honest limitation is that it is a younger platform in the enterprise SIEM space than Splunk or even Sentinel, with a smaller surrounding ecosystem of third-party integrations and community-built content. Teams evaluating it should expect to do more of the detection content authoring themselves compared to inheriting a decade of pre-built Splunk apps and should weigh that build effort honestly against the storage cost savings that make it attractive in the first place.
             </p>
           </section>
 
           <section id="wazuh" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Wazuh</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Wazuh</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               If the honest answer to "what your Splunk problem is" is simply "the license cost," Wazuh deserves serious consideration. It is a fully open-source security platform covering log analysis, intrusion detection, file integrity monitoring, and vulnerability detection, built on top of the same Elastic Stack foundation many teams already know, and it costs nothing to license.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Its strongest selling point is exactly that zero licensing costs are combined with a genuinely active open-source community and a real, if smaller, ecosystem of rules and integrations contributed by that community. For a smaller security team, a startup building its first SOC capability, or an organization with strict budget constraints but real in-house engineering talent, Wazuh can cover a meaningful chunk of Splunk Enterprise Security's core detection use cases at a fraction of the total cost.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The tradeoff is exactly the one you would expect from any self-hosted open-source platform: you are now responsible for deployment, scaling, patching, and tuning the whole stack yourself, and Wazuh's out of the box detection content, while genuinely useful, is less mature and less extensively curated than Splunk's commercial Enterprise Security content built up over more than a decade. For a team with the engineering bandwidth to own it, Wazuh is one of the most compelling cost stories on this entire list. For a team without spare capacity, the free software can end up costing real engineering hours you did not budget for.
             </p>
           </section>
 
           <section id="graylog" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Graylog</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Graylog</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Graylog occupies a similar niche to Wazuh but leans more heavily into log management and search as its core identity, with security analytics layered on top through its Security offering rather than being the platform's original reason for existing. It is available in a free open-source tier and a paid enterprise tier with additional features around archiving, audit logging, and support.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Its strongest appeal is a genuinely approachable interface and query experience compared to SPL's learning curve, along with solid role-based access control and a pricing model, on the enterprise tier, that many teams find easier to forecast than Splunk's ingestion-based math. Teams that specifically want centralized log management with reasonable security analytics bolted on, rather than a full-blown enterprise SIEM with deep correlation and case management, often find Graylog hits a comfortable middle ground.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The limitation is depth at the top end. If your actual requirement is sophisticated multistage correlation rules, extensive threat intelligence enrichment, and a mature case management workflow for a dedicated SOC, Graylog's security capabilities, while improving, are not yet at the same maturity level as Splunk Enterprise Security, Elastic Security, or the dedicated cloud SIEMs further down this list.
             </p>
           </section>
 
           <section id="sumo-logic" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Sumo Logic</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Sumo Logic</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Sumo Logic positions itself as a fully managed, cloud native alternative to Splunk that removes infrastructure management entirely while still covering log analytics, security analytics, and observability in one platform. Its cloud SIEM capability ships with a large library of pre-built detection rules, built in compliance reporting for frameworks like PCI DSS and HIPAA, and incident response automation aimed at reducing manual triage work.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The pitch that tends to land hardest with teams migrating off Splunk is unlimited long ingest on some of its plans, a genuinely different economic model than per gigabyte pricing that punishes volume growth directly. Combined with real time dashboards and support for structured, unstructured, and semi structured log formats, Sumo Logic is one of the more complete like for like managed replacements for teams whose primary complaint about Splunk is operational overhead and unpredictable ingestion cost rather than raw search sophistication.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Where it asks for a tradeoff is at the very top end of bespoke, highly customized correlation logic, the kind of thing a mature Splunk shop has built up over years of tuning. Sumo Logic covers the broad middle of security analytics use cases well. Teams with deeply specialized, highly bespoke detection requirements built specifically around Splunk's flexibility may find some rebuilding is required rather than a clean lift and shift.
             </p>
           </section>
 
           <section id="ibm-qradar" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">IBM QRadar</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">IBM QRadar</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               QRadar remains one of the most established enterprises SIEM platforms on the market, and it is a natural landing spot for organizations, particularly in traditional enterprises and regulated industries, that want a mature, on premises capable SIEM with deep correlation capabilities and a long track record in compliance heavy environments. Its correlation engine and its offense-based approach to grouping related alerts into a single investigable case are genuinely strong, addressing one of the exact pain points, alert fatigue from disconnected notifications, that plagues teams running any SIEM at scale.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               QRadar's strength is flexibility of deployment, on premises, hybrid, and cloud options exist, which matters enormously for organizations with strict data residency or air gapped requirements that rule out pure SaaS platforms entirely. It also has deep integration with the broader IBM Security portfolio for organizations already invested there.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The honest tradeoff is that QRadar carries a genuinely steep learning curve of its own, arguably comparable to Splunk's rather than meaningfully lower, and its licensing, while structured differently than Splunk's, is not inherently cheaper at enterprise scale. Teams moving from Splunk to QRadar specifically to escape complexity or cost may find they have traded one set of specialist requirements for a different but comparably demanding one. It is the right call for organizations with strict premises or hybrid requirements and existing IBM ecosystem investment. It is a less obvious win purely on cost or simplicity grounds.
             </p>
           </section>
 
           <section id="exabeam" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Exabeam</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Exabeam</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Exabeam has built its reputation specifically around user and entity behavior analytics, UEBA, layered on top of a broader SIEM and security analytics platform. Its core differentiator is a genuinely strong focus on detecting insider threats and compromised credential misuse by baselining normal behavior for users and entities and flagging meaningful deviations, a category of detection that traditional rule-based correlation, the kind Splunk's out of the box content leans heavily on, often misses entirely.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               For security teams whose actual biggest blind spot is insider risk or credential based lateral movement rather than perimeter or signature-based threats, Exabeam's behavioral analytics engine addresses a genuine gap. It also offers automated investigation timelines that assemble a narrative of an incident automatically, which meaningfully reduces the manual timeline construction work that eats up analyst hours on more traditional platforms.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The tradeoff is that Exabeam is priced and positioned toward mid-market and enterprise security teams with a real SOC function already in place, rather than smaller teams standing up security monitoring for the first time, and its strength is genuinely concentrated in the behavioral analytics use case rather than being an equally strong generalist replacement for every Splunk use case, including the broader IT operations and application troubleshooting workflows Splunk is also commonly used for.
             </p>
           </section>
 
           <section id="datadog-cloud-siem" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Datadog Cloud SIEM</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Datadog Cloud SIEM</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               For teams that are already running Datadog for infrastructure and application observability, Datadog Cloud SIEM offers a genuinely compelling path to consolidate security monitoring into a platform you are already paying for and already know how to use, rather than running Splunk as a completely separate tool with a completely separate learning curve and a completely separate vendor relationship.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Its biggest practical advantage is exactly that unification: the same logs you are already sending to Datadog for observability purposes can be evaluated against security detection rules without a second ingestion pipeline, and analysts already fluent in Datadog's interface do not need to context switch into a separate SIEM to investigate a security alert. That reduces both tool sprawl and the cognitive overhead of maintaining expertise across two entirely different platforms.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The honest limitation is depth. Datadog Cloud SIEM's detection content and security specific workflow maturity, while genuinely improving, still trails dedicated SIEM platforms including Splunk, QRadar, and Exabeam for teams with deep, specialized security operations requirements. It is an excellent fit for teams whose security monitoring needs are moderate and whose priority is consolidation. It is a less complete fit for a mature, dedicated SOC with highly specialized correlation and threat hunting requirements.
             </p>
           </section>
 
           <section id="openobserve" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">OpenObserve and the Cost First Camp</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">OpenObserve and the Cost First Camp</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               OpenObserve has emerged as one of the most talked about pure cost plays among Splunk alternatives, and the pitch is specific and compelling: unified logs, metrics, and traces in a single, fully self-hostable platform under an open license, with SQL based querying instead of a proprietary query language, and an ingestion-based pricing model without Splunk's per gigabyte economics.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The cost numbers being reported by teams that have made the switch are genuinely striking, with documented reductions in the range of sixty to ninety percent against equivalent Splunk deployments in some cases, driven by more efficient storage compression and a fundamentally different billing philosophy. For teams whose Splunk pain is almost entirely a volume and cost story, and who are comfortable with SQL rather than SPL, OpenObserve is one of the more compelling financial arguments on this list.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The honest limitation is maturity. It is a younger platform with a smaller surrounding ecosystem than the incumbents, and its security specific detection content and alerting depth, while functional and improving quickly, has not had the same years of battle testing in production SOC environments that Splunk, QRadar, or even Elastic Security have accumulated. For teams wanting to be relatively early on a still maturing platform in exchange for dramatically lower costs, it is worth serious evaluation.
             </p>
           </section>
 
           <section id="where-24observe-fits" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Where 24Observe Fits into This</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Where 24Observe Fits into This</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Worth being direct about this rather than treating it as an afterthought: 24Observe approaches the Splunk alternative question from a genuinely different angle than most of the platforms above, and it is worth being honest about exactly what that angle is rather than overselling it.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Most of the tools on this list, however capable they are, are still fundamentally search and detection engines. They ingest telemetry, let you query it, and fire an alert when a rule matches. The actual investigative work, gathering the related events, checking indicators against threat intelligence, tracing what changed, deciding whether this is a real incident, still lands on a human analyst starting mostly from scratch. That is true whether the query language is SPL, KQL, or plain SQL. A cheaper search bar is still just a search bar.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               24Observe's positioning is built around different premises. Uptime monitoring, log management, and security detection are unified in one platform, and every detection that fires opens an incident that an AI analyst immediately investigates, walking a live context graph of your services, hosts, and identities, corroborating findings against threat intelligence, and handing back an evidence backed verdict rather than leaving an analyst to construct that investigation by hand. Search and detection authoring run on a readable query language a practitioner can genuinely learn in an afternoon rather than a specialist dialect that requires months of practice, and the whole thing is available fully self-hosted for teams with strict data residency requirements, with identical functionality inside your own perimeter.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Where it is a genuinely strong fit: teams whose real bottleneck is analyst hours rather than search sophistication, teams tired of watching alerts pile up faster than anyone can work them, and teams that want their observability and their security detection unified rather than run as two separate platforms with two separate learning curves. It is also genuinely cost competitive for smaller self-hosted deployments, avoiding the ingestion rationing dynamic that pushes so many Splunk teams to quietly drop log sources they wish they had kept.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Where it is less of a slam dunk: if you need Splunk's specific depth of bespoke, highly customized correlation logic built up over a decade, or you are already heavily invested in a mature Splunk Enterprise Security practice with years of tuned content you are not eager to rebuild, those specific strengths still belong to Splunk itself, or to platforms like QRadar and Exabeam built at comparable depth. The honest framing is that automatic investigation and consolidated pricing should not be the only deciding factor for every team. A large enterprise SOC with deep existing Splunk tooling and dedicated specialist headcount has different tradeoffs than a lean team standing up security monitoring for the first time.
             </p>
           </section>
 
           <section id="decision-framework" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">The Decision Framework: Matching the Tool to Your Actual Pain</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">The Decision Framework: Matching the Tool to Your Actual Pain</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Rather than crowning one universal winner, it is more useful to work backward from which trigger from earlier in this guide is yours.
             </p>
             <ul style="list-style: none; padding: 0; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 12px;">
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If your bill is the entire problem and you have real engineering capacity to spare, Wazuh or the Elastic Stack are very likely your strongest financial move, genuinely low or no license cost, at the price of someone on your team owning the operational burden of running it well.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If you are already deeply anchored to Azure, Microsoft Sentinel is usually the path of least resistance, with native integration into a security stack you are probably already paying for.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If you are specifically drowning in ingestion volume and retention cost at genuine scale, Google Security Operations deserves a serious look precisely because its underlying architecture was built around making that specific problem economically viable.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If you want a managed, cloud native replacement without rebuilding your operational muscle from scratch, Sumo Logic or Exabeam, depending on whether general log analytics or behavioral threat detection is your bigger gap, are strong, mature choices.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If your organization has strict premises or hybrid deployment requirements and existing enterprise security investment, IBM QRadar remains a defensible, if not dramatically simpler, choice.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>If you are already running Datadog for observability and want to consolidate rather than run a second platform, Datadog Cloud SIEM is worth evaluating for moderate security monitoring needs specifically.</div>
               </li>
-              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #09090b;">
-                <span style="color: #2A680D; font-size: 1.2rem;">•</span>
+              <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.75; color: #0f172a;">
+                <span style="color: #000000; font-size: 1.2rem;">•</span>
                 <div>And if what is actually bothering you is not the dashboard cost at all but the fact that every alert still starts with a human doing detective work from zero, and you would rather have monitoring, logs, and security unified with an AI analyst that hands you the why alongside the what, that is the specific gap a platform like 24Observe is built to close.</div>
               </li>
             </ul>
           </section>
 
           <section id="migrating-off-splunk" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Migrating Off Splunk: What the Transition Actually Involves</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Migrating Off Splunk: What the Transition Actually Involves</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It is tempting to treat picking a new platform as the whole project. The migration itself deserves its own honest accounting, because underestimating it is one of the most common ways a switch goes badly.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Start with your forwarders and ingestion pipeline.</strong> If you are relying heavily on Splunk Universal Forwarders and custom sourcetypes, budget real time to re point that telemetry at a new destination. Most modern alternatives support open standards like syslog, OpenTelemetry, and common log formats, which reduces but does not eliminate the re instrumentation work, treat any vendor's ten-minute quickstart as describing a single service, not your entire fleet.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Plan for a genuine parallel running period.</strong> Running the new platform alongside Splunk for several weeks, ideally through at least one full business cycle so you catch weekly and monthly patterns, lets you validate that detection rules, alert thresholds, and analyst workflows all behave the way you expect before you cancel the old license. Cutting over cold is how teams end up with a coverage gap during exactly the week something inevitably goes sideways.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Rebuild your detection content deliberately rather than copying it blindly.</strong> Rules tuned against SPL's specific query semantics and Splunk's aggregation behavior do not always translate cleanly to a different platform's query language or data model. Treat detection migration as a genuine re authoring exercise informed by the original logic, not a mechanical port.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               <strong>Budget real time for dashboard and case management rebuilding.</strong> Years of accumulated Splunk dashboards, saved searches, and institutional knowledge about which search shows the thing that matters do not migrate automatically. Rebuilding the handful your team uses daily is a more realistic goal than trying to recreate everything at once.
             </p>
           </section>
 
           <section id="common-mistakes" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Common Mistakes Teams Make When Switching</h2>
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Common Mistakes Teams Make When Switching</h2>
             <div style="display: flex; flex-direction: column; gap: 16px;">
               
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Choosing based on vendor cost comparisons alone</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Choosing based on vendor cost comparisons alone</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                   Every alternative on this list has marketing content showing a cost comparison that favors itself. The only numbers that matter are what your specific ingestion volume, retention needs, and detection surface would cost on that platform. Get a real quote against real usage before committing.
                 </p>
               </div>
 
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Underestimating detection re authoring work</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Underestimating detection re authoring work</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                   Going live with a thin subset of your original Splunk detection content because rebuilding everything felt too slow leaves genuine coverage gaps that nobody notices until an incident falls through one.
                 </p>
               </div>
 
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Treating cheaper and better architectural fits the same thing</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Treating cheaper and better architectural fits the same thing</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                   A dramatically cheaper platform that cannot cover your compliance requirement, your log volume, or your specific detection surface costs more in workarounds and blind spots than it saves in license fees.
                 </p>
               </div>
 
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Skipping the parallel run period to save a few weeks of double paying</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Skipping the parallel run period to save a few weeks of double paying</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                   This is consistently how teams discover a coverage gap during the exact week neither platform was fully validated against the other.
                 </p>
               </div>
@@ -483,15 +483,15 @@ const FAQS = [
           </section>
 
           <section id="what-actually-matters" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">What Actually Matters When You Evaluate, Regardless of Which List You Read</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">What Actually Matters When You Evaluate, Regardless of Which List You Read</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               A few practical checks worth running on any shortlist, whichever platforms end up on it. Run the real numbers, not the marketing numbers, against your actual telemetry volume, cardinality, and retention requirements, not a generic benchmark pulled from someone else's environment. Check the migration path honestly rather than optimistically, open standards genuinely reduce re instrumentation pain compared to a hard rip and replace, but reduced is not zero, budget real engineering time regardless of which platform you pick. Separate cheaper from a better architectural fit, they are two different axes and optimizing for only one leaves the other to bite you later. And be honest with yourself about what happens after the alert fires. A cheaper search bar is still just a search bar. If the real cost center in your current setup is not the license price but the hours your analysts spend manually correlating logs and deciding what is real, make sure whatever you migrate to actually addresses that, or you will have solved the invoice problem and left the two in the morning problem exactly where it was.
             </p>
           </section>
 
           <section id="where-market-is-heading" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #2A680D;">Where This Market Is Heading</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Where This Market Is Heading</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               A few directional trends worth watching, because the landscape a year from now will look meaningfully different from today's snapshot. Open ingestion standards are steadily becoming table stakes rather than a differentiator, nearly every credible alternative now treats formats like OpenTelemetry and common syslog as first class citizens, which is lowering the switching cost between platforms and putting real competitive pressure on the incumbents. Readable, SQL adjacent query languages are displacing proprietary dialects across a growing share of the market, reducing the specialist skill tax that is used to lock teams into whichever platform's language they have already learned. And the category of platforms that investigate rather than merely detect, doing the correlation and evidence gathering automatically instead of leaving it to a human, is still young relative to the rest of this list, but it is the fastest growing differentiator in the space, precisely because it addresses the one part of the job that a cheaper dashboard alone was never going to fix.
             </p>
           </section>
@@ -499,15 +499,15 @@ const FAQS = [
 
         {/* FAQ SECTION MATCHING DESIGN SYSTEM */}
         <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #2A680D;">Frequently Asked Questions</h2>
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #000000;">Frequently Asked Questions</h2>
           <div style="display: flex; flex-direction: column; gap: 16px;">
             {FAQS.map((faq) => (
-              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
-                <summary style="font-size: 1.1rem; font-weight: 800; color: #09090b; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              <details style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #0f172a; list-style: none; display: flex; justify-content: space-between; align-items: center;">
                   <span>{faq.q}</span>
-                  <span style="font-size: 1.2rem; color: #2A680D;">+</span>
+                  <span style="font-size: 1.2rem; color: #000000;">+</span>
                 </summary>
-                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                <p style="font-size: 1.02rem; color: #475569; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                   {faq.a}
                 </p>
               </details>
@@ -517,16 +517,16 @@ const FAQS = [
 
         {/* WRAPPING IT UP SECTION */}
         <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #2A680D;">Wrapping Up</h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #000000;">Wrapping Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
             Splunk did not suddenly get worse in 2026. The math of ingestion-based pricing simply forced more teams to confront a cost curve that was always going to catch up with them eventually, and the Cisco acquisition gave a lot of renewal conversations a reason to happen a little earlier than they otherwise would have. Whether you prefer open-source control through Wazuh or the Elastic Stack, cloud native consolidation through Microsoft Sentinel or Google Security Operations, or a managed enterprise replacement through Sumo Logic, QRadar, or Exabeam, the alternative market is mature enough in 2026 that leaving Splunk no longer means compromising meaningfully on capability.
           </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
             If your actual goal is to move past a search bar entirely and get a platform that investigates the incident for you, unifies your monitoring and your security detection, and does not force you to ration the data you send it, 24Observe is built specifically around closing that gap, with the option to run the entire thing self-hosted inside your own perimeter. Pick the alternative that solves the specific pain your team is feeling today, not the one with the loudest marketing page.
           </p>
 
           <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
-            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #2A680D !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(42, 104, 13, 0.25);">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #000000 !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);">
               Start free with 24Observe →
             </a>
           </div>
@@ -537,7 +537,7 @@ const FAQS = [
       {/* RIGHT SIDEBAR: PLATFORM SPECIAL */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <span style="background: #3B9112; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+          <span style="background: #000000; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             PLATFORM SPECIAL
           </span>
         </div>
@@ -552,16 +552,16 @@ const FAQS = [
             </a>
           ))}
         </nav>
-        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #3B9112; text-decoration: none;">
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #000000; text-decoration: none;">
           View All Specials →
         </a>
         
         {/* LIGHT ELEGANT GREEN CTA CARD WIDGET */}
-        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(42, 104, 13, 0.06);">
-          <p style="font-size: 0.96rem; line-height: 1.5; color: #2A680D; font-weight: 700; margin: 0 0 18px 0;">
+        <div style="background: #f4fbf0; border: 1.5px solid #cdebc2; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);">
+          <p style="font-size: 0.96rem; line-height: 1.5; color: #000000; font-weight: 700; margin: 0 0 18px 0;">
             AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
           </p>
-          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #2A680D !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(42, 104, 13, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #000000 !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
             Start free trial →
           </a>
         </div>

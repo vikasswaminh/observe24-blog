@@ -71,7 +71,7 @@ const FAQS = [
       {/* LEFT SIDEBAR */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <span style="background: #0084C7; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+          <span style="background: #000000; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             FEATURED GUIDES
           </span>
         </div>
@@ -79,14 +79,14 @@ const FAQS = [
           {FEATURED_GUIDES.map((g) => (
             <a
               href={g.link}
-              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #0284C7; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(2, 132, 199, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
+              style={g.link.includes(ARTICLE_META.slug) ? "padding: 6px 10px; font-size: 0.90rem; color: #000000; font-weight: 700; text-decoration: none; border-radius: 8px; background: rgba(2, 132, 199, 0.08); transition: all 0.2s ease; line-height: 1.35;" : "padding: 6px 10px; font-size: 0.90rem; color: #111827; font-weight: 600; text-decoration: none; border-radius: 8px; transition: all 0.2s ease; line-height: 1.35;"}
               class="sidebar-nav-item"
             >
               {g.title}
             </a>
           ))}
         </nav>
-        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #0284C7; text-decoration: none;">
+        <a href="/blog" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #000000; text-decoration: none;">
           View All Guides →
         </a>
       </aside>
@@ -94,14 +94,14 @@ const FAQS = [
       {/* CENTER MAIN ARTICLE */}
       <main style="flex: 1; min-width: 0;">
         <header style="margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; width: 100%;">
-          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px; font-size: 0.88rem; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             <span>{ARTICLE_META.category}</span>
             <span>•</span>
             <span>{ARTICLE_META.date}</span>
             <span>•</span>
             <span>{ARTICLE_META.readTime}</span>
           </div>
-          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #0284C7; width: 100%;">
+          <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin: 0 0 12px 0; color: #000000; width: 100%;">
             {ARTICLE_META.title}
           </h1>
           <p style="font-size: 1.05rem; color: #475569; line-height: 1.55; margin: 0;">
@@ -110,36 +110,36 @@ const FAQS = [
         </header>
 
         {/* TL;DR BOX */}
-        <section id="tldr" style="background: rgba(2, 132, 199, 0.08); border-left: 5px solid #0284C7; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: #0284C7; margin: 0 0 6px 0;">TL;DR</h3>
-          <p style="font-size: 1.08rem; line-height: 1.7; color: #09090b; margin: 0;">
-            Alert fatigue happens when the sheer volume of alerts, most of them low value, false, duplicate, or irrelevant, wears down a team's ability to respond to the ones that matter. It doesn't show up as a single dramatic event. It shows up slowly, as engineers start snoozing notifications, muting channels, and developing a quiet, almost involuntary habit of assuming most pages are noise. That assumption is exactly what turns a real outage into a missed one. The fix isn't "send fewer alerts" as a blanket rule, because under alerting is just as dangerous as over alerting. The real fix is treating alert quality as a discipline: tuning thresholds against real behavior, routing by genuine severity instead of dumping everything into one channel, deduplicating and correlating related signals so one incident doesn't become forty pages, and giving engineers a fast way to understand why an alert fired instead of a wall of raw metrics to decode at 3am. Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #0284C7; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> are built around exactly this problem, pairing uptime monitoring, log management, and smart on call escalation with an AI analyst that correlates related signals into one investigated verdict instead of a pile of disconnected pings.
+        <section id="tldr" style="background: rgba(2, 132, 199, 0.08); border-left: 5px solid #000000; border-radius: 10px; padding: 18px 22px; margin-bottom: 32px; width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #000000; margin: 0 0 6px 0;">TL;DR</h3>
+          <p style="font-size: 1.08rem; line-height: 1.7; color: #0f172a; margin: 0;">
+            Alert fatigue happens when the sheer volume of alerts, most of them low value, false, duplicate, or irrelevant, wears down a team's ability to respond to the ones that matter. It doesn't show up as a single dramatic event. It shows up slowly, as engineers start snoozing notifications, muting channels, and developing a quiet, almost involuntary habit of assuming most pages are noise. That assumption is exactly what turns a real outage into a missed one. The fix isn't "send fewer alerts" as a blanket rule, because under alerting is just as dangerous as over alerting. The real fix is treating alert quality as a discipline: tuning thresholds against real behavior, routing by genuine severity instead of dumping everything into one channel, deduplicating and correlating related signals so one incident doesn't become forty pages, and giving engineers a fast way to understand why an alert fired instead of a wall of raw metrics to decode at 3am. Platforms like <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #000000; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> are built around exactly this problem, pairing uptime monitoring, log management, and smart on call escalation with an AI analyst that correlates related signals into one investigated verdict instead of a pile of disconnected pings.
           </p>
         </section>
 
         {/* KEY TAKEAWAYS */}
         <section id="key-takeaways" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h3 style="font-size: 1.3rem; font-weight: 800; color: #0284C7; margin: 0 0 16px 0;">Key Takeaways</h3>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #000000; margin: 0 0 16px 0;">Key Takeaways</h3>
           <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
-              <div><strong style="color: #0284C7; font-weight: 800;">Alert fatigue is a volume and quality problem, not a willpower problem.</strong> No amount of telling your team to "pay closer attention" fixes a system that pages someone forty times a night for the same underlying issue.</div>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #000000; font-weight: 800;">Alert fatigue is a volume and quality problem, not a willpower problem.</strong> No amount of telling your team to "pay closer attention" fixes a system that pages someone forty times a night for the same underlying issue.</div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
-              <div><strong style="color: #0284C7; font-weight: 800;">The real damage isn't the noise itself, it's what the noise trains people to do.</strong> Once an engineer learns that most alerts don't matter, their brain starts filtering pages before they've even read them, and that filter doesn't know the difference between noise and the one alert that needed them.</div>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #000000; font-weight: 800;">The real damage isn't the noise itself, it's what the noise trains people to do.</strong> Once an engineer learns that most alerts don't matter, their brain starts filtering pages before they've even read them, and that filter doesn't know the difference between noise and the one alert that needed them.</div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
-              <div><strong style="color: #0284C7; font-weight: 800;">Under alerting is the hidden twin of over alerting.</strong> Teams that overcorrect by silencing everything end up missing real incidents just as often as teams drowning in noise. The goal is precision, not silence.</div>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #000000; font-weight: 800;">Under alerting is the hidden twin of over alerting.</strong> Teams that overcorrect by silencing everything end up missing real incidents just as often as teams drowning in noise. The goal is precision, not silence.</div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
-              <div><strong style="color: #0284C7; font-weight: 800;">Diagnosis, not detection, is usually where fatigue bites hardest.</strong> A flood of raw, uncorrelated alerts forces engineers to manually piece together what's connected, and that manual correlation work is what quietly burns people out shift after shift.</div>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #000000; font-weight: 800;">Diagnosis, not detection, is usually where fatigue bites hardest.</strong> A flood of raw, uncorrelated alerts forces engineers to manually piece together what's connected, and that manual correlation work is what quietly burns people out shift after shift.</div>
             </li>
-            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #09090b; text-align: left;">
-              <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
-              <div><strong style="color: #0284C7; font-weight: 800;">Fixing alert fatigue is mostly an engineering and process problem, and it's very solvable.</strong> Severity based routing, deduplication, correlation, and an AI layer that groups related signals into one readable story can cut meaningful noise dramatically, often within the first few weeks of working on it.</div>
+            <li style="display: flex; gap: 12px; font-size: 1.08rem; line-height: 1.7; color: #0f172a; text-align: left;">
+              <span style="color: #000000; font-size: 1.2rem; line-height: 1.4; flex-shrink: 0;">•</span>
+              <div><strong style="color: #000000; font-weight: 800;">Fixing alert fatigue is mostly an engineering and process problem, and it's very solvable.</strong> Severity based routing, deduplication, correlation, and an AI layer that groups related signals into one readable story can cut meaningful noise dramatically, often within the first few weeks of working on it.</div>
             </li>
           </ul>
         </section>
@@ -149,88 +149,88 @@ const FAQS = [
 
           {/* INTRODUCTION */}
           <section id="introduction" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">Introduction</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Introduction</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               There's a specific kind of tiredness that doesn't come from working too many hours. It comes from being interrupted too many times for reasons that turned out not to matter. Ask any engineer who's spent a real stretch on call and they'll describe some version of the same feeling: the phone buzzes at 2am, heart rate spikes, they fumble for the laptop, and it's the same disk usage warning that's fired every night for the past three weeks and resolved itself twelve minutes later, every single time. Nothing was wrong. Nothing needed them. But their sleep is gone anyway, and tomorrow they'll be a little slower, a little less patient, and a little more likely to glance at the next page and think, "probably nothing," before they've even opened it.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               That thought, "probably nothing," is the whole problem in three words. It's not laziness. It's not a lack of discipline. It's what happens to any human brain, no matter how conscientious, when it's trained by hundreds of false alarms to expect the next one to be false too. Engineers don't choose to tune out alerts. Their nervous system does it for them, as a survival mechanism, the same way anyone stops hearing a smoke detector chirping low battery after the fifth night in a row.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               This is alert fatigue, and it is one of the most quietly destructive forces in modern engineering and security operations. It doesn't show up on a dashboard. There's no single metric labeled "team burnout level" that turns red when things get bad. It shows up in slower acknowledgment times that nobody flagged as a trend. It shows up in the on-call engineer who used to respond in ninety seconds now taking twelve minutes. It shows up in the security analyst who stopped fully reading alert descriptions because reading the first three words was usually enough to guess it was another false positive. And eventually, it shows up in the incident that got missed entirely, buried in a channel that everyone had long since learned to ignore, because that's what the channel had trained them to do.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               This guide is a thorough look at alert fatigue: what it is, why it happens even to teams with expensive, well configured monitoring stacks, the specific mechanisms that turn a reasonable alerting setup into a wall of noise, the human and business cost of letting it fester, and, most importantly, the concrete, practical changes that bring it back under control. Not vague advice to "reduce alerts." Specific levers, in the order that moves the needle, and an honest look at the mistakes teams make when they try to fix this and accidentally make it worse.
             </p>
           </section>
 
           {/* WHAT IS ALERT FATIGUE */}
           <section id="what-is-alert-fatigue" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">What Is Alert Fatigue?</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">What Is Alert Fatigue?</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Alert fatigue is the gradual erosion of a person's responsiveness to alerts, caused by exposure to a high volume of alerts that carry low information value, whether because they're false positives, duplicates, low severity noise dressed up as urgent, or simply too frequent to process meaningfully. It's a well-documented phenomenon in fields far outside software engineering too. The term originates in clinical medicine, where nurses and doctors exposed to constant, mostly irrelevant medical device alarms started missing critical ones, a problem serious enough that hospital safety organizations now treat alarm fatigue as a formal patient safety risk.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Engineering and security operations inherited the exact same failure mode, just with different alarms. Instead of heart monitors and IV pumps, its CPU thresholds, disk warnings, failed login attempts, latency spikes, and a hundred other signals, all competing for the same limited human attention span, all funneled into the same Slack channel or pager, all demanding the same instantaneous response regardless of whether they deserve it.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The important nuance here, and the one most teams miss, is that alert fatigue isn't really about the total number of alerts. A team that receives five hundred alerts a day where four hundred and ninety are correctly filtered into a low-priority digest and ten need eyes right now isn't fatigued, they're well organized. A team that receives fifty alerts a day, all screaming the same urgency level, where forty-five of them are noise, absolutely is fatigued, and dangerously so, because there's no signal left to distinguish. Alert fatigue is a ratio problem dressed up as a volume problem. The volume is just the symptom that's easiest to notice.
             </p>
           </section>
 
           {/* THE ANATOMY OF ALERT FATIGUE */}
           <section id="anatomy-of-alert-fatigue" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">The Anatomy of Alert Fatigue: How It Builds Silently</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 24px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">The Anatomy of Alert Fatigue: How It Builds Silently</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 24px;">
               Nobody wakes up one day with a fully fatigued team. It builds in layers, and understanding those layers is what makes it fixable instead of just something you complain about in retros.
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer One: Threshold Drift</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer One: Threshold Drift</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     A monitoring rule gets set up with the best intentions, usually copied from a default template or a quick guess during initial setup. CPU above eighty percent, alert. Disk above ninety percent, alert. Response time above five hundred milliseconds, alert. These thresholds feel reasonable on day one, but real systems are noisy, and normal operation regularly brushes up against arbitrary round numbers. Within a few weeks, the eighty percent CPU alert is firing every afternoon during a completely expected traffic bump that resolves itself in ten minutes. Nobody adjusts the threshold, because nobody's job is specifically "go tune alert thresholds," so it just keeps firing.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Two: Alert Sprawl</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Two: Alert Sprawl</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     As systems grow, more services get added, more integrations get connected, and more dashboards get wired up to notification channels, usually one at a time, usually each addition feeling small and reasonable on its own. Nobody ever sits down and asks, "given everything we've added over the past year, does our total alert volume still make sense?" It's death by a thousand small, individually justified decisions.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Three: Duplicate and Cascading Alerts</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Three: Duplicate and Cascading Alerts</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     A single underlying failure, say, a database connection pool exhausting, doesn't produce one alert. It produces a burst of alerts, one for every downstream service that starts timing out because it depends on that database. What was one incident shows up in the pager as fifteen or twenty separate pages, each one technically accurate, each one describing a real symptom, but collectively creating the illusion of chaos when the actual problem is singular and, once identified, often simple.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Four: Severity Inflation</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Four: Severity Inflation</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Somewhere along the way, someone decides that a warning that used to be a low-priority notification should really be urgent, because it turned out to matter that one time. So, it gets bumped up. Then another alert gets bumped up for the same reason. Within a year, half the alert catalog is marked critical or urgent, and "critical" has stopped meaning anything, because it's applied so broadly that it no longer distinguishes a real emergency from a mild inconvenience.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">5</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">5</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Five: Human Adaptation</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Layer Five: Human Adaptation</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     This is the layer that causes the damage, and it's the one that happens inside people, not inside systems. Once someone has been paged a dozen times for the same nonissue, their brain does something remarkable and completely rational: it starts predicting that future alerts from that source are probably also nonissues, and it adjusts response speed and attention accordingly. This isn't a character flaw. It's basic pattern recognition, the same mechanism that lets you tune out your own refrigerator's hum but instantly notice when it stops. The tragedy is that this adaptation doesn't come with a warning label, and it doesn't discriminate between the alert that's noise for the four hundredth time and the one time it's something new.
                   </p>
                 </div>
@@ -240,58 +240,58 @@ const FAQS = [
 
           {/* THE REAL COST OF ALERT FATIGUE */}
           <section id="real-cost" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">The Real Cost of Alert Fatigue</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">The Real Cost of Alert Fatigue</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It's tempting to treat alert fatigue as an annoyance, something engineers grumble about but ultimately work around. The actual cost is much larger, and it touches three distinct areas: people, incident outcomes, and the business itself.
             </p>
 
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: #0284C7; margin: 24px 0 12px 0;">The Human Cost</h3>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #000000; margin: 24px 0 12px 0;">The Human Cost</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               On call burnout is real, well studied, and expensive to replace. Engineers who spend months on rotations dominated by noisy, low value pages report worse sleep, higher stress, and a measurable decline in job satisfaction, even when their actual working hours haven't changed. The pager doesn't need to go off constantly to cause harm. It needs to go off unpredictably and disproportionately for things that didn't matter, because that's what keeps a person in a low-grade state of vigilance even during their supposed off hours. Chronic low-grade vigilance is exhausting in a way that's hard to describe to someone who hasn't experienced an on-call rotation, and it's a well-known contributor to engineers quietly starting to look for a new job, or a new team, or a role that doesn't include being on call at all.
             </p>
 
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: #0284C7; margin: 24px 0 12px 0;">The Incident Outcome Cost</h3>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #000000; margin: 24px 0 12px 0;">The Incident Outcome Cost</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               This is the part that should worry engineering leadership the most, because it's not abstract, it's measurable and it's directly tied to your worst days. A fatigued team has slower mean time to acknowledge, because engineers are subconsciously deprioritizing pages before reading them fully. They have slower mean time to diagnose, because when a real incident does show up buried among a pile of unrelated noise, it takes longer to recognize which of the forty things happening right now is the actual root cause and which are downstream symptoms. And in the worst cases, they miss incidents entirely, because the specific channel or alert type that would have flagged the real problem had already been muted, snoozed, or mentally filtered out by a team that had been burned by that same channel too many times before.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               There's a particularly painful version of this that shows up in postmortems more often than anyone likes to admit: "the alert did fire, but it was on a channel nobody was actively watching because it usually wasn't anything." That single sentence is alert fatigue's signature. It's not a detection gap. The system worked exactly as designed. It's a trust gap, and trust gaps are far harder to repair after the fact than a missing monitor would have been.
             </p>
 
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: #0284C7; margin: 24px 0 12px 0;">The Business Cost</h3>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #000000; margin: 24px 0 12px 0;">The Business Cost</h3>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Every extra minute an incident goes unnoticed or undiagnosed because a human filtered it out as probable noise is a minute of downtime, degraded service, or security exposure that didn't need to happen. In customer-facing systems, that translates directly into lost revenue, damaged trust, and support tickets piling up faster than the team can triage them. In security operations specifically, alert fatigue has a documented history of contributing to serious breaches, where a legitimate intrusion alert sat unnoticed in a queue alongside hundreds of benign ones, because analysts had learned, reasonably, that most alerts in that queue didn't require action.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               And there's a slower, less visible business cost too: attrition. Replacing a burned-out senior engineer or SRE isn't just a recruiting cost, it's months of lost institutional knowledge, a gap in coverage during the search, and a ramp up period for whoever replaces them. Alert fatigue doesn't just make one bad night, it quietly pushes good people toward the exit, and that's an extremely expensive way to lose someone.
             </p>
           </section>
 
           {/* WHY TRADITIONAL MONITORING SETUPS CREATE FATIGUE */}
           <section id="why-traditional-setups-fail" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">Why Traditional Monitoring Setups Create Alert Fatigue Almost by Default</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Why Traditional Monitoring Setups Create Alert Fatigue Almost by Default</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It's worth being honest about why this problem is so common instead of treating it as a symptom of bad engineering. Most monitoring tools, out of the box, are optimized to help you catch everything, not to help you catch only what matters. That's a reasonable default for a vendor trying to avoid the liability of a customer missing an outage, but it puts the entire burden of filtering onto the team using the tool, and most teams never get around to doing that filtering properly, because it's tedious, unglamorous, ongoing work that nobody explicitly owns.
             </p>
 
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-              <h3 style="font-size: 1.25rem; font-weight: 800; color: #0284C7; margin: 0 0 14px 0;">4 Common Patterns That Guarantee Noise:</h3>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #000000; margin: 0 0 14px 0;">4 Common Patterns That Guarantee Noise:</h3>
               <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
-                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #09090b;">
-                  <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
-                  <div><strong style="color: #0284C7; font-weight: 800;">Threshold based alerting without context:</strong> A rule that says "alert if metric X crosses value Y" has no concept of whether that crossing is expected, seasonal, or dangerous. A retail company's traffic spikes predictably every evening. A threshold set without that context will alert every single evening, forever, until someone notices and fixes it.</div>
+                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #0f172a;">
+                  <span style="color: #000000; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
+                  <div><strong style="color: #000000; font-weight: 800;">Threshold based alerting without context:</strong> A rule that says "alert if metric X crosses value Y" has no concept of whether that crossing is expected, seasonal, or dangerous. A retail company's traffic spikes predictably every evening. A threshold set without that context will alert every single evening, forever, until someone notices and fixes it.</div>
                 </li>
-                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #09090b;">
-                  <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
-                  <div><strong style="color: #0284C7; font-weight: 800;">Siloed tools that each alert independently:</strong> When uptime checks, log monitoring, infrastructure metrics, and security detections all live on separate platforms, each one alerts in isolation, with no awareness that the other three tools just fired for the exact same underlying event. The team ends up doing the correlation manually, in their head, at the worst possible time.</div>
+                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #0f172a;">
+                  <span style="color: #000000; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
+                  <div><strong style="color: #000000; font-weight: 800;">Siloed tools that each alert independently:</strong> When uptime checks, log monitoring, infrastructure metrics, and security detections all live on separate platforms, each one alerts in isolation, with no awareness that the other three tools just fired for the exact same underlying event. The team ends up doing the correlation manually, in their head, at the worst possible time.</div>
                 </li>
-                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #09090b;">
-                  <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
-                  <div><strong style="color: #0284C7; font-weight: 800;">Every alert treated as equally urgent by default:</strong> Many monitoring setups ship with a single notification channel and a single urgency level unless someone actively goes in and configures tiers. Configuring tiers takes time and thought, so it frequently just doesn't happen, and everything lands in the same channel competing for attention.</div>
+                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #0f172a;">
+                  <span style="color: #000000; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
+                  <div><strong style="color: #000000; font-weight: 800;">Every alert treated as equally urgent by default:</strong> Many monitoring setups ship with a single notification channel and a single urgency level unless someone actively goes in and configures tiers. Configuring tiers takes time and thought, so it frequently just doesn't happen, and everything lands in the same channel competing for attention.</div>
                 </li>
-                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #09090b;">
-                  <span style="color: #0284C7; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
-                  <div><strong style="color: #0284C7; font-weight: 800;">No feedback loops from resolved incidents back into alert tuning:</strong> When an incident closes, the observation that a rule was unhelpful rarely makes its way back into an actual threshold change. The knowledge lives in memory, not configuration, and memory fades.</div>
+                <li style="display: flex; gap: 12px; font-size: 1.05rem; line-height: 1.65; color: #0f172a;">
+                  <span style="color: #000000; font-size: 1.2rem; line-height: 1.3; flex-shrink: 0;">•</span>
+                  <div><strong style="color: #000000; font-weight: 800;">No feedback loops from resolved incidents back into alert tuning:</strong> When an incident closes, the observation that a rule was unhelpful rarely makes its way back into an actual threshold change. The knowledge lives in memory, not configuration, and memory fades.</div>
                 </li>
               </ul>
             </div>
@@ -299,131 +299,131 @@ const FAQS = [
 
           {/* WARNING SIGNS */}
           <section id="warning-signs" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">The Warning Signs Your Team Is Already Fatigued</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">The Warning Signs Your Team Is Already Fatigued</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Alert fatigue is easier to fix early than late, but it's hard to notice from the inside, because it develops gradually and everyone adjusts to the new normal without registering that it used to feel different. A few concrete signs worth watching for, in yourself or your team:
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Engineers start describing certain alerts by their reputation rather than their content, phrases like "oh that's just the usual disk one" said with a shrug before anyone's even opened the message. That shrug is the tell. It means the content of the alert has stopped mattering, only its source has, and that's exactly the kind of mental shortcut that misses the one time the usual disk alert is accompanying something new.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Acknowledgment times creep upward slowly over months, not dramatically overnight, which is exactly why it tends to go unnoticed without someone actively tracking the trend. If your mean time to acknowledge six months ago was ninety seconds and it's now six minutes, that's not a coincidence, that's fatigue, even if nobody can point to a single event that caused it.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               People start muting channels, snoozing notification types, or quietly building personal filters that route certain alerts away from their immediate attention, often without telling anyone else on the team, because it feels like a personal coping mechanism rather than a process failure worth escalating. If you interview your on-call rotation and discover that three different engineers have independently built three different silent workarounds for the same noisy alert type, that's a very strong signal the alert itself needs fixing, not the individual coping strategies.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Postmortems start including the phrase "we did get an alert for this, but" more than once a quarter. That phrase, in any of its forms, whether it's "but it was buried," "but we'd started ignoring that channel," or "but nobody was actively watching it," is the single clearest indicator that alert fatigue has already caused real, tangible damage, not just discomfort.
             </p>
           </section>
 
           {/* THE FEEDBACK LOOP */}
           <section id="feedback-loop" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">The Alert Fatigue Feedback Loop</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">The Alert Fatigue Feedback Loop</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Understanding alert fatigue as a self-reinforcing loop, rather than a static problem, matters because it explains why it tends to get worse over time if nobody intervenes, and why half measures often fail to break it.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It starts with noise: too many low value alerts land in front of the team. That noise causes slower response and lower attention per alert, because humans naturally allocate less mental effort to things that have repeatedly turned out not to matter. Lower attention causes slower detection of the alerts that do matter, since they're now competing with everything else for a shrinking amount of genuine focus. Slower detection means worse incident outcomes, longer downtime, messier diagnoses, more stressful on call shifts. Worse outcomes and more stress increase burnout and attrition risk, which shrinks the team or introduces less experienced people into the rotation faster than institutional knowledge can transfer. A smaller or less experienced team is, almost by definition, worse equipped to go back and do the unglamorous work of properly tuning alert thresholds and building correlation logic, which is exactly the work needed to reduce the original noise. And so, the loop closes and tightens, usually invisibly, over a period of months or years, until someone finally has a bad incident that was missed because of accumulated fatigue, and only then does it become a leadership priority.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The good news buried inside this loop is that it works in reverse too. Reduce the noise deliberately, and response quality improves, which improves outcomes, which reduces stress, which frees up the exact time and morale needed to keep improving alert quality further. Every fix compounds. That's why teams that commit to working on this problem for even a single focused quarter tend to see disproportionate improvement, not linear improvement, because they're not just removing bad alerts, they're breaking a cycle that was actively working against them.
             </p>
           </section>
 
           {/* HOW TO FIX ALERT FATIGUE */}
           <section id="how-to-fix" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">How to Fix Alert Fatigue: A Step-by-Step Discipline</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 24px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">How to Fix Alert Fatigue: A Step-by-Step Discipline</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 24px;">
               Fixing alert fatigue isn't a one-time project you complete and check off. It's an ongoing discipline, similar to code quality or security hygiene, that needs continuous, if lightweight, attention. Here are the concrete levers in the order that moves the needle:
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">1</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Run an Honest Alert Audit</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Run an Honest Alert Audit</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Pull raw data on every alert type over the last 1–3 months. Figure out how often it fired, what percentage led to real action, and how it's currently routed. In most teams, 3–5 specific rules cause most of the noise. Fix those first.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">2</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Separate Alerts by Genuine Severity, Not Convenience</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Separate Alerts by Genuine Severity, Not Convenience</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Classify into tiers: Needs Human Awake Right Now, Working Hours Attention, and Informational Digest. If waking someone up at 3am wouldn't change the outcome compared to 9am, it doesn't belong in the urgent tier.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">3</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Deduplicate and Correlate Related Alerts</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Deduplicate and Correlate Related Alerts</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     A single root cause should produce one incident, not a cascade of twenty separate pages. Group alerts by window and dependency, or use platform correlation to eliminate cascading noise.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">4</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Tune Thresholds Against Real Historical Behavior</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Tune Thresholds Against Real Historical Behavior</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Look at real historical metric behavior rather than default templates. Add sustained duration windows or pattern-aware baselines so harmless daily spikes don't trigger alerts.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">5</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">5</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Build in a Feedback Loop from Every Incident</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Build in a Feedback Loop from Every Incident</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Every postmortem should ask: did any alert fire that was unhelpful, late, or noisy? Create an assigned action item to tune or delete that rule.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">6</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">6</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Design On Call Rotations That Respect Human Limits</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Design On Call Rotations That Respect Human Limits</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Ensure humane shift lengths, time off between rotations, secondary escalation paths, and enough members so no single person carries unfair weight.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">7</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">7</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Use Correlated Context and AI Assisted Triage</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Use Correlated Context and AI Assisted Triage</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Use an AI analyst to automatically walk correlated logs, metrics, and traces. Turn a 3am 30-minute cross-referencing slog into a 2-minute read with cited hypotheses.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">8</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">8</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Give Every Alert Enough Embedded Context to Act On</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Give Every Alert Enough Embedded Context to Act On</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Embed log links, historical frequency, and downstream dependencies directly into the alert body so engineers can judge severity within 30 seconds.
                   </p>
                 </div>
               </div>
 
               <div style="display: flex; gap: 14px; align-items: flex-start; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
-                <span style="flex-shrink: 0; background: #0284C7; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">9</span>
+                <span style="flex-shrink: 0; background: #000000; color: #fff; font-size: 0.82rem; font-weight: 800; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-top: 2px;">9</span>
                 <div>
-                  <h3 style="color: #0284C7; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Periodically Retire Alerts That No Longer Serve a Purpose</h3>
-                  <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">
+                  <h3 style="color: #000000; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0;">Periodically Retire Alerts That No Longer Serve a Purpose</h3>
+                  <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">
                     Schedule quarterly reviews to explicitly delete obsolete monitor rules for legacy architectures or retired services.
                   </p>
                 </div>
@@ -433,55 +433,55 @@ const FAQS = [
 
           {/* BUILDING CULTURE */}
           <section id="culture-of-alert-hygiene" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">Building a Culture of Alert Hygiene, Not Just a One-Time Fix</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Building a Culture of Alert Hygiene, Not Just a One-Time Fix</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The technical changes above matter, but they don't stick on their own without a cultural shift alongside them. Alert hygiene needs to become something the team actively values and maintains, the same way code review or test coverage became a norm rather than a one-off initiative in most engineering organizations.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Practically, this means giving someone explicit ownership of alert quality, not as their entire job necessarily, but as a named, recognized responsibility with actual time allocated to it, rather than an implicit expectation that everyone will somehow get around to it between sprints. It means treating a noisy, unhelpful alert as a bug worth filing and fixing, with the same seriousness as a bug in the product itself, rather than something engineers are just expected to individually work around. And it means regularly celebrating and communicating the wins, when a specific noisy alert type gets fixed and the team's total page volume visibly drops, that's worth mentioning out loud, because it reinforces that this work matters and produces real, felt results, not just an abstract metric on a slide nobody remembers by next quarter.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               Teams that treat alert quality as an ongoing discipline rather than a firefighting exercise tend to end up in a different place within six months to a year: on call rotations people don't dread, postmortems that rarely include the phrase "we did get an alert but," and a much lower baseline of ambient stress that compounds into better retention and better incident outcomes across the board.
             </p>
           </section>
 
           {/* REALISTIC WALKTHROUGH */}
           <section id="realistic-walkthrough" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">A Realistic Walkthrough: What Fixing This Looks Like</h2>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">A Realistic Walkthrough: What Fixing This Looks Like</h2>
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               It helps to see this concretely rather than abstractly. Picture a mid-sized engineering team running a handful of microservices, a Postgres database, and a couple of third-party integrations. Their on call engineers getting paged roughly fifteen times a week. When they finally sit down and audit those fifteen weekly pages honestly, here's a realistic breakdown of what they might find: four are the same recurring CPU threshold alert that fires every weekday afternoon during an entirely expected, harmless traffic bump. There are duplicate alerts from a single database connection pool issue, each downstream service pages separately for what is, underneath, one root cause. Two are useful and require real action. Two are vague, low context alerts that took the engineer twenty minutes each just to figure out what they were even referring to. The remaining four are informational notices that never needed a page at all and could have lived comfortably in a daily digest.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               After a focused two-week effort: the CPU threshold gets adjusted to account for the known daily pattern, cutting those four weekly pages to roughly zero. The database cascade gets correlation logic that groups related downstream failures into a single incident notification instead of three separate ones. The vague alerts get rewritten with embedded context, links to relevant logs and a one-line description of likely cause, cutting investigation time from twenty minutes to roughly two. The purely informational alerts get moved to a digest.
             </p>
-            <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 18px;">
+            <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 18px;">
               The result: fifteen weekly pages drops to roughly four or five, and every single one of those remaining pages is something that needs a human's attention. That's not a hypothetical outcome, it's a realistic, achievable result of the specific, concrete changes described above, applied honestly and consistently over a relatively short period.
             </p>
           </section>
 
           {/* COMMON MISTAKES */}
           <section id="common-mistakes" style="margin-bottom: 36px; width: 100%;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #0284C7;">Common Mistakes Teams Make When Trying to Fix Alert Fatigue</h2>
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 18px; color: #000000;">Common Mistakes Teams Make When Trying to Fix Alert Fatigue</h2>
             <div style="display: flex; flex-direction: column; gap: 16px;">
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Silencing alerts wholesale instead of fixing them properly</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Muting a noisy alert without fixing threshold or correlation logic creates dangerous blind spots that cost you when real incidents hit.</p>
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">1. Silencing alerts wholesale instead of fixing them properly</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">Muting a noisy alert without fixing threshold or correlation logic creates dangerous blind spots that cost you when real incidents hit.</p>
               </div>
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Treating this as a one-time project instead of ongoing maintenance</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Doing a big cleanup once without establishing recurring reviews allows new services and drift to return you to square one within a year.</p>
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">2. Treating this as a one-time project instead of ongoing maintenance</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">Doing a big cleanup once without establishing recurring reviews allows new services and drift to return you to square one within a year.</p>
               </div>
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Fixing volume without fixing severity misclassification</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Reducing total pages from 200 to 50 doesn't stop fatigue if all 50 remaining pages still scream at maximum urgency for non-critical issues.</p>
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">3. Fixing volume without fixing severity misclassification</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">Reducing total pages from 200 to 50 doesn't stop fatigue if all 50 remaining pages still scream at maximum urgency for non-critical issues.</p>
               </div>
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Assuming more monitoring automatically means better monitoring</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Adding integrations without investing in correlation and severity routing increases noise exponentially rather than enhancing visibility.</p>
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">4. Assuming more monitoring automatically means better monitoring</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">Adding integrations without investing in correlation and severity routing increases noise exponentially rather than enhancing visibility.</p>
               </div>
               <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                <h3 style="color: #ef4444; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">5. Not accounting for the post-arrival diagnosis phase</h3>
-                <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin: 0;">Focusing solely on reducing page volume while ignoring the cognitive effort needed to decode raw metrics at 3am leaves half the burnout problem unaddressed.</p>
+                <h3 style="color: #000000; font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0;">5. Not accounting for the post-arrival diagnosis phase</h3>
+                <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin: 0;">Focusing solely on reducing page volume while ignoring the cognitive effort needed to decode raw metrics at 3am leaves half the burnout problem unaddressed.</p>
               </div>
             </div>
           </section>
@@ -490,15 +490,15 @@ const FAQS = [
 
         {/* FREQUENTLY ASKED QUESTIONS */}
         <section id="faq" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px 24px 24px; margin-bottom: 32px; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #0284C7;">Frequently Asked Questions</h2>
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 16px 0; color: #000000;">Frequently Asked Questions</h2>
           <div style="display: flex; flex-direction: column; gap: 16px;">
             {FAQS.map((faq) => (
-              <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
-                <summary style="font-size: 1.1rem; font-weight: 800; color: #09090b; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              <details style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer;">
+                <summary style="font-size: 1.1rem; font-weight: 800; color: #0f172a; list-style: none; display: flex; justify-content: space-between; align-items: center;">
                   <span>{faq.q}</span>
-                  <span style="font-size: 1.2rem; color: #0284C7;">+</span>
+                  <span style="font-size: 1.2rem; color: #000000;">+</span>
                 </summary>
-                <p style="font-size: 1.02rem; color: #1e293b; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                <p style="font-size: 1.02rem; color: #475569; line-height: 1.65; margin-top: 12px; margin-bottom: 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                   {faq.a}
                 </p>
               </details>
@@ -508,18 +508,18 @@ const FAQS = [
 
         {/* WRAPPING IT UP */}
         <section id="wrapping-it-up" style="background: var(--bg-card, #ffffff); border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center; width: 100%; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
-          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #0284C7;">Wrapping It Up</h2>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+          <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 10px 0; color: #000000;">Wrapping It Up</h2>
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
             Alert fatigue doesn't announce itself. It arrives quietly, one reasonable sounding threshold and one small integration at a time, until a team that started out trying to build good monitoring ends up buried under a volume of noise nobody consciously chose to create. The damage it does isn't limited to a few bad nights of sleep either, it reshapes how people respond to everything, training good engineers to filter first and second, right up until the one time that habit costs something real.
           </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
             The fix isn't complicated in concept, even if it takes sustained effort in practice: know your actual noise sources through honest auditing, classify severity truthfully instead of by convenience, deduplicate and correlate so one root cause doesn't masquerade as twenty separate crises, tune thresholds against real behavior instead of arbitrary guesses, and give every alert enough context that responding to it doesn't require a separate investigation just to understand what it's even saying.
           </p>
-          <p style="font-size: 1.05rem; line-height: 1.75; color: #09090b; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
-            That's precisely the gap <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #0284C7; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> is built to close: uptime monitoring, log management, and SIEM detections, unified with smart severity based on call escalation and an AI analyst that automatically correlates related signals into one investigated, cited story instead of a pile of disconnected pings. Less noise competing for your team's attention, more of that attention available for the moments that need it.
+          <p style="font-size: 1.05rem; line-height: 1.75; color: #0f172a; margin-bottom: 16px; max-width: 850px; margin-left: auto; margin-right: auto; text-align: left;">
+            That's precisely the gap <a href="https://24observe.com" target="_blank" rel="noopener noreferrer" style="color: #000000; font-weight: 800; text-decoration: underline; text-underline-offset: 4px;">24Observe</a> is built to close: uptime monitoring, log management, and SIEM detections, unified with smart severity based on call escalation and an AI analyst that automatically correlates related signals into one investigated, cited story instead of a pile of disconnected pings. Less noise competing for your team's attention, more of that attention available for the moments that need it.
           </p>
           <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 14px;">
-            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #0284C7 !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);">
+            <a href="https://login.24observe.com/register" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; padding: 14px 36px; font-size: 1.1rem; line-height: 1; background: #000000 !important; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);">
               Start free with 24Observe →
             </a>
           </div>
@@ -530,7 +530,7 @@ const FAQS = [
       {/* RIGHT SIDEBAR */}
       <aside class="desktop-sidebar" style="width: 270px; flex-shrink: 0; position: sticky; top: 80px;">
         <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <span style="background: #0084C7; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
+          <span style="background: #000000; color: #ffffff; font-size: 0.78rem; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase;">
             PLATFORM SPECIAL
           </span>
         </div>
@@ -545,14 +545,14 @@ const FAQS = [
             </a>
           ))}
         </nav>
-        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #0284C7; text-decoration: none;">
+        <a href="/docs" style="display: inline-block; margin-top: 10px; padding-left: 10px; font-size: 0.88rem; font-weight: 700; color: #000000; text-decoration: none;">
           View All Specials →
         </a>
         <div style="background: #F0F9FF; border: 1.5px solid #BAE6FD; border-radius: 18px; padding: 24px 18px; margin-top: 24px; text-align: center; box-shadow: 0 4px 16px rgba(2, 132, 199, 0.08);">
           <p style="font-size: 0.96rem; line-height: 1.5; color: #0369A1; font-weight: 700; margin: 0 0 18px 0;">
             AI-powered uptime, logs, SIEM &amp;<br />AI agent observability in one<br />platform.
           </p>
-          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #0284C7 !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
+          <a href="https://login.24observe.com/register" style="display: block; width: 100%; background: #000000 !important; color: #ffffff !important; font-size: 0.95rem; font-weight: 800; padding: 12px 16px; border-radius: 10px; text-decoration: none !important; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2); transition: all 0.2s ease;" class="sidebar-cta-btn">
             Start free trial →
           </a>
         </div>
@@ -569,6 +569,6 @@ const FAQS = [
     }
   }
   .sidebar-nav-item:hover, .right-sidebar-link:hover {
-    color: #0284C7 !important;
+    color: #000000 !important;
   }
 </style>

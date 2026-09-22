@@ -26,7 +26,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #0284C7;
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* Faint gold grid background pattern */
@@ -47,7 +48,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #0284C7;
+  background: #000000;
   color: #ffffff;
   padding: 14px 26px;
   border-radius: 9999px;
@@ -58,7 +59,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .floating-cta-pill:hover {
-  background: #0084C7;
+  background: #000000;
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 12px 28px -4px rgba(2, 132, 199, 0.5);
