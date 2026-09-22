@@ -24,7 +24,7 @@ const BLOG_POSTS = [
   {
     "title": "On-Call Rotations Done Right: A Practical Guide for Engineering Teams",
     "description": "On-call rotations are supposed to protect your systems and your people, but most teams build them backwards, optimizing for coverage while quietly burning out the humans holding the pager. This practical guide breaks down how to design rotations that work, from scheduling models and escalation policies to alert quality, compensation, and the tooling that makes a rotation survivable.",
-    "category": "INCIDENT MANAGEMENT & DEVOPS",
+    "category": "INCIDENT MANAGEMENT",
     "date": "2026-09-17",
     "readTime": "23 MIN READ",
     "link": "/blog/on-call-rotations-done-right-practical-guide",
@@ -324,12 +324,12 @@ const RELEASES = [
                 class="blog-grid-card"
               >
                 <div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                    <span style="font-size: 0.72rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.05em; background: #dc2626; padding: 3px 8px; border-radius: 4px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 10px;">
+                    <span style="font-size: 0.68rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.04em; background: #dc2626; padding: 3px 8px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;">
                       {post.category}
                     </span>
                     {post.tag && (
-                      <span style="font-size: 0.68rem; font-weight: 800; color: #ffffff; background: #dc2626; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
+                      <span style="font-size: 0.68rem; font-weight: 800; color: #ffffff; background: #dc2626; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; flex-shrink: 0;">
                         {post.tag}
                       </span>
                     )}
