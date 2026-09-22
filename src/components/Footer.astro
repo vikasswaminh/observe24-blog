@@ -1,51 +1,195 @@
 ---
-// 24Observe Footer Component
+// 24Observe Clean Premium Footer Component
+const year = new Date().getFullYear();
+
+const productLinks = [
+  { href: '/product/ai-analyst',        label: 'AI NOC + SOC Analyst' },
+  { href: '/product/siem',              label: 'SIEM & detections' },
+  { href: '/llm-observability',         label: 'AI-agent observability' },
+  { href: '/product/ai-agent-security', label: 'AI-agent security' },
+  { href: '/product/uptime',            label: 'Uptime monitoring' },
+  { href: '/product/logs',              label: 'Log management' },
+  { href: '/product/metrics',           label: 'Metrics & alerting' },
+  { href: '/product/tracing',           label: 'Tracing' },
+  { href: '/product/network',           label: 'Network monitoring' },
+];
+
+const platformLinks = [
+  { href: '/product/context-graph',     label: 'Context graph' },
+  { href: '/product/incidents',         label: 'On-call & incidents' },
+  { href: '/product/alerting',          label: 'Alerting' },
+  { href: '/product/status-pages',      label: 'Status pages' },
+  { href: '/product/sensor',            label: 'The Linux Sensor' },
+  { href: '/solutions/noc',             label: 'For NOC teams' },
+];
+
+const developerLinks = [
+  { href: '/docs',              label: 'Documentation' },
+  { href: '/docs/guide',        label: 'User guide' },
+  { href: '/docs/admin',        label: 'Admin guide' },
+  { href: '/docs/agent-cookbook', label: 'Build an agent' },
+  { href: '/self-host',         label: 'Self-host guide' },
+  { href: '/blog',              label: 'Blog' },
+];
+
+const solutionLinks = [
+  { href: '/solutions/sre',       label: 'For SRE & DevOps' },
+  { href: '/solutions/soc',       label: 'For SOC & security' },
+  { href: '/solutions/noc',       label: 'For NOC teams' },
+  { href: '/solutions/ai-teams',  label: 'For AI teams' },
+  { href: '/solutions/startups',  label: 'For startups' },
+  { href: '/solutions/self-host', label: 'Self-host' },
+  { href: '/compare',             label: 'Compare' },
+];
+
+const ollaBrands = [
+  { href: 'https://ollabear.com',     label: 'OllaBear' },
+  { href: 'https://olladns.com',      label: 'OllaDNS' },
+  { href: 'https://ollagraph.com',    label: 'OllaGraph' },
+  { href: 'https://ollalink.com',     label: 'OllaLink' },
+  { href: 'https://ollanode.com',     label: 'OllaNode' },
+  { href: 'https://ollasoftware.com', label: 'OllaSoftware' },
+  { href: 'https://ollastack.com',    label: 'OllaStack' },
+  { href: 'https://ollasuper.com',    label: 'OllaSuper' },
+  { href: 'https://ollasync.com',     label: 'OllaSync' },
+  { href: 'https://ollavpn.com',      label: 'OllaVPN' },
+  { href: 'https://ollawrite.com',    label: 'OllaWrite' },
+];
 ---
 
-<footer class="site-footer">
-  <div class="container footer-layout">
-    <div class="footer-brand-col">
-      <div class="logo-lockup">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 28px; height: 28px; background: #09090b; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 900; font-size: 14px;">◉</div>
-          <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">24observe</span>
+<!-- MAIN FOOTER SECTION -->
+<footer style="background: #FFFFFF; border-top: 1px solid #E2E8F0; padding: 56px 20px 40px 20px; font-family: inherit;">
+  <div style="max-width: 1180px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr 1fr; gap: 40px;" class="footer-grid-wrap">
+      
+      <!-- BRAND COLUMN -->
+      <div>
+        <a href="/" style="display: flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 16px;">
+          <div style="width: 28px; height: 28px; background: #DC2626; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 900; font-size: 14px;">◉</div>
+          <span style="font-size: 1.25rem; font-weight: 800; color: #0F172A; letter-spacing: -0.02em;">24observe</span>
+        </a>
+        <p style="color: #475569; font-size: 0.92rem; line-height: 1.6; margin: 0 0 20px 0; max-width: 280px;">
+          Observability priced like a utility, licensed like a library, architected like a platform you'd actually build.
+        </p>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 5px 12px; border-radius: 20px; font-size: 0.80rem; font-weight: 600; color: #334155;">
+          <span style="width: 7px; height: 7px; background: #22C55E; border-radius: 50%; box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);"></span>
+          99.99% · 90d uptime
         </div>
       </div>
-      <p class="footer-tagline">One platform for uptime monitoring, log management, and SIEM — with an AI analyst that investigates every incident. Self-hostable.</p>
-      <p class="footer-copyright">© 2026 24Observe Inc. All rights reserved.</p>
+
+      <!-- PRODUCT COLUMN -->
+      <div>
+        <h4 style="font-size: 0.78rem; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px 0;">PRODUCT</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          {productLinks.map((item) => (
+            <li>
+              <a href={item.href} class="footer-clean-link">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- PLATFORM COLUMN -->
+      <div>
+        <h4 style="font-size: 0.78rem; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px 0;">PLATFORM</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          {platformLinks.map((item) => (
+            <li>
+              <a href={item.href} class="footer-clean-link">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- DEVELOPERS COLUMN -->
+      <div>
+        <h4 style="font-size: 0.78rem; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px 0;">DEVELOPERS</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          {developerLinks.map((item) => (
+            <li>
+              <a href={item.href} class="footer-clean-link">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- SOLUTIONS COLUMN -->
+      <div>
+        <h4 style="font-size: 0.78rem; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px 0;">SOLUTIONS</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          {solutionLinks.map((item) => (
+            <li>
+              <a href={item.href} class="footer-clean-link">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </div>
 
-    <div class="footer-links-col">
-      <h5 class="footer-col-title">Product</h5>
-      <ul class="footer-links">
-        <li><a href="/product/ai-analyst">AI SOC &amp; NOC Analyst</a></li>
-        <li><a href="/product/siem">SIEM &amp; Detections</a></li>
-        <li><a href="/product/logs">Log Management</a></li>
-        <li><a href="/product/uptime">Uptime Monitoring</a></li>
-        <li><a href="/product/ai-agent-security">AI Agent Security</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-      </ul>
+    <!-- OLLA GROUP BRANDS STRIP -->
+    <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #F1F5F9;">
+      <div style="font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">
+        Part of the Olla group
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px 20px;">
+        {ollaBrands.map((b) => (
+          <a href={b.href} target="_blank" rel="noopener" style="font-size: 0.85rem; color: #64748B; text-decoration: none; transition: color 0.15s ease;" class="olla-link">
+            {b.label}
+          </a>
+        ))}
+      </div>
     </div>
 
-    <div class="footer-links-col">
-      <h5 class="footer-col-title">Developers</h5>
-      <ul class="footer-links">
-        <li><a href="/docs">Documentation</a></li>
-        <li><a href="https://api.24observe.com/api/v1/openapi.json" target="_blank">OpenAPI Spec</a></li>
-        <li><a href="#api-console">API Sandbox</a></li>
-        <li><a href="/agents">Agent API</a></li>
-        <li><a href="/docs/mcp">MCP Server Setup</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-links-col">
-      <h5 class="footer-col-title">Company</h5>
-      <ul class="footer-links">
-        <li><a href="/blog">Engineering Blog</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/roadmap">Public Roadmap</a></li>
-        <li><a href="/contact">Contact Support</a></li>
-      </ul>
+    <!-- BOTTOM COPYRIGHT & LEGAL -->
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 0.85rem; color: #64748B;">
+      <div>
+        © {year} 24Observe Inc. · Self-hostable, end-to-end AI observability.
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <a href="/legal/terms" style="color: #64748B; text-decoration: none;" class="olla-link">Terms</a>
+        <a href="/legal/privacy" style="color: #64748B; text-decoration: none;" class="olla-link">Privacy</a>
+        <a href="/legal/security" style="color: #64748B; text-decoration: none;" class="olla-link">Security</a>
+        <a href="/legal/sla" style="color: #64748B; text-decoration: none;" class="olla-link">SLA</a>
+      </div>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-clean-link {
+    font-size: 0.90rem;
+    color: #475569;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+    display: inline-block;
+  }
+  .footer-clean-link:hover {
+    color: #DC2626 !important;
+    transform: translateX(2px);
+  }
+  .olla-link:hover {
+    color: #DC2626 !important;
+  }
+
+  @media (max-width: 900px) {
+    .footer-grid-wrap {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 32px !important;
+    }
+  }
+  @media (max-width: 540px) {
+    .footer-grid-wrap {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
