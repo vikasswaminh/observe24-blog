@@ -6,22 +6,22 @@
 :root {
   /* Brand Palette */
   --nh-white: #ffffff;
-  --nh-bg-grid: rgba(0, 0, 0, 0.04);
+  --nh-bg-grid: rgba(0, 0, 0, 0.05);
   --nh-black: #000000;
   --nh-heading: #000000;
-  --nh-body: #111827;
-  --nh-muted: #4b5563;
-  --nh-border: #e2e8f0;
+  --nh-body: #111111;
+  --nh-muted: #444444;
+  --nh-border: rgba(0, 0, 0, 0.15);
   --nh-border-strong: #000000;
 
   /* US Enterprise Accents */
-  --nh-red: #dc2626;
+  --nh-red: #dc2626; /* Red (Primary) */
   --nh-red-hover: #b91c1c;
-  --nh-red-light: #fef2f2;
-  --nh-amber: #000000;
-  --nh-amber-bg: #f1f5f9;
-  --nh-amber-text: #000000;
-  --nh-blue-link: #000000;
+  --nh-red-light: #ef4444;
+  --nh-amber: #d97706;
+  --nh-amber-bg: #fffbeb;
+  --nh-amber-text: #92400e;
+  --nh-blue-link: #dc2626;
 
   /* Typography */
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -44,8 +44,8 @@ html {
 }
 
 body {
-  background-color: #ffffff !important;
-  color: #111827 !important;
+  background-color: var(--nh-white);
+  color: var(--nh-body);
   font-family: var(--font-main);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -258,30 +258,21 @@ body {
   transform: translateY(-1px);
 }
 
-.nav-cta-btn,
-.nav-cta-btn:link,
-.nav-cta-btn:visited,
-.nav-cta-btn:hover,
-.nav-cta-btn:focus,
-.nav-cta-btn:active,
-.nav-cta-btn * {
-  background: #dc2626 !important;
+.nav-cta-btn {
+  background: var(--nh-red);
   color: #ffffff !important;
-  font-weight: 700 !important;
+  font-weight: 700;
   font-size: 0.9rem;
   padding: 10px 22px;
   border-radius: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
 }
 
-.nav-cta-btn:hover,
-.nav-cta-btn:hover * {
-  background: #b91c1c !important;
-  color: #ffffff !important;
+.nav-cta-btn:hover {
+  background: var(--nh-red-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.35);
 }
 
 /* --------------------------------------------------------------------------
