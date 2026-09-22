@@ -15,9 +15,9 @@
   --nh-border-strong: #000000;
 
   /* US Enterprise Accents */
-  --nh-red: #000000; /* Black Accent */
-  --nh-red-hover: #1f2937;
-  --nh-red-light: #374151;
+  --nh-red: #dc2626;
+  --nh-red-hover: #b91c1c;
+  --nh-red-light: #fef2f2;
   --nh-amber: #000000;
   --nh-amber-bg: #f1f5f9;
   --nh-amber-text: #000000;
@@ -258,21 +258,30 @@ body {
   transform: translateY(-1px);
 }
 
-.nav-cta-btn {
-  background: var(--nh-red);
+.nav-cta-btn,
+.nav-cta-btn:link,
+.nav-cta-btn:visited,
+.nav-cta-btn:hover,
+.nav-cta-btn:focus,
+.nav-cta-btn:active,
+.nav-cta-btn * {
+  background: #dc2626 !important;
   color: #ffffff !important;
-  font-weight: 700;
+  font-weight: 700 !important;
   font-size: 0.9rem;
   padding: 10px 22px;
   border-radius: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  text-decoration: none !important;
 }
 
-.nav-cta-btn:hover {
-  background: var(--nh-red-hover);
+.nav-cta-btn:hover,
+.nav-cta-btn:hover * {
+  background: #b91c1c !important;
+  color: #ffffff !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.35);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.35);
 }
 
 /* --------------------------------------------------------------------------
